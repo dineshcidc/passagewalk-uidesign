@@ -229,12 +229,13 @@ export default function JourneyScreen({ onNavigate, plan }: { onNavigate: (tab: 
   const pageStart = journeyDays[0];
   const pageEnd = journeyDays[journeyDays.length - 1];
   // One page = "Sep 30 – Nov 1"; month pages = "October 2026". The line under it ties the page to journey days.
-  const pageLabel = title ?? `${pageStart.month} ${pageStart.dateNumber} – ${pageEnd.month} ${pageEnd.dateNumber}`;
-  const pageRange = pageStart.journeyDay === pageEnd.journeyDay
+  const singleDay = pageStart.journeyDay === pageEnd.journeyDay;
+  const pageLabel = title ?? (singleDay ? `${pageStart.month} ${pageStart.dateNumber}` : `${pageStart.month} ${pageStart.dateNumber} – ${pageEnd.month} ${pageEnd.dateNumber}`);
+  const pageRange = singleDay
     ? `Day ${formatCount(pageStart.journeyDay)} of ${formatCount(plan.days)}`
     : `Days ${formatCount(pageStart.journeyDay)}–${formatCount(pageEnd.journeyDay)} of ${formatCount(plan.days)}`;
   const pageDays = pageCount === 1
-    ? `All ${plural(plan.days, "day")} · Today is Day ${formatCount(today)}`
+    ? `${plan.days === 1 ? "1 day" : `All ${plural(plan.days, "day")}`} · Today is Day ${formatCount(today)}`
     : page === todayPage ? `${pageRange} · Today is Day ${formatCount(today)}` : pageRange;
   // Books read so far (completed days) and the latest reading, for the book progress section.
   const readBooks = getRecordedDays().filter(isDayComplete).map((day) => getDayRecord(day)!.reading.bookIndex);
