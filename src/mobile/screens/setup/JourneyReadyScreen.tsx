@@ -1,0 +1,79 @@
+import AppIcon from "../../components/AppIcon";
+import { formatBookList, formatCount, journeyTypeLabels, plural, readingOrderLabel, readingStyle, withArticle } from "../../data/journeyPlans";
+import type { JourneyPlan } from "../../types";
+
+// Journey confirmation after setup (client slide 16): "You're set for a 67-day sequential Passage Walk".
+export default function JourneyReadyScreen({ plan, onStart, onChange, startLabel = "Start My Journey" }: { plan: JourneyPlan; onStart: () => void; onChange: () => void; startLabel?: string }) {
+  const days = formatCount(plan.days);
+  // "One chapter a day through Exodus and Leviticus." + how the steps work for this journey.
+  const through = plan.type === "custom" ? formatBookList(plan.books) : plan.type === "bible" ? "the entire Bible" : "the Old and New Testaments";
+  const stepsLine = plan.type !== "automatic" && plan.order === "in-order"
+    ? "Your steps unlock each day's chapter, in order."
+    : "Your steps will guide you to each day's chapter.";
+  const details = plan.type === "custom"
+    ? [
+      { label: "Books", value: plan.books.length > 3 ? `${plan.books.length} books` : plan.books.join(" · ") },
+      { label: "Chapters", value: `${plural(plan.days, "chapter")} · one a day` },
+      { label: "Reading order", value: readingOrderLabel(plan) },
+    ]
+    : plan.type === "bible"
+      ? [
+        { label: "Books", value: "All 66 books" },
+        { label: "Chapters", value: `${days} · about 3 years` },
+        { label: "Reading order", value: readingOrderLabel(plan) },
+      ]
+      : [
+        { label: "Testaments", value: "Old & New Testaments, alternating" },
+        { label: "Daily reading", value: "One chapter a day" },
+        { label: "Chosen by", value: "Your daily steps" },
+      ];
+  const fact = plan.type === "automatic"
+    ? "Did you know? Christ was 33 years old when He died — one day for each year of His life."
+    : plan.type === "bible"
+      ? "66 books, written over many centuries. Your steps will take you to every one."
+      : plan.books.length > 1
+        ? "Finish a book and you'll earn a milestone along the way."
+        : plan.days === 1
+          ? `Read the one chapter of ${plan.books[0]} to complete your journey.`
+          : `Read all ${days} chapters of ${plan.books[0]} to complete your journey.`;
+
+  return (
+    <div className="moment-screen journey-ready-screen">
+      <div className="moment-visual">
+        <div className="moment-sparkles" aria-hidden="true">{Array.from({ length: 8 }, (_, index) => <i key={index} />)}</div>
+        <div className="journey-ready-medallion">
+          <svg viewBox="0 0 120 120" aria-hidden="true">
+            <circle className="journey-ready-track" cx="60" cy="60" r="54" />
+            <circle className="journey-ready-arc" cx="60" cy="60" r="54" pathLength={100} />
+          </svg>
+          <div><strong className={days.length > 3 ? "long" : ""}>{days}</strong><span>{plan.days === 1 ? "DAY" : "DAYS"}</span></div>
+        </div>
+      </div>
+
+      <div className="moment-copy">
+        <span>YOUR JOURNEY IS READY</span>
+        <h1>You're set for {withArticle(plan.days)}-day {readingStyle(plan) && `${readingStyle(plan)} `}Passage Walk</h1>
+        <p>One chapter a day through {through}. {stepsLine}</p>
+      </div>
+
+      <div className="journey-ready-card">
+        <div className="journey-ready-card-head">
+          <i><AppIcon name={plan.type === "custom" ? "book" : plan.type === "bible" ? "library" : "spark"} /></i>
+          <div><span>JOURNEY TYPE</span><strong>{journeyTypeLabels[plan.type]}</strong></div>
+        </div>
+        <dl>
+          {details.map((item) => <div key={item.label}><dt>{item.label}</dt><dd>{item.value}</dd></div>)}
+        </dl>
+        <p className="journey-ready-fact"><AppIcon name="spark" />{fact}</p>
+      </div>
+
+      <div className="moment-footer">
+        <button type="button" className="moment-primary" onClick={onStart}>
+          <span>{startLabel}</span>
+          <AppIcon name="chevron" />
+        </button>
+        <button type="button" className="moment-link" onClick={onChange}>Change Journey</button>
+      </div>
+    </div>
+  );
+}

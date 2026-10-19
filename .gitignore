@@ -1,0 +1,27 @@
+# Dependencies & build output
+node_modules/
+dist/
+build/
+.cache/
+.vite/
+vite.config.*.timestamp-*
+*.tsbuildinfo
+
+# Environment & logs
+.env*
+*-debug.log*
+logs/
+*.log
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local tooling (not project source)
+.claude/
+.vercel/
+
+# Internal client notes — never push to GitHub
+Client-call/

@@ -1,0 +1,99 @@
+import { useState } from "react";
+import AppIcon from "../../components/AppIcon";
+import { formatBookList, formatCount, journeyTypeLabels, plural, readingOrderLabel } from "../../data/journeyPlans";
+import { getTodayDay } from "../../data/progress";
+import type { JourneyPlan } from "../../types";
+import JourneyReadyScreen from "../setup/JourneyReadyScreen";
+import JourneySetupScreen from "../setup/JourneySetupScreen";
+import ProfileSubpageHeader from "./ProfileSubpageHeader";
+
+// Settings → Change Journey reuses the first-time setup (3 journey types → books → order → journey ready),
+// so the team sees one flow. Starting the new journey switches the whole app to it.
+export default function SettingsPage({
+  plan,
+  onChangeJourney,
+  onBack,
+}: {
+  plan: JourneyPlan;
+  onChangeJourney: (plan: JourneyPlan) => void;
+  onBack: () => void;
+}) {
+  const [step, setStep] = useState<"overview" | "setup" | "ready">("overview");
+  const [nextPlan, setNextPlan] = useState<JourneyPlan | null>(null);
+  const [confirmChange, setConfirmChange] = useState(false);
+
+  if (step === "ready" && nextPlan) {
+    return <JourneyReadyScreen plan={nextPlan} startLabel="Start This Journey" onStart={() => onChangeJourney(nextPlan)} onChange={() => setStep("setup")} />;
+  }
+
+  if (step === "setup") {
+    return (
+      <JourneySetupScreen
+        initialPlan={nextPlan ?? plan}
+        onExit={() => setStep("overview")}
+        onComplete={(chosen) => {
+          setNextPlan(chosen);
+          setStep("ready");
+        }}
+      />
+    );
+  }
+
+  const details = [
+    { label: "Length", value: `${plural(plan.days, "day")} · one chapter a day` },
+    plan.type === "custom"
+      ? { label: "Books", value: formatBookList(plan.books) }
+      : { label: "Books", value: plan.type === "bible" ? "All 66 books" : "Old & New Testaments, alternating" },
+    { label: "Reading order", value: readingOrderLabel(plan) },
+  ];
+
+  return (
+    <div className="profile-subpage">
+      <ProfileSubpageHeader title="Settings" onBack={onBack} />
+      <div className="settings-content">
+        <div className="profile-subpage-intro">
+          <span>JOURNEY SETTINGS</span>
+          <h1>Current Journey</h1>
+          <p>Review the journey type guiding your daily scripture assignments.</p>
+        </div>
+
+        <section className="current-journey-card">
+          <div className="current-journey-icon"><AppIcon name={plan.type === "automatic" ? "spark" : plan.type === "bible" ? "library" : "book"} /></div>
+          <div>
+            <span>CURRENT JOURNEY</span>
+            <strong>{journeyTypeLabels[plan.type]}</strong>
+          </div>
+          <i>{formatCount(plan.days)} {plan.days === 1 ? "DAY" : "DAYS"}</i>
+        </section>
+
+        <dl className="current-journey-details">
+          {details.map((item) => <div key={item.label}><dt>{item.label}</dt><dd>{item.value}</dd></div>)}
+        </dl>
+
+        <button className="change-journey-button" onClick={() => setConfirmChange(true)}>
+          Change Journey
+          <AppIcon name="chevron" />
+        </button>
+        <p className="change-journey-note">Choose from the 33-Day Journey, your own books, or the entire Bible.</p>
+      </div>
+
+      {/* Changing journey ends the current one, so ask first. */}
+      {confirmChange && (
+        <div className="logout-backdrop" onClick={() => setConfirmChange(false)}>
+          <section className="logout-dialog change-journey-dialog" role="dialog" aria-modal="true" aria-labelledby="change-journey-title" onClick={(event) => event.stopPropagation()}>
+            <div className="logout-dialog-icon"><AppIcon name="journey" /></div>
+            <h2 id="change-journey-title">Start a new journey?</h2>
+            <p>
+              Your current journey ({journeyTypeLabels[plan.type]}) is on Day {getTodayDay()} of {formatCount(plan.days)}. Changing your journey
+              will stop it here, and its progress won&apos;t carry over to the new one.
+            </p>
+            <div>
+              <button onClick={() => setConfirmChange(false)}>Keep Current</button>
+              <button onClick={() => { setConfirmChange(false); setStep("setup"); }}>Yes, Change</button>
+            </div>
+          </section>
+        </div>
+      )}
+    </div>
+  );
+}
