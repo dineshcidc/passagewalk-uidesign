@@ -1,6 +1,10 @@
 import { useState } from "react";
 import AppIcon from "../../components/AppIcon";
-import { formatBookList, formatCount, journeyTypeLabels, plural, readingOrderLabel } from "../../data/journeyPlans";
+import BibleVersionList from "../../components/BibleVersionList";
+import MilestoneBadge from "../../components/MilestoneBadge";
+import JourneyCompleteFlow from "../complete/JourneyCompleteFlow";
+import { BIBLE_VERSION } from "../../data/bible";
+import { formatBookList, formatCount, journeyName, journeyTypeIcons, journeyTypeLabels, plural, readingOrderLabel } from "../../data/journeyPlans";
 import { getTodayDay } from "../../data/progress";
 import type { JourneyPlan } from "../../types";
 import JourneyReadyScreen from "../setup/JourneyReadyScreen";
@@ -18,9 +22,38 @@ export default function SettingsPage({
   onChangeJourney: (plan: JourneyPlan) => void;
   onBack: () => void;
 }) {
-  const [step, setStep] = useState<"overview" | "setup" | "ready">("overview");
+  const [step, setStep] = useState<"overview" | "setup" | "ready" | "bible" | "complete">("overview");
   const [nextPlan, setNextPlan] = useState<JourneyPlan | null>(null);
   const [confirmChange, setConfirmChange] = useState(false);
+
+  // Prototype demo: the Journey Complete screens; choosing a next walk continues into Change Journey.
+  if (step === "complete") {
+    return (
+      <JourneyCompleteFlow
+        onExit={() => setStep("overview")}
+        onChoose={(chosen) => {
+          setNextPlan(chosen);
+          setStep("setup");
+        }}
+      />
+    );
+  }
+
+  if (step === "bible") {
+    return (
+      <div className="profile-subpage">
+        <ProfileSubpageHeader title="Bible Version" onBack={() => setStep("overview")} />
+        <div className="settings-content">
+          <div className="profile-subpage-intro">
+            <span>READING SETTINGS</span>
+            <h1>Bible Version</h1>
+            <p>Choose the version for your daily readings and highlights.</p>
+          </div>
+          <BibleVersionList />
+        </div>
+      </div>
+    );
+  }
 
   if (step === "ready" && nextPlan) {
     return <JourneyReadyScreen plan={nextPlan} startLabel="Start This Journey" onStart={() => onChangeJourney(nextPlan)} onChange={() => setStep("setup")} />;
@@ -30,7 +63,8 @@ export default function SettingsPage({
     return (
       <JourneySetupScreen
         initialPlan={nextPlan ?? plan}
-        onExit={() => setStep("overview")}
+        askVersion={false}
+        onExit={() => { setNextPlan(null); setStep("overview"); }}
         onComplete={(chosen) => {
           setNextPlan(chosen);
           setStep("ready");
@@ -41,8 +75,9 @@ export default function SettingsPage({
 
   const details = [
     { label: "Length", value: `${plural(plan.days, "day")} · one chapter a day` },
-    plan.type === "custom"
-      ? { label: "Books", value: formatBookList(plan.books) }
+    ...(plan.type === "designed" ? [{ label: "Walk", value: journeyName(plan) }] : []),
+    plan.type === "custom" || plan.type === "designed"
+      ? { label: "Books", value: plan.books.length === 66 ? "All 66 books" : formatBookList(plan.books) }
       : { label: "Books", value: plan.type === "bible" ? "All 66 books" : "Old & New Testaments, alternating" },
     { label: "Reading order", value: readingOrderLabel(plan) },
   ];
@@ -58,7 +93,7 @@ export default function SettingsPage({
         </div>
 
         <section className="current-journey-card">
-          <div className="current-journey-icon"><AppIcon name={plan.type === "automatic" ? "spark" : plan.type === "bible" ? "library" : "book"} /></div>
+          <div className="current-journey-icon"><AppIcon name={journeyTypeIcons[plan.type]} /></div>
           <div>
             <span>CURRENT JOURNEY</span>
             <strong>{journeyTypeLabels[plan.type]}</strong>
@@ -74,7 +109,24 @@ export default function SettingsPage({
           Change Journey
           <AppIcon name="chevron" />
         </button>
-        <p className="change-journey-note">Choose from the 33-Day Journey, your own books, or the entire Bible.</p>
+        <p className="change-journey-note">Choose from the 33-Day Walk, a Designed Experience, or create your own journey.</p>
+
+        <div className="settings-section-label">READING</div>
+        <button className="settings-version-row" onClick={() => setStep("bible")}>
+          <i><AppIcon name="book" /></i>
+          <div><span>BIBLE VERSION</span><strong>{BIBLE_VERSION.name}</strong></div>
+          <em>{BIBLE_VERSION.short}</em>
+          <AppIcon name="chevron" />
+        </button>
+
+        {/* Prototype only: the mock journey is on Day 5, so the end of a journey is shown from here. */}
+        <div className="settings-section-label">PROTOTYPE DEMO</div>
+        <button className="settings-demo-row" onClick={() => setStep("complete")}>
+          <i><MilestoneBadge milestone={{ day: 33, unlocked: true }} /></i>
+          <div><span>JOURNEY COMPLETE</span><strong>See what happens when a user finishes their last day</strong></div>
+          <AppIcon name="chevron" />
+        </button>
+        <p className="settings-demo-note">Demo only. In the app, these screens open when the final day's reflection is saved.</p>
       </div>
 
       {/* Changing journey ends the current one, so ask first. */}

@@ -49,7 +49,7 @@ export default function ProfileScreen({
   return (
     <div className="profile-screen">
       <section className="profile-hero">
-        <span className="profile-page-label">MY PROFILE</span>
+        <span className="profile-page-label">YOU</span>
         <button className="profile-avatar" onClick={() => setView("my-profile")} aria-label="Open my profile">
           <img src={user.photo} alt={`${user.firstName}'s profile`} />
           <i><AppIcon name="camera" /></i>
@@ -59,7 +59,7 @@ export default function ProfileScreen({
       </section>
 
       <div className="profile-content">
-        <nav className="profile-menu-card" aria-label="Profile options">
+        <nav className="profile-menu-card" aria-label="You options">
           {menuItems.map((item) => (
             <button onClick={() => item.view && setView(item.view)} key={item.label}>
               <span className="profile-menu-icon"><AppIcon name={item.icon} /></span>

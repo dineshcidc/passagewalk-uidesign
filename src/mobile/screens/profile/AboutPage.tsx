@@ -22,7 +22,7 @@ export default function AboutPassageWalkPage({ onBack }: { onBack: () => void })
           <div className="about-passage-mark"><PassageWalkLogo /></div>
           <h1>Passage Walk</h1>
           <span>WALK · READ · REFLECT</span>
-          <p>Passage Walk connects your daily walking with scripture and reflection — over 33 days, through books you choose, or across the entire Bible.</p>
+          <p>Passage Walk connects your daily walking with scripture and reflection — over 33 days, through a Designed Experience, through books you choose, or across the whole Bible.</p>
         </section>
 
         {/* Kathy's "why PassageWalk" copy (client slide 22, draft until the final copy arrives). xx scriptures = 31,102 verses (KJV). */}

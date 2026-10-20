@@ -5,7 +5,7 @@ import BibleBooksGrid from "../../components/BibleBooksGrid";
 import { getBookName } from "../../data/bible";
 import { getChapter, getDayHighlights } from "../../data/chapters";
 import { getJournalEntries } from "../../data/journal";
-import { formatBookList, formatCount, journeyTypeLabels, plural, readingOrderLabel } from "../../data/journeyPlans";
+import { formatBookList, formatCount, journeyName, journeyTypeIcons, journeyTypeLabels, plural, readingOrderLabel } from "../../data/journeyPlans";
 import { getDayDate, getDayRecord, getRecordedDays } from "../../data/journeyStore";
 import { getBookProgress, getDayStatus, getDayStepCount, getProgress, getTodayDay, isDayComplete, type DayStatus } from "../../data/progress";
 import type { JourneyPlan, MainTab } from "../../types";
@@ -243,7 +243,11 @@ export default function JourneyScreen({ onNavigate, plan }: { onNavigate: (tab: 
   const bookProgress = getBookProgress();
   const chaptersRead = readBooks.length;
   const [booksOpen, setBooksOpen] = useState(false);
-  const typeDetail = plan.type === "custom"
+  // Designed Experiences with a few books list them like your own books; the Every Book Walk shows the 66-book map.
+  const perBook = plan.type === "custom" || (plan.type === "designed" && plan.books.length <= 10);
+  const typeDetail = plan.type === "designed"
+    ? `${journeyName(plan)} · ${plan.books.length === 66 ? "All 66 books" : formatBookList(plan.books)} · ${readingOrderLabel(plan)}`
+    : plan.type === "custom"
     ? `${formatBookList(plan.books)} · ${readingOrderLabel(plan)}`
     : plan.type === "bible" ? `All 66 books · ${readingOrderLabel(plan)}` : "Old & New Testaments, alternating";
 
@@ -278,19 +282,19 @@ export default function JourneyScreen({ onNavigate, plan }: { onNavigate: (tab: 
           </div>
           <div className="journey-summary-track"><span style={{ width: progress.barWidth }}></span></div>
           <div className="journey-summary-type">
-            <div><AppIcon name={plan.type === "automatic" ? "spark" : plan.type === "bible" ? "library" : "book"} /></div>
+            <div><AppIcon name={journeyTypeIcons[plan.type]} /></div>
             <span>Journey type</span>
             <strong>{journeyTypeLabels[plan.type]}</strong>
           </div>
           <p className="journey-summary-detail">{typeDetail}</p>
         </section>
 
-        <section className={`journey-books-card ${plan.type === "custom" ? `accordion ${booksOpen ? "open" : ""}` : ""}`}>
-          {plan.type === "custom" ? (
-            // Choose Your Own can hold many books, so the per-book list opens and closes.
+        <section className={`journey-books-card ${perBook ? `accordion ${booksOpen ? "open" : ""}` : ""}`}>
+          {perBook ? (
+            // Create a Journey (your books) can hold many books, so the per-book list opens and closes.
             <button className="journey-books-heading journey-books-toggle" onClick={() => setBooksOpen((open) => !open)} aria-expanded={booksOpen}>
               <div>
-                <span>YOUR BOOKS · {plan.books.length}</span>
+                <span>{plan.type === "designed" ? "BOOKS IN THIS WALK" : "YOUR BOOKS"} · {plan.books.length}</span>
                 <strong>Chapters read per book</strong>
                 <p>{chaptersRead} of {plural(plan.days, "chapter")} read{latestBook !== null ? ` · Latest: ${getBookName(latestBook)}` : ""}</p>
               </div>
@@ -312,7 +316,7 @@ export default function JourneyScreen({ onNavigate, plan }: { onNavigate: (tab: 
               <span><strong>{bookProgress.filter((book) => book.read > 0).length} of 66</strong> books started</span>
             </p>
           )}
-          {plan.type === "custom" ? (
+          {perBook ? (
             booksOpen && <div className="journey-book-rows">
               {bookProgress.map((book) => (
                 <div className={book.finished ? "finished" : ""} key={book.bookIndex}>

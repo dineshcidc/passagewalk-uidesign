@@ -6,7 +6,7 @@ const mainNavigation = [
   { id: "journey" as MainTab, label: "Journey", icon: "journey" as const },
   { id: "journal" as MainTab, label: "Journal", icon: "journal" as const },
   { id: "milestones" as MainTab, label: "Milestones", icon: "milestones" as const },
-  { id: "profile" as MainTab, label: "Profile", icon: "profile" as const },
+  { id: "profile" as MainTab, label: "You", icon: "profile" as const }, // Kathy (review call 3): "Profile" → "You"
 ];
 
 export default function BottomNavigation({ active, onSelect }: { active: MainTab; onSelect: (tab: MainTab) => void }) {

@@ -29,7 +29,7 @@ function LegalDocumentPage({ type, onBack }: { type: "terms" | "privacy"; onBack
           <h2>{isTerms ? "Changes and availability" : "Your choices"}</h2>
           <p>{isTerms
             ? "Features may evolve as Passage Walk improves. Continued use of the app means you accept the current terms."
-            : "You may update your profile information and reminder preferences at any time from the Profile menu."}</p>
+            : "You may update your profile information and reminder preferences at any time from the You tab."}</p>
         </section>
       </article>
     </div>

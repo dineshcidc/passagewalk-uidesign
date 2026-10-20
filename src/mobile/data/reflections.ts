@@ -1,4 +1,5 @@
 // Reflection questions shared by Write Reflection and the Journal (wording pending Kathy's final copy).
+// Review call 3: Kathy wants one question built on the word "move" — Q1 already is ("As you moved…").
 // Q1 connects the walk with the reading (client slide 18, wording completed by us — "As you moved through your steps
 // and passages what…"); Q2 and Q3 come from the hard-copy journal.
 export const reflectionQuestions = [

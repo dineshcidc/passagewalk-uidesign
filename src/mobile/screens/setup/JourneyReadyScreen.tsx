@@ -1,16 +1,26 @@
 import AppIcon from "../../components/AppIcon";
-import { formatBookList, formatCount, journeyTypeLabels, plural, readingOrderLabel, readingStyle, withArticle } from "../../data/journeyPlans";
+import { BIBLE_VERSION } from "../../data/bible";
+import { getExperience } from "../../data/experiences";
+import { experienceThrough, formatBookList, formatCount, journeyTypeIcons, journeyTypeLabels, plural, readingOrderLabel, readingStyle, withArticle } from "../../data/journeyPlans";
 import type { JourneyPlan } from "../../types";
 
 // Journey confirmation after setup (client slide 16): "You're set for a 67-day sequential Passage Walk".
 export default function JourneyReadyScreen({ plan, onStart, onChange, startLabel = "Start My Journey" }: { plan: JourneyPlan; onStart: () => void; onChange: () => void; startLabel?: string }) {
   const days = formatCount(plan.days);
+  const experience = getExperience(plan.experience);
   // "One chapter a day through Exodus and Leviticus." + how the steps work for this journey.
-  const through = plan.type === "custom" ? formatBookList(plan.books) : plan.type === "bible" ? "the entire Bible" : "the Old and New Testaments";
+  const through = experience ? experienceThrough(experience) : plan.type === "custom" ? formatBookList(plan.books) : plan.type === "bible" ? "the whole Bible" : "the Old and New Testaments";
   const stepsLine = plan.type !== "automatic" && plan.order === "in-order"
     ? "Your steps unlock each day's chapter, in order."
     : "Your steps will guide you to each day's chapter.";
-  const details = plan.type === "custom"
+  const details = experience
+    ? [
+      { label: "Walk", value: experience.name },
+      { label: "Books", value: plan.books.length === 66 ? "All 66 books" : plan.books.length > 3 ? `${plan.books.length} books` : plan.books.join(" · ") },
+      { label: "Chapters", value: `${plural(plan.days, "chapter")} · one a day` },
+      { label: "Reading order", value: readingOrderLabel(plan) },
+    ]
+    : plan.type === "custom"
     ? [
       { label: "Books", value: plan.books.length > 3 ? `${plan.books.length} books` : plan.books.join(" · ") },
       { label: "Chapters", value: `${plural(plan.days, "chapter")} · one a day` },
@@ -27,7 +37,9 @@ export default function JourneyReadyScreen({ plan, onStart, onChange, startLabel
         { label: "Daily reading", value: "One chapter a day" },
         { label: "Chosen by", value: "Your daily steps" },
       ];
-  const fact = plan.type === "automatic"
+  const fact = experience
+    ? `${experience.tagline} Walk all ${days} days to earn the ${experience.name} badge.`
+    : plan.type === "automatic"
     ? "Did you know? Christ was 33 years old when He died — one day for each year of His life."
     : plan.type === "bible"
       ? "66 books, written over many centuries. Your steps will take you to every one."
@@ -53,16 +65,16 @@ export default function JourneyReadyScreen({ plan, onStart, onChange, startLabel
       <div className="moment-copy">
         <span>YOUR JOURNEY IS READY</span>
         <h1>You're set for {withArticle(plan.days)}-day {readingStyle(plan) && `${readingStyle(plan)} `}Passage Walk</h1>
-        <p>One chapter a day through {through}. {stepsLine}</p>
+        <p>{experience ? `${experience.name}: one chapter a day through ${through}.` : `One chapter a day through ${through}.`} {stepsLine}</p>
       </div>
 
       <div className="journey-ready-card">
         <div className="journey-ready-card-head">
-          <i><AppIcon name={plan.type === "custom" ? "book" : plan.type === "bible" ? "library" : "spark"} /></i>
+          <i><AppIcon name={journeyTypeIcons[plan.type]} /></i>
           <div><span>JOURNEY TYPE</span><strong>{journeyTypeLabels[plan.type]}</strong></div>
         </div>
         <dl>
-          {details.map((item) => <div key={item.label}><dt>{item.label}</dt><dd>{item.value}</dd></div>)}
+          {[...details, { label: "Bible", value: BIBLE_VERSION.name }].map((item) => <div key={item.label}><dt>{item.label}</dt><dd>{item.value}</dd></div>)}
         </dl>
         <p className="journey-ready-fact"><AppIcon name="spark" />{fact}</p>
       </div>

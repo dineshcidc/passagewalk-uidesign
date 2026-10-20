@@ -1,15 +1,33 @@
+import type { AppIconName } from "../components/AppIcon";
 import type { JourneyPlan, JourneyType, ReadingOrder } from "../types";
 import { bibleBooks } from "./bibleBooks";
+import { getExperience, type Experience } from "./experiences";
 
 export const THIRTY_THREE_DAY_LENGTH = 33;
 // 66 books · 1,189 chapters — one chapter a day.
 export const BIBLE_CHAPTER_COUNT = bibleBooks.reduce((total, book) => total + book.chapters, 0);
 
+// Both "Your Own" and "Whole Bible" journeys are made with Create a Journey.
 export const journeyTypeLabels: Record<JourneyType, string> = {
-  automatic: "33-Day Journey",
-  custom: "Choose Your Own Journey",
-  bible: "Read the Entire Bible",
+  automatic: "33-Day Walk",
+  designed: "Designed Experience",
+  custom: "Your Own Journey",
+  bible: "Whole Bible Journey",
 };
+
+export const journeyTypeIcons: Record<JourneyType, AppIconName> = {
+  automatic: "spark",
+  designed: "compass",
+  custom: "book",
+  bible: "library",
+};
+
+// The plan's own name where it has one: "Courage Walk" for a Designed Experience, else the type label.
+export const journeyName = (plan: JourneyPlan) => getExperience(plan.experience)?.name ?? journeyTypeLabels[plan.type];
+
+export function createExperiencePlan(experience: Experience, order: ReadingOrder): JourneyPlan {
+  return { type: "designed", books: experience.books.map((book) => book.name), order, days: experience.days, experience: experience.id };
+}
 
 const bookIndex = (name: string) => bibleBooks.findIndex((book) => book.name === name);
 export const getBookChapters = (name: string) => bibleBooks[bookIndex(name)]?.chapters ?? 0;
@@ -23,7 +41,7 @@ export function getChapterTotal(books: string[]) {
   return books.reduce((total, name) => total + getBookChapters(name), 0);
 }
 
-export function createJourneyPlan(type: JourneyType, books: string[] = [], order: ReadingOrder = "in-order"): JourneyPlan {
+export function createJourneyPlan(type: Exclude<JourneyType, "designed">, books: string[] = [], order: ReadingOrder = "in-order"): JourneyPlan {
   if (type === "automatic") return { type, books: [], order: "steps", days: THIRTY_THREE_DAY_LENGTH };
   // Entire Bible: in chapter order (Genesis → Revelation) or randomly, guided by the steps.
   if (type === "bible") return { type, books: [], order, days: BIBLE_CHAPTER_COUNT };
@@ -62,4 +80,9 @@ export function getChapterPreview(books: string[], order: ReadingOrder, count = 
   // A fixed spread across the list stands in for step-chosen chapters (stable between renders).
   const picks = [0.62, 0.08, 0.85, 0.37].map((ratio) => chapters[Math.floor(chapters.length * ratio)]);
   return [...new Set(picks)].slice(0, count);
+}
+
+// "Daniel", "Mark and Luke", "all 66 books, Genesis to Revelation" — a Designed Experience's reading, in a sentence.
+export function experienceThrough(experience: Experience) {
+  return experience.books.length === bibleBooks.length ? "all 66 books, Genesis to Revelation" : formatBookList(experience.books.map((book) => book.name));
 }

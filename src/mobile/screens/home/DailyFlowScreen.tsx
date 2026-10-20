@@ -1,31 +1,33 @@
 import { useEffect, useState } from "react";
 import AppIcon from "../../components/AppIcon";
+import BibleVersionList from "../../components/BibleVersionList";
 import HighlightedVersesCard from "../../components/HighlightedVersesCard";
 import CelebrationScreen, { type Celebration } from "../../components/CelebrationScreen";
 import StepsLedCard from "../../components/StepsLedCard";
 import { getBookProgress, getJourneyLength, getMilestoneDays, getUnlockedMilestones } from "../../data/progress";
 import { BIBLE_VERSION, useBibleRevision } from "../../data/bible";
 import { getChapter, saveDayHighlights } from "../../data/chapters";
-import { formatDayDate, getDayRecord, getHighlightNumbers, getRecordedDays, getTodayDay } from "../../data/journeyStore";
+import { formatDayDate, getActivePlan, getDayRecord, getHighlightNumbers, getRecordedDays, getTodayDay } from "../../data/journeyStore";
 import { getDayReflection, reflectionQuestions, saveDayReflection, saveDaySteps, type ReflectionAnswers } from "../../data/reflections";
 
 export type DailyFlowEntry = "entry" | "reading" | "reflection";
 type DailyFlowPhase = DailyFlowEntry | "generating" | "ready" | "celebration" | "reflectionSuccess";
 
 // What a save newly earned: finished books first, then day badges (the final one = journey complete).
+// Designed Experiences have no book badges (Milestones screen), so only their walk badges celebrate.
 function getEarned() {
   return {
     milestones: getUnlockedMilestones(),
-    books: getBookProgress().filter((book) => book.finished).map((book) => book.bookIndex),
+    books: getActivePlan().type === "designed" ? [] : getBookProgress().filter((book) => book.finished).map((book) => book.bookIndex),
   };
 }
 
-// Encouragement on Passage Ready, based on the day's steps.
+// Encouragement on Passage Ready, based on the day's steps — Kathy's movement words (move, strengthen, build).
 function walkMessage(steps: number, isToday: boolean) {
   if (!isToday) return "Thanks for catching up — every day counts 👣";
-  if (steps >= 10000) return "Amazing walk — 10,000+ steps! 👣";
-  if (steps >= 5000) return "Great walk today! 👣";
-  return "Every step counts — well done! 👣";
+  if (steps >= 10000) return "10,000+ steps — you're on the move! 👣";
+  if (steps >= 5000) return "Great walk — keep moving forward! 👣";
+  return "Every step builds strength 👣";
 }
 
 export default function DailyFlowScreen({
@@ -56,6 +58,7 @@ export default function DailyFlowScreen({
   const [highlightedVerses, setHighlightedVerses] = useState<number[]>(() => getHighlightNumbers(journeyDay));
   const [readingReturn, setReadingReturn] = useState<"reflection" | null>(null);
   const [celebrations, setCelebrations] = useState<Celebration[]>([]);
+  const [versionSheet, setVersionSheet] = useState(false);
 
   const saveReflection = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -219,7 +222,9 @@ export default function DailyFlowScreen({
         <main className="scripture-reading-content">
           <div className="scripture-reading-label"><span>PASSAGE WALK</span><i></i><span>{dayLabel}</span></div>
           <h1>{reference}</h1>
-          <p className="scripture-reading-version"><AppIcon name="book" />{BIBLE_VERSION.name}</p>
+          <button className="scripture-reading-version" onClick={() => setVersionSheet(true)} aria-label={`${BIBLE_VERSION.name}. Change Bible version`}>
+            <AppIcon name="book" />{BIBLE_VERSION.name}<AppIcon name="chevron" />
+          </button>
           <p className="scripture-reading-intro">Tap any verse to highlight what speaks to you.</p>
 
           <div className="scripture-chapter-list">
@@ -245,6 +250,20 @@ export default function DailyFlowScreen({
           <div><strong>{selectedVerses.length}</strong><span>{selectedVerses.length === 1 ? "verse highlighted" : "verses highlighted"}</span></div>
           <button onClick={reflectFromReading}><AppIcon name="journal" />Write Reflection</button>
         </div>
+
+        {/* Version pill → change the Bible version without leaving the chapter. */}
+        {versionSheet && (
+          <div className="version-sheet-backdrop" onClick={() => setVersionSheet(false)}>
+            <section className="version-sheet" role="dialog" aria-modal="true" aria-labelledby="version-sheet-title" onClick={(event) => event.stopPropagation()}>
+              <i className="version-sheet-grip" aria-hidden="true"></i>
+              <div className="version-sheet-head">
+                <div><span>READING</span><h2 id="version-sheet-title">Bible version</h2></div>
+                <button onClick={() => setVersionSheet(false)}>Done</button>
+              </div>
+              <BibleVersionList preview={false} />
+            </section>
+          </div>
+        )}
       </div>
     );
   }
@@ -309,7 +328,7 @@ export default function DailyFlowScreen({
           </div>
           <span>JOURNAL UPDATED</span>
           <h1>Reflection Saved</h1>
-          <p className="reflection-proud">Day {journeyDay} is complete — well done!</p>
+          <p className="reflection-proud">Day {journeyDay} is complete — you're growing stronger!</p>
           <p>Your thoughts are safely stored as part of {isToday ? "today's" : `Day ${journeyDay}'s`} scripture journey.</p>
 
           <div className="reflection-success-summary">

@@ -5,7 +5,7 @@ import { useBibleRevision } from "../../data/bible";
 import { getChapter, getDayHighlights } from "../../data/chapters";
 import { getLastCompletedEntry } from "../../data/journal";
 import { formatDayDate, formatShortDate } from "../../data/journeyStore";
-import { formatBookList, formatCount, journeyTypeLabels, plural } from "../../data/journeyPlans";
+import { formatBookList, formatCount, journeyName, journeyTypeLabels, plural } from "../../data/journeyPlans";
 import { getBookName } from "../../data/bible";
 import { getMilestoneInfo } from "../../data/milestones";
 import { getUnreadCount } from "../../data/notifications";
@@ -17,6 +17,7 @@ import JourneyScreen from "../journey/JourneyScreen";
 import MilestonesScreen from "../milestones/MilestonesScreen";
 import ProfileScreen from "../profile/ProfileScreen";
 import DailyFlowScreen, { type DailyFlowEntry } from "./DailyFlowScreen";
+import PassagesGrowthChart from "../../components/PassagesGrowthChart";
 import NotificationsScreen from "./NotificationsScreen";
 
 // Greeting follows the phone's local time (client slide 20).
@@ -31,13 +32,16 @@ export default function HomeScreen({
   plan,
   onLogout,
   onChangeJourney,
+  initialFlow,
 }: {
   plan: JourneyPlan;
   onLogout: () => void;
   onChangeJourney: (plan: JourneyPlan) => void;
+  // Welcome back → Start Today's Walk opens the daily flow straight away.
+  initialFlow?: DailyFlowEntry;
 }) {
   useBibleRevision();
-  const [dailyFlow, setDailyFlow] = useState<{ phase: DailyFlowEntry; journeyDay?: number } | null>(null);
+  const [dailyFlow, setDailyFlow] = useState<{ phase: DailyFlowEntry; journeyDay?: number } | null>(initialFlow ? { phase: initialFlow } : null);
   const [activeTab, setActiveTab] = useState<MainTab>("home");
   const [viewEntryId, setViewEntryId] = useState<number | null>(null);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -51,7 +55,7 @@ export default function HomeScreen({
   const lastHighlights = lastEntry ? getDayHighlights(lastEntry.journeyDay).length : 0;
   const today = getTodayDay();
   const length = getJourneyLength();
-  const journeyLabel = plan.type === "custom" ? formatBookList(plan.books).toUpperCase() : plan.type === "bible" ? "THE ENTIRE BIBLE" : `YOUR ${length}-DAY JOURNEY`;
+  const journeyLabel = plan.type === "designed" ? journeyName(plan).toUpperCase() : plan.type === "custom" ? formatBookList(plan.books).toUpperCase() : plan.type === "bible" ? "THE WHOLE BIBLE" : `YOUR ${length}-DAY WALK`;
   // Milestone track: 33-Day spans the whole journey; longer journeys show their first milestones (up to Day 33).
   const trackDays = Math.min(length, 33);
   const trackMilestones = getMilestoneDays().filter((day) => day > 1 && day < trackDays).slice(0, 4);
@@ -128,7 +132,7 @@ export default function HomeScreen({
               <AppIcon name="bell" />
               {unreadCount > 0 && <span>{unreadCount > 9 ? "9+" : unreadCount}</span>}
             </button>
-            <button className="home-profile" onClick={() => navigateMain("profile")} aria-label="Open profile">
+            <button className="home-profile" onClick={() => navigateMain("profile")} aria-label="Open You">
               <img src={user.photo} alt={`${user.firstName}'s profile`} />
               <span></span>
             </button>
@@ -158,7 +162,7 @@ export default function HomeScreen({
                 </>
               )}
               {walkStatus === "steps-saved" && <p>Steps saved. Your reflection is still waiting.</p>}
-              {walkStatus === "complete" && <p>Today&apos;s walk is complete. Well done!</p>}
+              {walkStatus === "complete" && <p>Today&apos;s walk is complete. You moved, you read, you grew.</p>}
               <button onClick={() => setDailyFlow({ phase: "entry" })}>
                 <AppIcon name="steps" />{walkStatus === "not-entered" ? "Enter Steps" : "Update Steps"}
               </button>
@@ -244,6 +248,7 @@ export default function HomeScreen({
               <i><AppIcon name="book" /></i>
             </div>
           </div>
+          <PassagesGrowthChart />
           <div className="home-progress-next">
             <div><AppIcon name="spark" /></div>
             {progress.daysToGo > 0 ? (
@@ -272,7 +277,7 @@ export default function HomeScreen({
             <span>
               {plan.type === "bible"
                 ? "Your journey through all 66 books and 1,189 chapters of the Bible."
-                : `Every chapter you've read across the whole Bible — not just your ${plan.type === "custom" ? formatBookList(plan.books) : `${formatCount(length)}-day journey`}.`}
+                : `Every chapter you've read across the whole Bible — not just your ${plan.type === "designed" ? journeyName(plan) : plan.type === "custom" ? formatBookList(plan.books) : `${formatCount(length)}-day walk`}.`}
             </span>
           </p>
           <div className="home-bible-head">
@@ -297,8 +302,8 @@ export default function HomeScreen({
               <small>{formatCount(bible.new.read)} of {plural(bible.new.total, "chapter")}</small>
             </div>
           </div>
-          {plan.type === "automatic" ? (
-            // 33-Day: the steps pick a different book each day, so books are visited, not finished —
+          {plan.type === "automatic" || plan.books.length === 66 ? (
+            // 33-Day (and the Every Book Walk): a different book each day, so books are visited, not finished —
             // show which of the 66 books the steps have led to (client goal: learn the 66 books).
             <div className="home-bible-books home-bible-visited">
               <div className="home-bible-visited-head">

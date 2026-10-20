@@ -1,5 +1,7 @@
 import { getBookChapterCount, getBookIndex, getVerseCount, OLD_TESTAMENT_BOOKS } from "./bible";
 import { bibleBooks } from "./bibleBooks";
+import { getExperience } from "./experiences";
+import type { JourneyType } from "../types";
 import { formatDayDate, getActivePlan, getDayRecord, getJourneyLength, getRecordedDays, getTodayDay, isDayComplete } from "./journeyStore";
 
 export { getJourneyLength, getTodayDay, isDayComplete };
@@ -10,12 +12,14 @@ export { getJourneyLength, getTodayDay, isDayComplete };
 // earned badge and its achievement page; Day 3 then unlocks with the celebration when a reflection is saved.
 const TEACHING_NUMBERS = [1, 3, 7, 12, 21, 33, 40, 50, 70, 100, 150, 200, 365, 500, 1000];
 
-export function getMilestoneDays() {
-  const length = getJourneyLength();
+// Also used to preview a plan's badges before it starts (Designed Experience details).
+export function getMilestoneDaysFor(length: number, type: JourneyType) {
   // 33-Day: Kathy's five phases (Day 3 / 7 / 12 / 21 / 33, see milestones.ts) + our Day 1 "First Step" badge.
-  if (getActivePlan().type === "automatic") return [1, 3, 7, 12, 21, 33];
+  if (type === "automatic") return [1, 3, 7, 12, 21, 33];
   return [...TEACHING_NUMBERS.filter((day) => day < length), length];
 }
+
+export const getMilestoneDays = () => getMilestoneDaysFor(getJourneyLength(), getActivePlan().type);
 
 // A day badge unlocks once that many days are complete. Mock scenario: 2 days done, so saving one more
 // reflection earns Day 3 and shows the celebration screen.
@@ -96,16 +100,31 @@ export function getJourneyTotals() {
   };
 }
 
-// Chapters read per book (Choose Your Own: the chosen books; Entire Bible: all 66). Drives book badges.
+// Home "always going up" chart (Kathy, review call 3: passages are "the one that never goes down… show where it
+// goes up"). Day 1 → today: that day's steps (they vary) and the verses read so far (they only climb).
+export function getPassagesGrowth() {
+  let total = 0;
+  return Array.from({ length: getTodayDay() }, (_, index) => {
+    const day = index + 1;
+    const reading = getDayRecord(day)?.reading;
+    const complete = isDayComplete(day);
+    if (complete && reading) total += getVerseCount(reading.bookIndex, reading.chapter);
+    return { day, steps: getDayStepCount(day), total, complete, status: getDayStatus(day) };
+  });
+}
+
+// Chapters read per book (Create a Journey: the chosen books; Whole Bible: all 66; Designed Experience: the
+// plan's books, out of the plan's chapters). Drives book badges — finished always means the whole book.
 export function getBookProgress() {
   const plan = getActivePlan();
-  const bookIndexes = plan.type === "custom" ? plan.books.map(getBookIndex) : plan.type === "bible" ? bibleBooks.map((_, index) => index) : [];
+  const bookIndexes = plan.type === "custom" || plan.type === "designed" ? plan.books.map(getBookIndex) : plan.type === "bible" ? bibleBooks.map((_, index) => index) : [];
+  const experience = getExperience(plan.experience);
   const completeReadings = getRecordedDays().filter(isDayComplete).map((day) => getDayRecord(day)!.reading);
   const todayReading = getDayRecord(getTodayDay())?.reading;
   return bookIndexes.map((bookIndex) => {
     const read = new Set(completeReadings.filter((reading) => reading.bookIndex === bookIndex).map((reading) => reading.chapter)).size;
-    const total = getBookChapterCount(bookIndex);
-    return { bookIndex, read, total, finished: read === total, current: todayReading?.bookIndex === bookIndex };
+    const total = experience?.books.find((book) => getBookIndex(book.name) === bookIndex)?.chapters.length ?? getBookChapterCount(bookIndex);
+    return { bookIndex, read, total, finished: read === getBookChapterCount(bookIndex), current: todayReading?.bookIndex === bookIndex };
   });
 }
 

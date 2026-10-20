@@ -16,7 +16,7 @@ Run typecheck + build after every change.
 - `src/App.tsx` — renders `src/mobile/MobileApp.tsx` (Splash screen first)
 - `src/index.css` — all styles and `--app-*` design tokens; kept identical to the Figma Make CSS plus a few local rules at the end
 - `src/mobile/components/` — shared UI (`AppIcon`, `BottomNavigation`, `IOSDeviceFrame`, `HighlightedVersesCard`)
-- `src/mobile/data/` — mock data and prototype-only stores: `journeyStore.ts` (active journey + per-type mock scenario, steps/reflections/highlights), `stepsRule.ts` (steps → book + chapter for the 3 journey types), `bible.ts` (on-demand KJV Bible text), `progress.ts` (progress, milestones, totals every screen uses)
+- `src/mobile/data/` — mock data and prototype-only stores: `journeyStore.ts` (active journey + per-type mock scenario, steps/reflections/highlights), `stepsRule.ts` (steps → book + chapter for every journey type), `experiences.ts` (Designed Experience plans — placeholder books until Kathy sends hers), `bible.ts` (on-demand KJV Bible text), `progress.ts` (progress, milestones, totals every screen uses)
 - `public/bible/kjv/NN.json` — public-domain King James Version (client choice), one file per book (verse counts in `data/bibleVerseCounts.ts`)
 - `src/mobile/screens/<feature>/` — one folder per feature (onboarding, auth, setup, home, journey, journal, milestones, profile)
 
@@ -26,4 +26,4 @@ Run typecheck + build after every change.
 - Ensure JSX tags are closed and braces are balanced.
 - Export components as default exports.
 - New screens go in `src/mobile/screens/<feature>/` and copy class/spacing patterns from sibling screens.
-- When changing mock data, keep the progress rule in `src/mobile/data/journeyStore.ts` (Days 1–2 complete, Day 3 missed, Day 4 pending, Day 5 today) consistent across all screens and all three journey types.
+- When changing mock data, keep the progress rule in `src/mobile/data/journeyStore.ts` (Days 1–2 complete, Day 3 missed, Day 4 pending, Day 5 today) consistent across all screens and every journey type (33-Day Walk, Designed Experience, Create a Journey: your books / whole Bible).

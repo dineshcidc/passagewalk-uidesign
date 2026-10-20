@@ -128,6 +128,7 @@ export default function AuthFlow({
   const [view, setView] = useState<AuthView>(initialView);
   const [signup, setSignup] = useState(emptySignup);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [keepLoggedIn, setKeepLoggedIn] = useState(true);
   const [resetComplete, setResetComplete] = useState(false);
   const isLogin = view === "login";
   const isSignup = view === "signup";
@@ -230,7 +231,16 @@ export default function AuthFlow({
               </>
             )}
             {isLogin ? (
-              <button type="button" className="forgot-password" onClick={() => navigateTo("forgot")}>Forgot password?</button>
+              // Kathy (review call 3, slide 29): "the option to stay logged in and option to remember password. Those were great."
+              // Remembering the password is left to the phone's password manager (autoComplete on the fields).
+              <div className="auth-login-options">
+                <label className="terms-check">
+                  <input type="checkbox" checked={keepLoggedIn} onChange={(event) => setKeepLoggedIn(event.target.checked)} />
+                  <span className="terms-box"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m3.5 8 3 3 6-6" /></svg></span>
+                  <span>Keep me logged in</span>
+                </label>
+                <button type="button" className="forgot-password" onClick={() => navigateTo("forgot")}>Forgot password?</button>
+              </div>
             ) : isSignup ? (
               <label className="terms-check">
                 <input type="checkbox" checked={termsAccepted} onChange={(event) => setTermsAccepted(event.target.checked)} />

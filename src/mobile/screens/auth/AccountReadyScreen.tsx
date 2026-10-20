@@ -4,7 +4,7 @@ import { playApplause } from "../../sound";
 
 const nextSteps = [
   { title: "Account created", body: "Your private space is ready.", state: "done" },
-  { title: "Choose your journey", body: "33 days, your own books, or the entire Bible.", state: "next" },
+  { title: "Choose your journey", body: "The 33-Day Walk, a Designed Experience, or a journey you create.", state: "next" },
   { title: "Walk, read, reflect", body: "Your steps will lead you to each day's chapter.", state: "later" },
 ];
 

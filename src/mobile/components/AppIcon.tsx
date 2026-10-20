@@ -1,4 +1,4 @@
-export type AppIconName = "spark" | "steps" | "book" | "search" | "back" | "chevron" | "home" | "journey" | "journal" | "milestones" | "profile" | "edit" | "share" | "delete" | "download" | "bell" | "settings" | "help" | "info" | "shield" | "logout" | "camera" | "mail" | "alert" | "eye" | "eyeOff" | "library" | "check";
+export type AppIconName = "spark" | "steps" | "book" | "search" | "back" | "chevron" | "home" | "journey" | "journal" | "milestones" | "profile" | "edit" | "share" | "delete" | "download" | "bell" | "settings" | "help" | "info" | "shield" | "logout" | "camera" | "mail" | "alert" | "eye" | "eyeOff" | "library" | "check" | "compass";
 
 export default function AppIcon({ name }: { name: AppIconName }) {
   const paths = {
@@ -29,6 +29,7 @@ export default function AppIcon({ name }: { name: AppIconName }) {
     eye: <><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" /><circle cx="12" cy="12" r="2.5" /></>,
     library: <><rect x="3" y="4" width="4.5" height="16" rx="1" /><rect x="9.5" y="4" width="4.5" height="16" rx="1" /><path d="m15.8 5.6 3.6-1 3.3 14.6-3.6 1-3.3-14.6Z" /><path d="M3 8h4.5M9.5 16h4.5" /></>,
     check: <path d="m5 12.5 4.5 4.5L19 7.5" />,
+    compass: <><circle cx="12" cy="12" r="9" /><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z" /></>,
     eyeOff: <><path d="M3 3l18 18" /><path d="M10.6 6.2A10.7 10.7 0 0 1 12 6c6 0 9.5 6 9.5 6a15 15 0 0 1-2.1 2.8M6.2 6.2C3.8 7.8 2.5 12 2.5 12s3.5 6 9.5 6c1.5 0 2.8-.4 4-1" /><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" /></>,
   };
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>;

@@ -7,11 +7,14 @@ export default function BibleBooksGrid({
   visited = [],
   finished = [],
   compact = false,
+  visitedLabel = "Read",
 }: {
   current?: number | null;
   visited?: number[];
   finished?: number[];
   compact?: boolean;
+  // Legend word for the teal boxes ("Read"; a plan preview says "In this walk").
+  visitedLabel?: string;
 }) {
   const groups = [
     { label: "OLD TESTAMENT", count: 39, books: bibleBooks.slice(0, 39).map((book, index) => ({ book, index })) },
@@ -36,7 +39,7 @@ export default function BibleBooksGrid({
       <p className="bible-books-legend">
         <span>Each box = 1 of the 66 books, in Bible order</span>
         {current !== null && <span><i className="current" />{bibleBooks[current].name}</span>}
-        {visited.some((index) => index !== current && !finished.includes(index)) && <span><i className="visited" />Read</span>}
+        {visited.some((index) => index !== current && !finished.includes(index)) && <span><i className="visited" />{visitedLabel}</span>}
         {finished.some((index) => index !== current) && <span><i className="finished" />Finished</span>}
       </p>
     </div>

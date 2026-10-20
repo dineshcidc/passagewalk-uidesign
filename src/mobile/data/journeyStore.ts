@@ -12,6 +12,7 @@ import { resolveReading, type ReadingAssignment } from "./stepsRule";
 //   Entire Bible order:  Genesis 1 · Genesis 2 · (missed) · Genesis 4 pending · today Genesis 5
 //   Own, in order:       chapter 1 · chapter 2 · (missed) · chapter 4 pending · today chapter 5
 //   Own, steps choose:   e.g. Exodus + Leviticus → Leviticus 3 · Exodus 1 · (missed) · Leviticus 7 pending
+//   Designed:            the plan's chapters, in order (Courage Walk: Daniel 1 · 2 · missed · 4 pending) or by steps
 
 export type ReflectionAnswers = [string, string, string];
 export type DayRecord = { steps: string; time: string; reading: ReadingAssignment };
@@ -34,7 +35,7 @@ const seedHighlights: Partial<Record<JourneyPlan["type"], number[][]>> = {
   bible: [[16, 17], [22, 23]],
 };
 
-const seedAnswers: Record<JourneyPlan["type"], ReflectionAnswers[]> = {
+const seedAnswers: Record<Exclude<JourneyPlan["type"], "designed">, ReflectionAnswers[]> = {
   automatic: [
     ["Walking this morning felt like a quiet beginning — God was already there before I took the first step.", "The words “in the beginning” made this journey feel like a fresh start.", "God can create something meaningful even when I cannot see the full shape of it yet."],
     ["Every step felt like a reminder to be salt and light in the places I walk each day.", "I was reminded that faith is meant to shape how I show up for other people.", "I can bring more encouragement into the conversations I usually rush through."],
@@ -79,9 +80,9 @@ export function activateJourney(nextPlan: JourneyPlan) {
   const pendingDays = standard ? [4] : [];
   seededComplete = new Set(completeDays);
 
-  const stepsKey = plan.type === "custom" ? plan.order : plan.type;
-  // Entire Bible in chapter order reads Genesis 1, 2… so it uses the general (custom) reflections, not Ruth / Galatians.
-  const seedKind = plan.type === "bible" && plan.order === "in-order" ? "custom" : plan.type;
+  const stepsKey = plan.type === "custom" || plan.type === "designed" ? plan.order : plan.type;
+  // Entire Bible in chapter order and Designed Experiences use the general (custom) reflections, not Ruth / Galatians.
+  const seedKind = (plan.type === "bible" && plan.order === "in-order") || plan.type === "designed" ? "custom" : plan.type as keyof typeof seedAnswers;
   const stepsPool = seedSteps[stepsKey].filter(Boolean);
   const seeds = new Map<number, Seed>();
   [...completeDays, ...pendingDays].forEach((day, index) => {

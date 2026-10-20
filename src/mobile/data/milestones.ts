@@ -1,5 +1,7 @@
+import { getExperience } from "./experiences";
 import { formatCount } from "./journeyPlans";
 import { getActivePlan, getJourneyLength } from "./journeyStore";
+import type { JourneyPlan } from "../types";
 
 // Milestone content from Kathy's journal ("Milestones Certificates & Badges" PDF): the 33-Day Journey has
 // five phases — Day 3 Resurrection, Day 7 Creation, Day 12 Apostle, Day 21 Trinity, Day 33 Power Walk —
@@ -26,7 +28,7 @@ const walks: Record<number, Walk> = {
     name: "The First Step",
     shortName: "First Step",
     prompts: ["Every journey begins with a single step — and you have taken yours.", "Look back at today's reading and the verses you highlighted."],
-    closing: "Keep walking. Keep reading.",
+    closing: "Keep moving. Keep growing.",
     verse: { text: "Thy word is a lamp unto my feet, and a light unto my path.", reference: "Psalm 119:105" },
   },
   3: {
@@ -78,19 +80,38 @@ const walks: Record<number, Walk> = {
 const PHASE_DAYS = [3, 7, 12, 21, 33];
 const PHASE_ORDINALS = ["first", "second", "third", "fourth", "fifth and final"];
 
-export function getMilestoneInfo(day: number): MilestoneInfo {
-  const plan = getActivePlan();
-  const length = getJourneyLength();
+// plan / length default to the active journey; the Journey Complete demo passes a finished 33-Day Walk.
+export function getMilestoneInfo(day: number, plan: JourneyPlan = getActivePlan(), length = getJourneyLength()): MilestoneInfo {
   const isThirtyThree = plan.type === "automatic";
   const phaseIndex = isThirtyThree ? PHASE_DAYS.indexOf(day) : -1;
   const final = day === length;
   const known = walks[day];
+  // A Designed Experience ends with its own name ("Courage Walk"); its certificate design comes from Kathy later.
+  const experience = plan.type === "designed" && final ? getExperience(plan.experience) : null;
+  if (experience) {
+    const walk: Walk = {
+      name: experience.name,
+      shortName: "Experience Complete",
+      prompts: [`Take a moment to reflect on your ${formatCount(day)} days of ${experience.name}.`, "Look over your notes and think about how your body feels.", "Read the scripture on your certificate."],
+      closing: "Your experience is complete.",
+      verse: experience.verse,
+    };
+    return {
+      day,
+      ...walk,
+      phase: null,
+      congrats: `You have completed all ${formatCount(day)} days of ${experience.name}.`,
+      certificateLine: `has completed ${experience.name}, a ${formatCount(day)}-Day Designed Experience of the PassageWalk Journey.`,
+    };
+  }
   // Longer journeys reuse the named walks for 3 / 7 / 12 / 21 / 33 and get a plain "N-Day Walk" otherwise.
-  const walk: Walk = known && !(final && day !== 33 && !isThirtyThree) ? known : {
+  // Designed Experiences keep Kathy's 33-Day names for the 33-Day Walk (Robin: separate badges), so only Day 1 is shared.
+  const named = known && (day === 1 || plan.type !== "designed");
+  const walk: Walk = named && !(final && day !== 33 && !isThirtyThree) ? known : {
     name: final ? `The ${formatCount(day)}-Day PassageWalk Journey` : `The ${formatCount(day)}-Day Walk`,
     shortName: final ? "Journey Complete" : `${formatCount(day)}-Day Walk`,
     prompts: [`Take a moment to reflect on your ${formatCount(day)} days.`, "Look over your notes and think about how your body feels.", "Read the scripture on your certificate."],
-    closing: final ? "Your journey is complete." : "Keep walking. Keep reading.",
+    closing: final ? "Your journey is complete." : "Keep moving. Keep growing.",
     verse: walks[1].verse,
   };
   const phase = phaseIndex >= 0 ? { number: phaseIndex + 1, ordinal: PHASE_ORDINALS[phaseIndex], total: PHASE_DAYS.length } : null;

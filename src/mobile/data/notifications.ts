@@ -55,7 +55,7 @@ export function getNotifications(): AppNotification[] {
     list.push({
       id: `complete-${today}`, group: "earlier", tone: "green", icon: "check",
       title: "Today's walk is complete",
-      body: `Day ${formatCount(today)} is done. Well done — keep it up!`,
+      body: `Day ${formatCount(today)} is done. Keep moving — you're building a strong habit!`,
       when: "Today", action: { kind: "milestones" }, actionLabel: "See Milestones",
     });
   }

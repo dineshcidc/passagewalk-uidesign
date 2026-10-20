@@ -10,6 +10,7 @@ import type { JourneyPlan } from "../../types";
 import AccountReadyScreen from "../auth/AccountReadyScreen";
 import AuthFlow from "../auth/AuthFlow";
 import WelcomeBackScreen from "../auth/WelcomeBackScreen";
+import type { DailyFlowEntry } from "../home/DailyFlowScreen";
 import HomeScreen from "../home/HomeScreen";
 import JourneySetupFlow from "../setup/JourneySetupFlow";
 import LearnMoreScreen from "./LearnMoreScreen";
@@ -32,7 +33,7 @@ const onboardingContent = [
   },
   {
     eyebrow: "ONE DAY AT A TIME",
-    title: "A 33-Day Journey",
+    title: "A 33-Day Walk",
     body: "Build a lasting devotional habit through daily reading and personal reflection. Your steps uniquely determine your Bible reading. Follow your progress and celebrate meaningful milestones along the way.",
     image: onboardingImage3,
     imageAlt: "A hiker walking along a mountain trail toward a distant peak",
@@ -50,6 +51,8 @@ export default function OnboardingFlow() {
   // Owned here so the journey survives Log Out → Log In.
   const [journey, setJourney] = useState<JourneyPlan | null>(null);
   const [journeyRun, setJourneyRun] = useState(0);
+  // Set on Welcome back: open today's walk (Start Today's Walk) or the dashboard (Go to Dashboard).
+  const [openWalk, setOpenWalk] = useState<DailyFlowEntry | undefined>();
   const content = onboardingContent[activeScreen];
   const isLastSlide = activeScreen === onboardingContent.length - 1;
 
@@ -59,8 +62,10 @@ export default function OnboardingFlow() {
   };
 
   // Starting a journey resets the prototype data to that journey's mock scenario; the key remounts every tab.
-  const startJourney = (plan: JourneyPlan) => {
+  // walk = Welcome back → Start Today's Walk; any other start (setup, Change Journey) opens Home.
+  const startJourney = (plan: JourneyPlan, walk?: DailyFlowEntry) => {
     activateJourney(plan);
+    setOpenWalk(walk);
     setJourney(plan);
     setJourneyRun((run) => run + 1);
     setStage("app");
@@ -69,13 +74,13 @@ export default function OnboardingFlow() {
   if (stage === "app" && journey) {
     return (
       <IOSDeviceFrame>
-        <HomeScreen key={journeyRun} plan={journey} onLogout={() => setStage("login")} onChangeJourney={startJourney} />
+        <HomeScreen key={journeyRun} plan={journey} initialFlow={openWalk} onLogout={() => setStage("login")} onChangeJourney={(plan) => startJourney(plan)} />
       </IOSDeviceFrame>
     );
   }
 
   if (stage === "setup") {
-    return <JourneySetupFlow onExit={() => setStage("account-ready")} onComplete={startJourney} />;
+    return <JourneySetupFlow onExit={() => setStage("account-ready")} onComplete={(plan) => startJourney(plan)} />;
   }
 
   if (stage === "account-ready") {
@@ -83,8 +88,13 @@ export default function OnboardingFlow() {
   }
 
   if (stage === "welcome-back") {
-    // A returning user keeps their journey; signing in on a fresh install starts the default 33-Day Journey.
-    return <IOSDeviceFrame><WelcomeBackScreen onContinue={() => (journey ? setStage("app") : startJourney(defaultJourneyPlan))} /></IOSDeviceFrame>;
+    // A returning user keeps their journey; signing in on a fresh install starts the default 33-Day Walk.
+    const enterApp = (walk?: DailyFlowEntry) => {
+      if (!journey) return startJourney(defaultJourneyPlan, walk);
+      setOpenWalk(walk);
+      setStage("app");
+    };
+    return <IOSDeviceFrame><WelcomeBackScreen onContinue={() => enterApp()} onStartWalk={enterApp} /></IOSDeviceFrame>;
   }
 
   if (stage === "login" || stage === "signup") {
