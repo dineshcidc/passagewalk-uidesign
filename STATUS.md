@@ -1,6 +1,22 @@
 # Passage Walk — Status
 
-**Last updated:** 2026-10-20 evening (day close)
+**Last updated:** 2026-10-21 (full flow testing done)
+
+## ✅ 2026-10-21 — User design review corrections + FULL FLOW TESTING
+
+**User design review corrections (4 + 1):**
+1. 33-Day "You're set" card: Testaments = "Old & New Testaments" + keela chinna grey "(alternating)" (Journey / Settings card la pazhaya ore line appdiye).
+2. Experience details navy hero card right-top dashed circle remove.
+3. Demo → Your Next Walk → OR CHOOSE YOUR WAY cards la small badges green → light grey (icon box green oda same colour aagama).
+4. Notifications calm design: unread dot red → teal, left → right end (date pakkathula); icon tiles ellam ore teal (read = grey), action pills teal / read grey — gold / red / green per-type colours remove.
+5. Notifications default **3 unread mattum** (top 3: Today's walk, Reflection not added, Next milestone); matha (Missed day, badge) already read. All 5 · Unread 3 · Home bell 3. Pudhu notification unread ah varum; Change Journey = thirumba top 3 unread.
+
+**Full flow testing (headless Chrome, live app state cross-check):**
+- **9 journey shapes**, ovvonnum Sign Up → setup (header step numbers) → You're set → Home → notifications → today's walk (steps → Passage Ready → KJV + version sheet → highlight → 3 questions → celebration → saved) → pending Day 4 → missed Day 3 catch-up → Journey (calendar, Day 1 details, month nav) → Journal → Highlights → Milestones + certificate viewer → You → Settings → Bible version → Log Out → Log In → Welcome back → Dashboard: 33-Day · Courage Walk (12, in order) · Every Book Walk (66, random) · Faith in the Waiting (3-day) · Exodus + Leviticus in order · Ruth + John random · Obadiah (1 day) · Whole Bible random · Whole Bible chapter order → **254/254 pass, 0 console / network errors**. Readings rule ku match (e.g. 33-Day today Deuteronomy 4, Courage Walk Daniel 5, Bible in order Genesis 5).
+- **App-wide suite 50/50** (dev + production build): splash, onboarding back, Welcome, Learn more, Log In (Keep me logged in), Forgot / Reset, Sign Up all fields, setup back buttons + Designed filter + book search / testament filter, Ready → Change Journey, Welcome back 3 states (Start / Continue / Go to Dashboard only), Do this later, Journal delete + filters, You pages (My Profile edit, Reminders, Help, FAQ, Contact, Report, About, Terms, Privacy), Settings Keep Current, Change Journey → Walking with Jesus / Genesis random / Song of Solomon / whole Bible / 33-Day (no version step), Journey Complete demo (Celebrate → Story → certificate → Where to Next → Maybe later / Every Book Walk recommended → setup → Home).
+- Every screen text audit (undefined / NaN / null / 1-plural / double words / overflow) + non-33-Day journeys la "33-day" wording illa nu check.
+- **Fixes from testing:** 1-day journey (Obadiah) Milestones "1 of 1 days completed" → "1 of 1 day completed", badge prompt "your 1 days" → "your 1 day"; Whole Bible You're set "Chapters 1,189 · about 3 years" → "1,189 chapters · about 3 years".
+- **Observation (maathala, Figma design):** Home / tabs scroll pannum podhu content status bar (9:41) ku keela poi overlap aagudhu — status bar ku background illa. Venumna next correction.
 
 ## ▶️ NAALAIKU (2026-10-21) — first idha padi
 

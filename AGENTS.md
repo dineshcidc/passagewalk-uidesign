@@ -1,6 +1,6 @@
 # Passage Walk
 
-React + Vite + Tailwind CSS v4 mobile prototype. Originally generated in Figma Make; now a standalone project deployed to Vercel. The Figma Make design is updated separately — UI here must match it.
+React + Vite + Tailwind CSS v4 mobile prototype. Originally generated in Figma Make; now a standalone project deployed to Vercel. Since 2026-10-21 this app is the only UI (source of truth) — Figma Make is no longer updated or matched.
 
 ## Commands
 

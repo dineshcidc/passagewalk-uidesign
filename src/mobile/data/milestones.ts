@@ -1,5 +1,5 @@
 import { getExperience } from "./experiences";
-import { formatCount } from "./journeyPlans";
+import { formatCount, plural } from "./journeyPlans";
 import { getActivePlan, getJourneyLength } from "./journeyStore";
 import type { JourneyPlan } from "../types";
 
@@ -92,7 +92,7 @@ export function getMilestoneInfo(day: number, plan: JourneyPlan = getActivePlan(
     const walk: Walk = {
       name: experience.name,
       shortName: "Experience Complete",
-      prompts: [`Take a moment to reflect on your ${formatCount(day)} days of ${experience.name}.`, "Look over your notes and think about how your body feels.", "Read the scripture on your certificate."],
+      prompts: [`Take a moment to reflect on your ${plural(day, "day")} of ${experience.name}.`, "Look over your notes and think about how your body feels.", "Read the scripture on your certificate."],
       closing: "Your experience is complete.",
       verse: experience.verse,
     };
@@ -110,7 +110,7 @@ export function getMilestoneInfo(day: number, plan: JourneyPlan = getActivePlan(
   const walk: Walk = named && !(final && day !== 33 && !isThirtyThree) ? known : {
     name: final ? `The ${formatCount(day)}-Day PassageWalk Journey` : `The ${formatCount(day)}-Day Walk`,
     shortName: final ? "Journey Complete" : `${formatCount(day)}-Day Walk`,
-    prompts: [`Take a moment to reflect on your ${formatCount(day)} days.`, "Look over your notes and think about how your body feels.", "Read the scripture on your certificate."],
+    prompts: [`Take a moment to reflect on your ${plural(day, "day")}.`, "Look over your notes and think about how your body feels.", "Read the scripture on your certificate."],
     closing: final ? "Your journey is complete." : "Keep moving. Keep growing.",
     verse: walks[1].verse,
   };

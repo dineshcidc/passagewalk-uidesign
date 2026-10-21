@@ -119,10 +119,10 @@ export default function MilestonesScreen({ onNavigate, plan }: { onNavigate: (ta
           <p>Celebrate your progress along the journey.</p>
         </header>
 
-        <section className="milestones-progress" aria-label={`${progress.completedDays} of ${length} days completed`}>
+        <section className="milestones-progress" aria-label={`${progress.completedDays} of ${length} ${plan.days === 1 ? "day" : "days"} completed`}>
           <div>
             <span>JOURNEY PROGRESS</span>
-            <strong>{progress.completedDays} of {length} days completed</strong>
+            <strong>{progress.completedDays} of {length} {plan.days === 1 ? "day" : "days"} completed</strong>
           </div>
           <div className="milestones-progress-count"><strong>{progress.percent}%</strong><span>COMPLETE</span></div>
           <div className="milestones-progress-track"><i style={{ width: progress.barWidth }}></i></div>

@@ -13,7 +13,7 @@ export default function JourneyReadyScreen({ plan, onStart, onChange, startLabel
   const stepsLine = plan.type !== "automatic" && plan.order === "in-order"
     ? "Your steps unlock each day's chapter, in order."
     : "Your steps will guide you to each day's chapter.";
-  const details = experience
+  const details: { label: string; value: string; note?: string }[] = experience
     ? [
       { label: "Walk", value: experience.name },
       { label: "Books", value: plan.books.length === 66 ? "All 66 books" : plan.books.length > 3 ? `${plan.books.length} books` : plan.books.join(" · ") },
@@ -29,11 +29,11 @@ export default function JourneyReadyScreen({ plan, onStart, onChange, startLabel
     : plan.type === "bible"
       ? [
         { label: "Books", value: "All 66 books" },
-        { label: "Chapters", value: `${days} · about 3 years` },
+        { label: "Chapters", value: `${days} chapters · about 3 years` },
         { label: "Reading order", value: readingOrderLabel(plan) },
       ]
       : [
-        { label: "Testaments", value: "Old & New Testaments, alternating" },
+        { label: "Testaments", value: "Old & New Testaments", note: "(alternating)" },
         { label: "Daily reading", value: "One chapter a day" },
         { label: "Chosen by", value: "Your daily steps" },
       ];
@@ -74,7 +74,7 @@ export default function JourneyReadyScreen({ plan, onStart, onChange, startLabel
           <div><span>JOURNEY TYPE</span><strong>{journeyTypeLabels[plan.type]}</strong></div>
         </div>
         <dl>
-          {[...details, { label: "Bible", value: BIBLE_VERSION.name }].map((item) => <div key={item.label}><dt>{item.label}</dt><dd>{item.value}</dd></div>)}
+          {[...details, { label: "Bible", value: BIBLE_VERSION.name }].map((item) => <div key={item.label}><dt>{item.label}</dt><dd>{item.value}{item.note && <small>{item.note}</small>}</dd></div>)}
         </dl>
         <p className="journey-ready-fact"><AppIcon name="spark" />{fact}</p>
       </div>

@@ -1959,6 +1959,7 @@ footer p { margin: 0; }
 .journey-ready-card dl > div { padding: 7px 0; display: flex; align-items: center; justify-content: space-between; gap: 14px; }
 .journey-ready-card dt { color: var(--app-text-secondary); font-size: 11px; }
 .journey-ready-card dd { margin: 0; color: var(--app-deep-navy); font-size: 12px; font-weight: 600; text-align: right; }
+.journey-ready-card dd small { display: block; margin-top: 1px; color: var(--app-text-secondary); font-size: 9.5px; font-weight: 500; }
 .journey-ready-fact {
   margin: 6px 0 0; padding: 9px 11px; display: flex; align-items: center; gap: 8px; border-radius: 12px;
   color: #7a5a1c; background: #fff7e6; font-size: 11px; line-height: 1.45;
@@ -2279,21 +2280,16 @@ footer p { margin: 0; }
 .notification-row.unread { background: #f7fbfa; }
 .notification-icon { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 13px; color: var(--app-primary); background: var(--app-light-teal); }
 .notification-icon svg { width: 18px; height: 18px; }
-.notification-row.gold .notification-icon { color: #8d6824; background: #f8edd7; }
-.notification-row.red .notification-icon { color: #b4473d; background: #fbecea; }
-.notification-row.green .notification-icon { color: #267c54; background: #e6f5ec; }
+.notification-row.read .notification-icon { color: #7d8a94; background: #f1f4f3; }
 .notification-main { min-width: 0; display: block; }
 .notification-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .notification-meta em { display: flex; align-items: center; gap: 5px; color: #8a96a0; font-size: 7.5px; font-style: normal; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-.notification-meta em b { width: 6px; height: 6px; border-radius: 50%; background: #d9534f; }
-.notification-meta small { flex: 0 0 auto; color: #98a3ab; font-size: 8.5px; font-weight: 600; }
+.notification-meta small { flex: 0 0 auto; display: flex; align-items: center; gap: 6px; color: #98a3ab; font-size: 8.5px; font-weight: 600; }
+.notification-meta small b { width: 7px; height: 7px; border-radius: 50%; background: var(--app-primary); }
 .notification-main > strong { display: block; margin-top: 4px; font-size: 12.5px; font-weight: 700; line-height: 1.3; }
 .notification-row.read .notification-main > strong { font-weight: 600; color: #3d4b5c; }
 .notification-body { display: block; margin-top: 3px; color: var(--app-text-secondary); font-size: 10.5px; line-height: 1.45; }
 .notification-cta { margin-top: 9px; padding: 5px 10px 5px 11px; display: inline-flex; align-items: center; gap: 3px; border-radius: 999px; color: var(--app-primary-pressed); background: var(--app-light-teal); font-size: 9px; font-weight: 700; }
-.notification-row.gold .notification-cta { color: #8d6824; background: #f8edd7; }
-.notification-row.red .notification-cta { color: #b4473d; background: #fbecea; }
-.notification-row.green .notification-cta { color: #267c54; background: #e6f5ec; }
 .notification-cta svg { width: 10px; height: 10px; }
 .notification-row.read .notification-cta { color: var(--app-text-secondary); background: #f1f4f3; }
 .notifications-empty { margin-top: 18px; padding: 30px 20px; border: 1px dashed #d8e0de; border-radius: 20px; background: white; text-align: center; }
@@ -2460,7 +2456,6 @@ footer p { margin: 0; }
 .experience-card.selected .journey-radio i { background: var(--app-accent-gold); }
 
 .experience-hero { position: relative; overflow: hidden; padding: 18px 18px 16px; border-radius: 24px; color: white; background: linear-gradient(150deg, #20385c, var(--app-deep-navy) 70%); box-shadow: 0 14px 28px rgba(23,42,70,.16); }
-.experience-hero::after { content: ""; position: absolute; right: -40px; top: -50px; width: 150px; height: 150px; border-radius: 50%; border: 1px dashed rgba(255,255,255,.14); }
 .experience-hero-top { display: flex; align-items: center; justify-content: space-between; }
 .experience-hero-top span { display: flex; align-items: center; gap: 5px; color: #8fd3cd; font-size: 8px; font-weight: 700; letter-spacing: .14em; }
 .experience-hero-top span svg { width: 12px; height: 12px; }
@@ -2711,7 +2706,7 @@ button.scripture-reading-version svg:last-child { width: 9px; height: 9px; margi
 .jc-next-list strong { display: block; font-size: 13.5px; font-weight: 600; }
 .jc-next-list p { margin: 3px 0 0; color: var(--app-text-secondary); font-size: 11px; line-height: 1.4; }
 .jc-next-list span { margin-top: 7px; display: flex; flex-wrap: wrap; gap: 4px; }
-.jc-next-list span b { padding: 3px 7px; border-radius: 999px; color: var(--app-primary-pressed); background: var(--app-light-teal); font-size: 7.5px; font-weight: 700; letter-spacing: .06em; }
+.jc-next-list span b { padding: 3px 7px; border-radius: 999px; color: #5f6d78; background: #eef1f3; font-size: 7.5px; font-weight: 700; letter-spacing: .06em; }
 .jc-next-list button > svg { width: 14px; height: 14px; flex: 0 0 auto; color: #9aa7b0; }
 .jc-next-badges { margin: 18px 0 4px; display: flex; align-items: center; justify-content: center; gap: 6px; color: var(--app-text-secondary); font-size: 10.5px; text-align: center; }
 .jc-next-badges svg { width: 14px; height: 14px; color: var(--app-accent-gold); }

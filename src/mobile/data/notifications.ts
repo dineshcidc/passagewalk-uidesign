@@ -26,13 +26,15 @@ export type AppNotification = {
 
 const dateLabel = (journeyDay: number) => new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(getDayDate(journeyDay));
 
-// Read state belongs to the active journey; starting a new journey starts with everything unread.
-let readPlan = getActivePlan();
+// Read state belongs to the active journey. Prototype: each journey starts with the top 3 unread
+// and the older ones already read; anything that arrives later starts unread.
+const DEFAULT_UNREAD = 3;
+let readPlan: ReturnType<typeof getActivePlan> | null = null;
 let readIds = new Set<string>();
 function readState() {
   if (getActivePlan() !== readPlan) {
     readPlan = getActivePlan();
-    readIds = new Set();
+    readIds = new Set(getNotifications().slice(DEFAULT_UNREAD).map((item) => item.id));
   }
   return readIds;
 }

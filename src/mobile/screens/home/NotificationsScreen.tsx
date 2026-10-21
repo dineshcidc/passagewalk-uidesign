@@ -64,8 +64,8 @@ export default function NotificationsScreen({ onBack, onOpen }: { onBack: () => 
                       <i className="notification-icon"><AppIcon name={item.icon} /></i>
                       <span className="notification-main">
                         <span className="notification-meta">
-                          <em>{isUnread && <b aria-label="Unread"></b>}{tags[item.id.split("-")[0]] ?? "Update"}</em>
-                          <small>{item.when}</small>
+                          <em>{tags[item.id.split("-")[0]] ?? "Update"}</em>
+                          <small>{item.when}{isUnread && <b aria-label="Unread"></b>}</small>
                         </span>
                         <strong>{item.title}</strong>
                         <span className="notification-body">{item.body}</span>
