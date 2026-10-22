@@ -1,6 +1,67 @@
 # Passage Walk — Status
 
-**Last updated:** 2026-10-21 (full flow testing done)
+**Last updated:** 2026-10-22 (morning)
+
+## ▶️ INNIKU (2026-10-22) — first idha padi
+
+**Enga irukkom:**
+- **Branch `theme-version-2`** la client green theme **full app la complete** (Steps 1–8 ✅) + user review feedback (Splash → Choose journey) ✅. **Commit innum pannala** — user kadaisila commit pannuvaaru.
+- `main` = Theme 1 (teal, V1) — safe, touch pannala. Last main commit `8550c1d`.
+- Changed files (theme-version-2): `src/index.css` (theme), `MilestoneBadge.tsx` + `MilestonesScreen.tsx` + `CelebrationScreen.tsx` (purple Designed badge), `AuthFlow.tsx` (name fields no icon), `certificate.ts` + `PassagesGrowthChart.tsx` + `JourneyCompleteFlow.tsx` (colours), `STATUS.md`.
+- Figma Make venaam — **indha app dhaan UI source of truth** (2026-10-21 user, `AGENTS.md` update pannom).
+- Last check: typecheck + build pass, all 9 journey suites 250/250, app-wide 50/50, page reviews 150+ views **0 contrast / 0 text / 0 console errors**.
+
+**Ready documents:**
+- PM ku screen list: `Client-call/Passage-Walk-Screen-List.docx` (first design 36 → ippo **53 screens**: 18 new, 24 updated, 11 same + 5 popups).
+- Friday client call questions: `Client-call/Client-questions/final-client-help.md` (5 must-ask + 4 quick yes / no, page order la "Hi Kathy, here I need one help…" lines).
+
+**Next (order padi):**
+1. User theme review continue (Splash → Choose journey varaikum mudinjadhu). Matha pages (Home → You) user paathu feedback → fix. Pending idea: dark-card rule (header + main button mattum dark) — Passage Ready "Deuteronomy 4" card, Journal passage card, My Journey summary card, Milestones progress card um light aakkanuma nu user decide.
+2. User ok → `theme-version-2` commit (+ push / Vercel preview link user decide).
+3. **Fri 2026-10-23 = client presentation / design freeze** → flow explain + `final-client-help.md` questions.
+
+## 🎨 Theme version 2 (client green) · branch `theme-version-2`
+
+**Rules (user):**
+- V1 la irundha *good feel* (crisp, clean, premium) — **client green based**, navy / blue zero (green kooda match aagaadhu). V1 code copy illa.
+- Selected states = **primary-based green gradient**. Dark green = **header + main button mattum**; content cards inside page light (parchment / sage / light green tint) — dark-dark-dark stack venaam. Cards ku outer shadow venaam (Preview / Experience).
+- Complete / success = emerald (#34a76d family) — olive primary use pannakoodadhu.
+- Icon boxes neutral grey; selected tiles (KJV, book GE / LE) = light green #dfeacf, border illa.
+- Senior-designer process: ovvoru page → text values + visibility + UI/UX + WCAG contrast → 0 issues aana appram dhaan next page.
+- ❌ Drop pannadhu: (1) forest #2a3c21 + warm / sage greys (dull), (2) V1 navy + green accent (blue + green clash).
+
+**Tokens (`src/index.css` :root):**
+
+| Token | Value | Use |
+|---|---|---|
+| `--app-primary` | **#6c8f3e** (client exact) | graphics: progress, dots, radio, checkbox, switch, charts, focus ring (non-text 3:1 ✓) |
+| `--app-primary-strong` | #5b7f34 | fills with white text — buttons, chips (4.7:1) |
+| `--app-primary-text` | #4f7029 | green text / links (5.3:1 on cream) |
+| `--app-primary-pressed` | #4f7029 | tap / hover |
+| `--app-green-deep` | #3b5622 | active tabs, solid dark chips |
+| `--app-hero-gradient` | #34501e → #4f7029 | headers, hero cards, selected cards |
+| `--app-deep-navy` | **#1c2619** ink (name kept) | headings / body text |
+| `--app-text-secondary` | #636562 | neutral grey (cream mela 5.4:1) |
+| `--app-border` / `--app-icon-tile` | #e1e2e1 / #f3f4f3 | true neutral greys (blue lean zero) |
+| `--app-light-teal` | #eff5e8 | light green tint (name kept) |
+| `--app-success` | #34a76d | complete / success only; success text #1f6a47 |
+
+- On green surfaces: light text #e2efd0, gold text #fde9c0, gold tags = solid pill #f3c96f + #3f2c05. Gold-brown text #7a5a14, small meta grey #6b6e6a.
+- **Designed Experience badges = client purple #7e00fc** (`MilestoneBadge` `experience` prop, unlocked mattum); 33-Day = Kathy gold. Journey Complete confetti gold + purple.
+- 🆕 Top fade mask on full-screen scrollers → scroll pannumbodhu content 9:41 status bar kooda overlap aagaadhu.
+- QA tool (scratchpad `qa/cdp.mjs` `contrast()`): every visible text vs real background (gradient → worst stop), WCAG 4.5 / 3 large.
+
+**Steps done (all ✅, 0 contrast / 0 text / 0 errors):**
+1. Foundation tokens (rework ×2 → final green system above).
+2. Splash, Onboarding 1–3, Welcome, Learn more, Log In, Forgot / Reset, Sign Up, Account ready, Welcome back — 16 views.
+3. Journey setup — 28 states (choose, create, order, books, walks, details, Bible version, journey ready ×4).
+4. Home + daily walk — 27 views (Home scrolls, notifications, keypad, loading, Passage Ready, reading, reflection, celebration, saved, catch-up).
+5. My Journey + Journal — 27 views (calendar 33 / Bible months / books, day details ×5 states, reason dialog, Journal filters, entries, delete, highlights).
+6. Milestones + certificate + celebrations + Journey Complete — 23 views.
+7. You + 12 sub-pages — 29 views.
+8. Final regression: 9 journey suites 250/250 + app-wide 50/50 (dev + production) + all page reviews 0.
+
+**User review feedback ✅ (Splash → Choose journey):** onboarding photo icon box ulla + mela (right 30 / bottom 38px); Sign Up First / Last name icon illa; Bible version Preview card → light parchment (shadow illa), selected version tile light green; Experience details first card → light sage (shadow illa); Choose books count card → light green tint, selected book tiles light green.
 
 ## ✅ 2026-10-21 — User design review corrections + FULL FLOW TESTING
 
@@ -16,9 +77,9 @@
 - **App-wide suite 50/50** (dev + production build): splash, onboarding back, Welcome, Learn more, Log In (Keep me logged in), Forgot / Reset, Sign Up all fields, setup back buttons + Designed filter + book search / testament filter, Ready → Change Journey, Welcome back 3 states (Start / Continue / Go to Dashboard only), Do this later, Journal delete + filters, You pages (My Profile edit, Reminders, Help, FAQ, Contact, Report, About, Terms, Privacy), Settings Keep Current, Change Journey → Walking with Jesus / Genesis random / Song of Solomon / whole Bible / 33-Day (no version step), Journey Complete demo (Celebrate → Story → certificate → Where to Next → Maybe later / Every Book Walk recommended → setup → Home).
 - Every screen text audit (undefined / NaN / null / 1-plural / double words / overflow) + non-33-Day journeys la "33-day" wording illa nu check.
 - **Fixes from testing:** 1-day journey (Obadiah) Milestones "1 of 1 days completed" → "1 of 1 day completed", badge prompt "your 1 days" → "your 1 day"; Whole Bible You're set "Chapters 1,189 · about 3 years" → "1,189 chapters · about 3 years".
-- **Observation (maathala, Figma design):** Home / tabs scroll pannum podhu content status bar (9:41) ku keela poi overlap aagudhu — status bar ku background illa. Venumna next correction.
+- **Observation:** Home / tabs scroll pannum podhu content status bar (9:41) kooda overlap — ✅ 2026-10-21 theme work la top fade mask potu fix pannom.
 
-## ▶️ NAALAIKU (2026-10-21) — first idha padi
+## ✅ 2026-10-21 plan (done — history)
 
 **Inniku (2026-10-20) mudinjadhu:** Review call 3 (LAST client review) padichu plan → `Client-call/Review-calls/Review-call-3/Review-call-3-explanation.md`. 12-point plan la **Points 1–8 + 10 ✅**, Point 9 skip (calendar legend already irukku). Details keela "2026-10-20" lines la. Ellam typecheck + build pass, headless tests ellam pass, 0 errors. User inniku commit + Vercel push pannuvaaru (pudhu files `git add` pannanum: `certificate.ts`, `components/BibleVersionList.tsx`, `CertificateViewer.tsx`, `CompletionCertificate.tsx`, `PassagesGrowthChart.tsx`, `data/bibleVersions.ts`, `experiences.ts`, `journeyCompleteDemo.ts`, `screens/complete/`).
 
@@ -188,7 +249,13 @@ npx pnpm typecheck  → typecheck
 npx pnpm build      → typecheck + production build (Vercel um idhe run pannum)
 ```
 
-pnpm global ah install illa, so `npx pnpm` use pannanum.
+pnpm global ah install illa, so `npx pnpm` use pannanum. `npx pnpm` Device Guard la block aana:
+
+```
+node node_modules/vite/bin/vite.js --port 8443      → dev server
+node node_modules/typescript/bin/tsc --noEmit -p .   → typecheck
+node node_modules/vite/bin/vite.js build             → production build
+```
 
 ---
 

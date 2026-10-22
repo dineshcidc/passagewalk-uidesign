@@ -43,7 +43,7 @@ const confetti = Array.from({ length: 46 }, (_, index) => ({
   delay: (index % 11) * 0.27,
   duration: 3.2 + (index % 6) * 0.45,
   drift: ((index % 9) - 4) * 11,
-  color: ["#e7a83a", "#9b6dff", "#2a908f", "#f6cd7c", "#ffffff", "#c9b2ff"][index % 6],
+  color: ["#e7a83a", "#9b6dff", "#6c8f3e", "#f6cd7c", "#ffffff", "#c9b2ff"][index % 6],
   shape: index % 4 === 0 ? "round" : index % 4 === 1 ? "ribbon" : "",
 }));
 

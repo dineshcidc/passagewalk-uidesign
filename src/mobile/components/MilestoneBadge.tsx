@@ -1,9 +1,10 @@
-// Gold milestone medal. Locked badges show a padlock; large unlocked badges show the day number
+// Gold milestone medal (purple for Designed Experiences — review call 3: separate badges for experiences).
+// Locked badges show a padlock; large unlocked badges show the day number
 // (Milestones grid, achievement page and the celebration screen).
-export default function MilestoneBadge({ milestone, large = false }: { milestone: { day: number; unlocked: boolean }; large?: boolean }) {
+export default function MilestoneBadge({ milestone, large = false, experience = false }: { milestone: { day: number; unlocked: boolean }; large?: boolean; experience?: boolean }) {
   const dayText = milestone.day.toLocaleString("en-US");
   return (
-    <svg className={large ? "milestone-badge large" : "milestone-badge"} viewBox="0 0 92 104" aria-hidden="true">
+    <svg className={`milestone-badge${large ? " large" : ""}${experience ? " experience" : ""}`} viewBox="0 0 92 104" aria-hidden="true">
       <path className="milestone-ribbon-left" d="M31 58 18 94l21-10 7 15 7-41Z" />
       <path className="milestone-ribbon-right" d="m61 58 13 36-21-10-7 15-7-41Z" />
       <circle className="milestone-medal-rim" cx="46" cy="43" r="35" />

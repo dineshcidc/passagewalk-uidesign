@@ -55,8 +55,8 @@ function AuthField({
   return (
     <label className="auth-field">
       <span>{label}</span>
-      <div className="auth-input-wrap">
-        <FieldIcon type={type} />
+      <div className={`auth-input-wrap${type === "name" ? " no-icon" : ""}`}>
+        {type !== "name" && <FieldIcon type={type} />}
         <input
           type={isPassword && !passwordVisible ? "password" : type === "email" ? "email" : "text"}
           placeholder={placeholder}

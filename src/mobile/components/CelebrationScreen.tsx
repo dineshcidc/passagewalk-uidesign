@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { getBookChapterCount, getBookName } from "../data/bible";
+import { getActivePlan } from "../data/journeyStore";
 import { getMilestoneInfo } from "../data/milestones";
 import { playApplause } from "../sound";
 import AppIcon from "./AppIcon";
@@ -16,7 +17,7 @@ const confetti = Array.from({ length: 28 }, (_, index) => ({
   delay: (index % 7) * 0.12,
   duration: 2.4 + (index % 5) * 0.35,
   drift: ((index % 9) - 4) * 9,
-  color: ["#e7a83a", "#2a908f", "#f6cd7c", "#172a46", "#9fd9d3"][index % 5],
+  color: ["#e7a83a", "#6c8f3e", "#f6cd7c", "#3b5622", "#bfd6a2"][index % 5],
   round: index % 3 === 0,
 }));
 
@@ -79,7 +80,7 @@ export default function CelebrationScreen({ celebration, onContinue }: { celebra
         {celebration.kind === "book" ? (
           <div className="celebration-book-medal"><AppIcon name="book" /></div>
         ) : (
-          <div className="celebration-badge"><MilestoneBadge milestone={{ day: celebration.day, unlocked: true }} large /></div>
+          <div className="celebration-badge"><MilestoneBadge milestone={{ day: celebration.day, unlocked: true }} large experience={getActivePlan().type === "designed"} /></div>
         )}
       </div>
 

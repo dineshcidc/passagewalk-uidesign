@@ -46,8 +46,8 @@ export default function PassagesGrowthChart() {
           <svg className="passages-growth-chart" viewBox={`0 0 ${WIDTH} 104`} aria-hidden="true">
             <defs>
               <linearGradient id="passages-area" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#2a908f" stopOpacity=".32" />
-                <stop offset="100%" stopColor="#2a908f" stopOpacity="0" />
+                <stop offset="0%" stopColor="#6c8f3e" stopOpacity=".32" />
+                <stop offset="100%" stopColor="#6c8f3e" stopOpacity="0" />
               </linearGradient>
             </defs>
             {[TOP, (TOP + BASE) / 2, BASE].map((y) => <line className="passages-grid" x1="0" x2={WIDTH} y1={y} y2={y} key={y} />)}

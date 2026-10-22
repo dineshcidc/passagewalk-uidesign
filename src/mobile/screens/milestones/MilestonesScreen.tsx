@@ -10,6 +10,7 @@ import { formatCount, plural } from "../../data/journeyPlans";
 import { getMilestoneInfo } from "../../data/milestones";
 import { getBookProgress, getJourneyLength, getMilestoneDate, getMilestoneDays, getProgress, getUnlockedMilestones } from "../../data/progress";
 import { downloadCertificate } from "../../certificate";
+import { getActivePlan } from "../../data/journeyStore";
 import { playChime } from "../../sound";
 import type { JourneyPlan, MainTab } from "../../types";
 
@@ -53,7 +54,7 @@ function MilestoneAchievement({ milestone, onBack }: { milestone: Milestone; onB
             <i></i><i></i><i></i><i></i><i></i><i></i>
           </div>
           <div className="achievement-badge-glow">
-            <MilestoneBadge milestone={milestone} large />
+            <MilestoneBadge milestone={milestone} large experience={milestone.unlocked && getActivePlan().type === "designed"} />
           </div>
           <span className="achievement-eyebrow">{info.phase ? `PHASE ${info.phase.number} OF ${info.phase.total} · COMPLETE` : "MILESTONE UNLOCKED"}</span>
           <h1>{info.name}</h1>
@@ -141,7 +142,7 @@ export default function MilestonesScreen({ onNavigate, plan }: { onNavigate: (ta
               onClick={() => setSelectedMilestone(milestone)}
               key={milestone.day}
             >
-              <div className="milestone-art"><MilestoneBadge milestone={milestone} /></div>
+              <div className="milestone-art"><MilestoneBadge milestone={milestone} experience={milestone.unlocked && getActivePlan().type === "designed"} /></div>
               <strong>Day {formatCount(milestone.day)}</strong>
               <em>{getMilestoneInfo(milestone.day).shortName}</em>
               <span>{milestone.unlocked ? "Completed" : milestone.final ? "Final badge" : "Locked"}</span>
