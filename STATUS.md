@@ -1,8 +1,14 @@
 # Passage Walk — Status
 
-**Last updated:** 2026-10-22 (morning)
+**Last updated:** 2026-10-22 (day close)
 
-## ▶️ INNIKU (2026-10-22) — first idha padi
+## ▶️ NAALAIKU / NEXT SESSION — first idha padi
+
+**⭐ Working branch = `main`** (2026-10-22 user decision). Ini ella work um `main` la dhaan — thani theme branch venaam. `theme-version-2` = same commit (reference), `theme-version-1` = pazhaya teal V1 backup mattum (thevai illa).
+
+**Day close (2026-10-22):** user leave. Client green theme `main` la merge + push aagiduchu → Vercel production link dev + CPM ku internal review ku user share pannuvaaru. **Indha raathiri internal team feedback / changes vandhaa → next session la adha first work pannanum** (ovvoru change um: fix → page contrast / text check → typecheck + build → regression → commit `main`).
+
+**Fri 2026-10-23 = client presentation / design freeze** — internal feedback fix mudinja appram dhaan. Call la `Client-call/Client-questions/final-client-help.md` questions.
 
 **Enga irukkom:**
 - Client green theme **full app la complete** (Steps 1–8 ✅) + user review feedback (Splash → Choose journey) ✅ → commit `ebb4b8a`.
@@ -17,6 +23,7 @@
 - Friday client call questions: `Client-call/Client-questions/final-client-help.md` (5 must-ask + 4 quick yes / no, page order la "Hi Kathy, here I need one help…" lines).
 
 **Next (order padi):**
+0. **Internal team (dev / CPM) feedback** vandhaa adhu first.
 1. User theme review continue (Splash → Choose journey varaikum mudinjadhu). Matha pages (Home → You) user paathu feedback → fix. Pending idea: dark-card rule (header + main button mattum dark) — Passage Ready "Deuteronomy 4" card, Journal passage card, My Journey summary card, Milestones progress card um light aakkanuma nu user decide.
 2. Dev + CPM ku Vercel main link share (user) → feedback irundhaa fix.
 3. **Fri 2026-10-23 = client presentation / design freeze** → flow explain + `final-client-help.md` questions.
