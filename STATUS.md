@@ -5,9 +5,10 @@
 ## ▶️ INNIKU (2026-10-22) — first idha padi
 
 **Enga irukkom:**
-- **Branch `theme-version-2`** la client green theme **full app la complete** (Steps 1–8 ✅) + user review feedback (Splash → Choose journey) ✅. **Commit innum pannala** — user kadaisila commit pannuvaaru.
-- `main` = Theme 1 (teal, V1) — safe, touch pannala. Last main commit `8550c1d`.
-- Changed files (theme-version-2): `src/index.css` (theme), `MilestoneBadge.tsx` + `MilestonesScreen.tsx` + `CelebrationScreen.tsx` (purple Designed badge), `AuthFlow.tsx` (name fields no icon), `certificate.ts` + `PassagesGrowthChart.tsx` + `JourneyCompleteFlow.tsx` (colours), `STATUS.md`.
+- Client green theme **full app la complete** (Steps 1–8 ✅) + user review feedback (Splash → Choose journey) ✅ → commit `ebb4b8a`.
+- **2026-10-22: `theme-version-2` → `main` fast-forward merge + push** (user ask, dev / CPM review link ku) → **main = client green theme**, Vercel production update. Push ku munnadi: typecheck + build pass, regression 135/135, 0 errors.
+- Theme 1 (teal, V1) backup = `theme-version-1` branch (user: V1 thevai illa, backup branch la irukku).
+- Theme commit files: `src/index.css` (theme), `MilestoneBadge.tsx` + `MilestonesScreen.tsx` + `CelebrationScreen.tsx` (purple Designed badge), `AuthFlow.tsx` (name fields no icon), `certificate.ts` + `PassagesGrowthChart.tsx` + `JourneyCompleteFlow.tsx` (colours), `STATUS.md`.
 - Figma Make venaam — **indha app dhaan UI source of truth** (2026-10-21 user, `AGENTS.md` update pannom).
 - Last check: typecheck + build pass, all 9 journey suites 250/250, app-wide 50/50, page reviews 150+ views **0 contrast / 0 text / 0 console errors**.
 
@@ -17,10 +18,10 @@
 
 **Next (order padi):**
 1. User theme review continue (Splash → Choose journey varaikum mudinjadhu). Matha pages (Home → You) user paathu feedback → fix. Pending idea: dark-card rule (header + main button mattum dark) — Passage Ready "Deuteronomy 4" card, Journal passage card, My Journey summary card, Milestones progress card um light aakkanuma nu user decide.
-2. User ok → `theme-version-2` commit (+ push / Vercel preview link user decide).
+2. Dev + CPM ku Vercel main link share (user) → feedback irundhaa fix.
 3. **Fri 2026-10-23 = client presentation / design freeze** → flow explain + `final-client-help.md` questions.
 
-## 🎨 Theme version 2 (client green) · branch `theme-version-2`
+## 🎨 Theme version 2 (client green) · now on `main` (also `theme-version-2`)
 
 **Rules (user):**
 - V1 la irundha *good feel* (crisp, clean, premium) — **client green based**, navy / blue zero (green kooda match aagaadhu). V1 code copy illa.
