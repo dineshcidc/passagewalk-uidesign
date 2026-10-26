@@ -1,39 +1,51 @@
 import { getBookChapterCount, getBookIndex, OLD_TESTAMENT_BOOKS } from "./bible";
 import { bibleBooks } from "./bibleBooks";
 import { getExperience } from "./experiences";
-import type { JourneyType } from "../types";
-import { formatDayDate, getActivePlan, getDayChapters, getDayRecord, getDayVerseCount, getJourneyLength, getRecordedDays, getTodayDay, isDayComplete } from "./journeyStore";
+import { MILESTONE_LADDER } from "./milestones";
+import { formatDayDate, getActivePlan, getDayChapters, getDayRecord, getDayVerseCount, getJourneyLength, getPastCompletedDates, getRecordedDays, getTodayDay, isDayComplete } from "./journeyStore";
 
 export { getJourneyLength, getTodayDay, isDayComplete };
 
-// Day milestones. 33-Day follows Kathy's five phases; longer journeys use Bible "teaching numbers" that fit
-// inside the journey, ending with the journey's own length (names, prompts and certificates: milestones.ts).
-// Every journey starts with a Day 1 "first step" badge, so the mock scenario (2 days done) always shows one
-// earned badge and its achievement page; Day 3 then unlocks with the celebration when a reflection is saved.
-const TEACHING_NUMBERS = [1, 3, 7, 12, 21, 33, 40, 50, 70, 100, 150, 200, 365, 500, 1000];
+// Passage Walk milestones: one ladder for every journey (milestones.ts: Day 1 First Step, Kathy's 3 / 7 / 12 / 21 / 33,
+// then 40 … 365), counted in Passage Walk days — completed days of earlier journeys plus this one (Change Journey keeps
+// them). Mock scenario: 2 days done, so saving one more reflection earns Day 3 with the celebration screen.
+// Finishing the journey itself is a separate "This journey" badge (isJourneyComplete).
+export const getMilestoneDays = () => MILESTONE_LADDER;
 
-// Also used to preview a plan's badges before it starts (Designed Experience details).
-export function getMilestoneDaysFor(length: number, type: JourneyType) {
-  // 33-Day: Kathy's five phases (Day 3 / 7 / 12 / 21 / 33, see milestones.ts) + our Day 1 "First Step" badge.
-  if (type === "automatic") return [1, 3, 7, 12, 21, 33];
-  return [...TEACHING_NUMBERS.filter((day) => day < length), length];
+// Completed days of this journey, in journey order.
+const completedJourneyDays = () => getRecordedDays().filter(isDayComplete);
+
+// Every completed day so far, across journeys.
+export const getWalkedDays = () => getPastCompletedDates().length + completedJourneyDays().length;
+
+// What the Milestones screen shows: badges this journey can reach (earlier journeys' days + every day of this one),
+// so a 33-Day Walk shows Day 1 / 3 / 7 / 12 / 21 / 33, not 18 locked badges up to 365. The rest are "later"
+// (one line: they come with the next journey, because Passage Walk days keep counting).
+export function getReachableMilestones() {
+  const reach = getPastCompletedDates().length + getJourneyLength();
+  return { reachable: MILESTONE_LADDER.filter((day) => day <= reach), later: MILESTONE_LADDER.filter((day) => day > reach) };
 }
 
-export const getMilestoneDays = () => getMilestoneDaysFor(getJourneyLength(), getActivePlan().type);
+// Badges a journey can add, starting from `walked` Passage Walk days (setup preview of a Designed Experience).
+export const getMilestonePreview = (walked: number, length: number) => MILESTONE_LADDER.filter((day) => day > walked && day <= walked + length);
 
-// A day badge unlocks once that many days are complete. Mock scenario: 2 days done, so saving one more
-// reflection earns Day 3 and shows the celebration screen.
 export function getUnlockedMilestones() {
-  const completed = getProgress().completedDays;
-  return getMilestoneDays().filter((day) => day <= completed);
+  const walked = getWalkedDays();
+  return MILESTONE_LADDER.filter((day) => day <= walked);
 }
 
-// Date of the day that earned the badge (the Nth completed journey day), or null while locked.
+// Date of the Passage Walk day that earned the badge (the Nth completed day, across journeys), or null while locked.
 export function getMilestoneDate(milestoneDay: number) {
-  const completeDays = getRecordedDays().filter(isDayComplete);
-  const earnedOn = completeDays[milestoneDay - 1];
+  const past = getPastCompletedDates();
+  if (milestoneDay <= past.length) return past[milestoneDay - 1];
+  const earnedOn = completedJourneyDays()[milestoneDay - past.length - 1];
   return earnedOn ? formatDayDate(earnedOn) : null;
 }
+
+export const isJourneyComplete = () => completedJourneyDays().length >= getJourneyLength();
+
+// Date the journey was finished (its last completed day), or null.
+export const getJourneyCompleteDate = () => (isJourneyComplete() ? formatDayDate(completedJourneyDays().slice(-1)[0]) : null);
 
 const formatPercent = (value: number) => (value > 0 && value < 1 ? value.toFixed(1) : String(Math.round(value)));
 
@@ -42,16 +54,19 @@ export function getProgress() {
   const length = getJourneyLength();
   const today = getTodayDay();
   const completedDays = Array.from({ length: today }, (_, index) => index + 1).filter(isDayComplete).length;
-  const nextMilestone = getMilestoneDays().find((day) => day > completedDays) ?? length;
+  // Milestones count Passage Walk days (across journeys); 0 = every badge on the ladder is earned.
+  const walkedDays = getWalkedDays();
+  const nextMilestone = MILESTONE_LADDER.find((day) => day > walkedDays) ?? 0;
   const percent = (completedDays / length) * 100;
   return {
     completedDays,
+    walkedDays,
     percent: formatPercent(percent),
     barWidth: `${percent}%`,
     todayPercent: formatPercent((today / length) * 100),
     todayBarWidth: `${(today / length) * 100}%`,
     nextMilestone,
-    daysToGo: nextMilestone - completedDays,
+    daysToGo: nextMilestone ? nextMilestone - walkedDays : 0,
   };
 }
 

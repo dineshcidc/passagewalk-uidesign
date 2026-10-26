@@ -4,7 +4,7 @@ import BibleVersionList from "../../components/BibleVersionList";
 import HighlightedVersesCard from "../../components/HighlightedVersesCard";
 import CelebrationScreen, { type Celebration } from "../../components/CelebrationScreen";
 import StepsLedCard from "../../components/StepsLedCard";
-import { getBookProgress, getJourneyLength, getMilestoneDays, getUnlockedMilestones } from "../../data/progress";
+import { getBookProgress, getJourneyLength, getMilestoneDays, getUnlockedMilestones, isJourneyComplete } from "../../data/progress";
 import { BIBLE_VERSION, useBibleRevision } from "../../data/bible";
 import { getChapter, saveDayHighlights } from "../../data/chapters";
 import { formatDayDate, getActivePlan, getDayChapters, getDayRecord, getHighlightNumbers, getRecordedDays, getTodayDay } from "../../data/journeyStore";
@@ -13,12 +13,13 @@ import { getDayReflection, reflectionQuestions, saveDayReflection, saveDaySteps,
 export type DailyFlowEntry = "entry" | "reading" | "reflection";
 type DailyFlowPhase = DailyFlowEntry | "generating" | "ready" | "celebration" | "reflectionSuccess";
 
-// What a save newly earned: finished books first, then day badges (the final one = journey complete).
-// Designed Experiences have no book badges (Milestones screen), so only their walk badges celebrate.
+// What a save newly earned: finished books first, then Passage Walk milestones, then the journey itself.
+// Designed Experiences have no book badges (Milestones screen).
 function getEarned() {
   return {
     milestones: getUnlockedMilestones(),
     books: getActivePlan().type === "designed" ? [] : getBookProgress().filter((book) => book.finished).map((book) => book.bookIndex),
+    journey: isJourneyComplete(),
   };
 }
 
@@ -69,13 +70,15 @@ export default function DailyFlowScreen({
     const before = getEarned();
     saveDayReflection(journeyDay, answers);
     const after = getEarned();
-    const length = getJourneyLength();
     const milestoneDays = getMilestoneDays();
+    const finishedNow = after.journey && !before.journey;
+    // A first 33-Day Walk reaches Passage Walk Day 33 on its last day: the journey celebration (Power Walk) covers both.
+    const sameAsJourney = (day: number) => finishedNow && getActivePlan().type === "automatic" && day === 33;
     const earned: Celebration[] = [
       ...after.books.filter((book) => !before.books.includes(book)).map((bookIndex): Celebration => ({ kind: "book", bookIndex })),
-      ...after.milestones.filter((day) => !before.milestones.includes(day)).map((day): Celebration => (
-        day === length ? { kind: "journey", day } : { kind: "milestone", day, nextDay: milestoneDays.find((next) => next > day) ?? null }
-      )),
+      ...after.milestones.filter((day) => !before.milestones.includes(day) && !sameAsJourney(day))
+        .map((day): Celebration => ({ kind: "milestone", day, nextDay: milestoneDays.find((next) => next > day) ?? null })),
+      ...(finishedNow ? [{ kind: "journey", day: getJourneyLength() } as Celebration] : []),
     ];
     setReflectionSaved(true);
     setCelebrations(earned);

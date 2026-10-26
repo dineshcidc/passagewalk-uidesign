@@ -56,9 +56,10 @@ export default function HomeScreen({
   const today = getTodayDay();
   const length = getJourneyLength();
   const journeyLabel = plan.type === "designed" ? journeyName(plan).toUpperCase() : plan.type === "custom" ? formatBookList(plan.books).toUpperCase() : plan.type === "bible" ? `THE WHOLE BIBLE · ${getBiblePace(plan.pace).years.toUpperCase()}` : `YOUR ${length}-DAY WALK`;
-  // Milestone track: 33-Day spans the whole journey; longer journeys show their first milestones (up to Day 33).
-  const trackDays = Math.min(length, 33);
-  const trackMilestones = getMilestoneDays().filter((day) => day > 1 && day < trackDays).slice(0, 4);
+  // Milestone track in Passage Walk days (milestones count across journeys): up to Day 33 first, then up to the
+  // next milestone, with the four milestones before its end as dots.
+  const trackDays = progress.walkedDays < 33 ? 33 : progress.nextMilestone || 365;
+  const trackMilestones = getMilestoneDays().filter((day) => day > 1 && day < trackDays).slice(-4);
   const unlockedMilestones = getUnlockedMilestones();
   // A day is pending when steps were entered but no reflection was saved,
   // e.g. the user tapped "Do this later" on the Passage Ready screen.
@@ -225,7 +226,7 @@ export default function HomeScreen({
             <div className="home-progress-count"><strong>{progress.completedDays}</strong><span>of {formatCount(length)}</span></div>
           </div>
           <div className="home-milestone-track">
-            <span style={{ width: `${(progress.completedDays / trackDays) * 100}%` }}></span>
+            <span style={{ width: `${Math.min(progress.walkedDays / trackDays, 1) * 100}%` }}></span>
             {trackMilestones.map((day) => (
               <i
                 className={`milestone-dot ${unlockedMilestones.includes(day) ? "completed" : day === progress.nextMilestone ? "next" : ""}`}
@@ -303,7 +304,7 @@ export default function HomeScreen({
             </div>
           </div>
           {plan.type === "automatic" || plan.books.length === 66 ? (
-            // 33-Day (and the Every Book Walk): a different book each day, so books are visited, not finished —
+            // 33-Day (or any plan through all 66 books): a different book each day, so books are visited, not finished —
             // show which of the 66 books the steps have led to (client goal: learn the 66 books).
             <div className="home-bible-books home-bible-visited">
               <div className="home-bible-visited-head">

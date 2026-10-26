@@ -225,7 +225,7 @@ function resolveCustomSteps(plan: JourneyPlan, steps: number, taken: ReadingRef[
 }
 
 // Designed Experience, "Read randomly": like Create a Journey, but only the plan's own chapters count
-// (Every Book Walk reads chapter 1 of each book, so there the steps pick the book only).
+// (one-chapter books — the 5-Day: Obadiah, Philemon, 2 John, 3 John, Jude — so there the steps pick the book only).
 function resolveExperienceSteps(sequence: ReadingRef[], steps: number, taken: ReadingRef[]): SingleAssignment {
   const books = [...new Set(sequence.map((reading) => reading.bookIndex))];
   const chaptersIn = (bookIndex: number) => sequence.filter((reading) => reading.bookIndex === bookIndex).map((reading) => reading.chapter);

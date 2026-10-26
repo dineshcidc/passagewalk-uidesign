@@ -1,4 +1,4 @@
-// Gold milestone medal (purple for Designed Experiences — review call 3: separate badges for experiences).
+// Gold milestone medal for every Passage Walk milestone; purple (client accent) only for a finished Designed Experience.
 // Locked badges show a padlock; large unlocked badges show the day number
 // (Milestones grid, achievement page and the celebration screen).
 export default function MilestoneBadge({ milestone, large = false, experience = false }: { milestone: { day: number; unlocked: boolean }; large?: boolean; experience?: boolean }) {

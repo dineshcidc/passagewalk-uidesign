@@ -22,7 +22,7 @@ export const journeyTypeIcons: Record<JourneyType, AppIconName> = {
   bible: "library",
 };
 
-// The plan's own name where it has one: "Courage Walk" for a Designed Experience, else the type label.
+// The plan's own name where it has one: "21-Day Designed Experience" for a Designed Experience, else the type label.
 export const journeyName = (plan: JourneyPlan) => getExperience(plan.experience)?.name ?? journeyTypeLabels[plan.type];
 
 export function createExperiencePlan(experience: Experience, order: ReadingOrder): JourneyPlan {

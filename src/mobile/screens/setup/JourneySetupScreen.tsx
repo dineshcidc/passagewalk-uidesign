@@ -4,9 +4,10 @@ import { bibleBooks, type Testament } from "../../data/bibleBooks";
 import BibleBooksGrid from "../../components/BibleBooksGrid";
 import BibleVersionList from "../../components/BibleVersionList";
 import { BIBLE_VERSION, getBookIndex, getBookName } from "../../data/bible";
-import { EXPERIENCE_LENGTHS, experiences, formatBookChapters, getExperience, getExperienceSequence, type Experience } from "../../data/experiences";
+import { EXPERIENCE_RANGES, experiences, formatBookChapters, getExperience, getExperienceSequence, type Experience } from "../../data/experiences";
 import { BIBLE_CHAPTER_COUNT, biblePaces, chaptersPerDayLabel, createExperiencePlan, createJourneyPlan, DEFAULT_BIBLE_PACE, experienceThrough, formatBookList, formatChapterRun, formatCount, getBiblePace, getChapterPreview, getChapterTotal, getDayChapterCount, getDayChapterStart, plural, sortBooks, THIRTY_THREE_DAY_LENGTH } from "../../data/journeyPlans";
-import { getMilestoneDaysFor } from "../../data/progress";
+import { getMilestoneInfo } from "../../data/milestones";
+import { getMilestonePreview, getWalkedDays } from "../../data/progress";
 import type { ReadingRef } from "../../data/stepsRule";
 import type { BiblePace, JourneyPlan, JourneyType, ReadingOrder } from "../../types";
 
@@ -63,8 +64,8 @@ const walkOptions: ChoiceCard<WalkChoice>[] = [
     value: "designed",
     icon: "compass",
     title: "Choose a Designed Experience",
-    body: "A ready-made walk through chosen books of the Bible. Pick a length and start walking.",
-    meta: ["3 TO 120 DAYS", "PLANNED FOR YOU"],
+    body: "Books with the same number of chapters, walked together. Pick a length and start walking.",
+    meta: ["2 TO 150 DAYS", "PLANNED FOR YOU"],
   },
   {
     value: "create",
@@ -119,23 +120,23 @@ function ChoiceList<T extends string>({ options, selected, onSelect }: { options
   );
 }
 
-// "Matthew · Mark · Luke · John · Acts · Titus", or the Every Book Walk's one-liner.
+// "Obadiah · Philemon · 2 John · 3 John · Jude" (or a one-liner for a plan through all 66 books).
 const experienceBooksLine = (experience: Experience) =>
   experience.books.length === bibleBooks.length ? "All 66 books · chapter 1 of each" : experience.books.map((book) => book.name).join(" · ");
 
 const readingName = (reading: ReadingRef) => `${getBookName(reading.bookIndex)} ${reading.chapter}`;
 
-// Designed Experience list: lengths as filter chips (Kathy's "dropdown" of 3 · 7 · 8 · 12 · 40 · 66 · 120 days), then the walks.
+// Designed Experience list (Kathy's targeted books, review call 4): 31 walks, shortest first, filtered by length range.
 function ExperienceList({ selectedId, onSelect }: { selectedId: string | null; onSelect: (id: string) => void }) {
-  const [length, setLength] = useState<number | null>(null);
-  const shown = experiences.filter((experience) => length === null || experience.days === length);
+  const [range, setRange] = useState<number | null>(null);
+  const shown = experiences.filter((experience) => range === null || (experience.days >= EXPERIENCE_RANGES[range].min && experience.days <= EXPERIENCE_RANGES[range].max));
   return (
     <div className="setup-content experience-list-content" key="experience">
-      <div className="setup-heading"><span>DESIGNED EXPERIENCE</span><h1>Choose a walk</h1><p>Ready-made walks through chosen books of the Bible. Pick a length, then a walk.</p></div>
+      <div className="setup-heading"><span>DESIGNED EXPERIENCE</span><h1>Choose a walk</h1><p>Books with the same number of chapters, walked together — including the ones you may never have opened.</p></div>
       <div className="experience-length-filter" aria-label="Filter by length">
-        <button className={length === null ? "active" : ""} onClick={() => setLength(null)} aria-pressed={length === null}>All</button>
-        {EXPERIENCE_LENGTHS.map((days) => (
-          <button className={length === days ? "active" : ""} onClick={() => setLength(days)} aria-pressed={length === days} key={days}>{days} days</button>
+        <button className={range === null ? "active" : ""} onClick={() => setRange(null)} aria-pressed={range === null}>All · {experiences.length}</button>
+        {EXPERIENCE_RANGES.map((option, index) => (
+          <button className={range === index ? "active" : ""} onClick={() => setRange(index)} aria-pressed={range === index} key={option.label}>{option.label}</button>
         ))}
       </div>
       <div className="experience-list">
@@ -157,19 +158,21 @@ function ExperienceList({ selectedId, onSelect }: { selectedId: string | null; o
 }
 
 // The chosen walk before it starts: what it is, the verse, the books day by day, and the badges on the way.
-function ExperienceDetails({ experience }: { experience: Experience }) {
+// walked = Passage Walk days already done (Change Journey): milestones count on from there; first setup = 0.
+function ExperienceDetails({ experience, walked }: { experience: Experience; walked: number }) {
   const everyBook = experience.books.length === bibleBooks.length;
-  const milestoneDays = getMilestoneDaysFor(experience.days, "designed");
+  const milestoneDays = getMilestonePreview(walked, experience.days);
   return (
     <div className="setup-content experience-detail-content" key="plan">
       <section className="experience-hero">
         <div className="experience-hero-top"><span><AppIcon name="compass" />DESIGNED EXPERIENCE</span><em>{experience.theme}</em></div>
         <h1>{experience.name}</h1>
         <p>{experience.description}</p>
+        {/* The common ground (Kathy): how many chapters each book has. */}
         <div className="experience-hero-stats">
           <div><strong>{experience.days}</strong><span>days</span></div>
           <div><strong>{experience.books.length}</strong><span>{experience.books.length === 1 ? "book" : "books"}</span></div>
-          <div><strong>{milestoneDays.length}</strong><span>badges</span></div>
+          <div><strong>{experience.chaptersEach}</strong><span>{experience.books.length === 1 ? (experience.chaptersEach === 1 ? "chapter" : "chapters") : "ch. each"}</span></div>
         </div>
       </section>
 
@@ -201,18 +204,22 @@ function ExperienceDetails({ experience }: { experience: Experience }) {
         </div>
       )}
 
-      <div className="experience-section-title"><span>BADGES ALONG THE WAY</span><small>{plural(milestoneDays.length, "badge")}</small></div>
+      {/* Passage Walk milestones this walk can reach (one ladder for every journey) + its own finishing badge. */}
+      <div className="experience-section-title"><span>BADGES ALONG THE WAY</span><small>{plural(milestoneDays.length + 1, "badge")}</small></div>
+      {walked > 0 && <p className="experience-milestones-note">Counting on from your {plural(walked, "Passage Walk day")} — every badge you've earned stays.</p>}
       <div className="experience-milestones">
-        {milestoneDays.map((day) => {
-          const final = day === experience.days;
-          return (
-            <div className={final ? "final" : ""} key={day}>
-              <i><AppIcon name="milestones" /></i>
-              <strong>Day {day}</strong>
-              <span>{day === 1 ? "First Step" : final ? "Complete" : `${day}-Day Walk`}</span>
-            </div>
-          );
-        })}
+        {milestoneDays.map((day) => (
+          <div key={day}>
+            <i><AppIcon name="milestones" /></i>
+            <strong>Day {formatCount(day)}</strong>
+            <span>{getMilestoneInfo(day, { type: "designed", books: [], order: "in-order", days: experience.days }).shortName}</span>
+          </div>
+        ))}
+        <div className="final">
+          <i><AppIcon name="milestones" /></i>
+          <strong>{plural(experience.days, "day")}</strong>
+          <span>Experience Complete</span>
+        </div>
       </div>
     </div>
   );
@@ -231,7 +238,8 @@ export default function JourneySetupScreen({
   onExit: () => void;
   askVersion?: boolean;
 }) {
-  const [step, setStep] = useState<SetupStep>("choose");
+  // A recommended walk (Journey Complete → "Where to next", a plan with no days yet) opens straight on its details.
+  const [step, setStep] = useState<SetupStep>(initialPlan?.type === "designed" && initialPlan.experience && initialPlan.days === 0 ? "plan" : "choose");
   const [choice, setChoice] = useState<WalkChoice>(!initialPlan || initialPlan.type === "automatic" ? "automatic" : initialPlan.type === "designed" ? "designed" : "create");
   const [experienceId, setExperienceId] = useState<string | null>(initialPlan?.experience ?? null);
   const experience = getExperience(experienceId ?? undefined);
@@ -342,7 +350,7 @@ export default function JourneySetupScreen({
 
       {step === "experience" && <ExperienceList selectedId={experienceId} onSelect={setExperienceId} />}
 
-      {step === "plan" && experience && <ExperienceDetails experience={experience} />}
+      {step === "plan" && experience && <ExperienceDetails experience={experience} walked={askVersion ? 0 : getWalkedDays()} />}
 
       {step === "build" && (
         <div className="setup-content journey-options-content" key="build">

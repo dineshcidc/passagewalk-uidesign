@@ -7,30 +7,39 @@ import CompletionCertificate from "../../components/CompletionCertificate";
 import MilestoneBadge from "../../components/MilestoneBadge";
 import { getBookName } from "../../data/bible";
 import { formatCount, plural } from "../../data/journeyPlans";
-import { getMilestoneInfo } from "../../data/milestones";
-import { getBookProgress, getJourneyLength, getMilestoneDate, getMilestoneDays, getProgress, getUnlockedMilestones } from "../../data/progress";
+import { getJourneyCompleteInfo, getMilestoneInfo } from "../../data/milestones";
+import { getBookProgress, getJourneyCompleteDate, getJourneyLength, getMilestoneDate, getProgress, getReachableMilestones, getUnlockedMilestones, isJourneyComplete } from "../../data/progress";
 import { downloadCertificate } from "../../certificate";
 import { getActivePlan } from "../../data/journeyStore";
 import { playChime } from "../../sound";
 import type { JourneyPlan, MainTab } from "../../types";
 
+// ladder = a Passage Walk milestone (counts days across journeys); journey = finishing this journey.
 type Milestone = {
+  kind: "ladder" | "journey";
   day: number;
   unlocked: boolean;
   unlockedOn?: string;
-  final: boolean;
 };
 
-// Day badges follow the journey length (see progress.ts) and unlock as days are completed —
+// Passage Walk milestones (progress.ts): one ladder for every journey, unlocked by Passage Walk days —
 // saving one more reflection in the mock scenario earns Day 3 (with the celebration screen).
+// Only the badges this journey can reach are cards; the rest are one "after this journey" line.
 function getMilestones(): Milestone[] {
   const unlocked = getUnlockedMilestones();
-  const length = getJourneyLength();
-  return getMilestoneDays().map((day) => ({ day, unlocked: unlocked.includes(day), unlockedOn: getMilestoneDate(day) ?? undefined, final: day === length }));
+  return getReachableMilestones().reachable.map((day) => ({ kind: "ladder", day, unlocked: unlocked.includes(day), unlockedOn: getMilestoneDate(day) ?? undefined }));
 }
 
+// "Day 40, 66, 70, 120 … 365"
+const formatLaterDays = (days: number[]) => (days.length <= 5 ? days.map(formatCount).join(", ") : `${days.slice(0, 4).map(formatCount).join(", ")} … ${formatCount(days[days.length - 1])}`);
+
+const getJourneyMilestone = (): Milestone => ({ kind: "journey", day: getJourneyLength(), unlocked: isJourneyComplete(), unlockedOn: getJourneyCompleteDate() ?? undefined });
+
+// Only a finished Designed Experience wears the client purple; every Passage Walk milestone is gold.
+const isPurple = (milestone: Milestone) => milestone.kind === "journey" && milestone.unlocked && getActivePlan().type === "designed";
+
 function MilestoneAchievement({ milestone, onBack }: { milestone: Milestone; onBack: () => void }) {
-  const info = getMilestoneInfo(milestone.day);
+  const info = milestone.kind === "journey" ? getJourneyCompleteInfo() : getMilestoneInfo(milestone.day);
   const [viewerOpen, setViewerOpen] = useState(false);
 
   // A soft bell chime as the earned badge opens (the celebration itself uses applause).
@@ -54,9 +63,9 @@ function MilestoneAchievement({ milestone, onBack }: { milestone: Milestone; onB
             <i></i><i></i><i></i><i></i><i></i><i></i>
           </div>
           <div className="achievement-badge-glow">
-            <MilestoneBadge milestone={milestone} large experience={milestone.unlocked && getActivePlan().type === "designed"} />
+            <MilestoneBadge milestone={milestone} large experience={isPurple(milestone)} />
           </div>
-          <span className="achievement-eyebrow">{info.phase ? `PHASE ${info.phase.number} OF ${info.phase.total} · COMPLETE` : "MILESTONE UNLOCKED"}</span>
+          <span className="achievement-eyebrow">{milestone.kind === "journey" ? (getActivePlan().type === "designed" ? "EXPERIENCE COMPLETE" : "JOURNEY COMPLETE") : info.phase ? `PHASE ${info.phase.number} OF ${info.phase.total} · COMPLETE` : "PASSAGE WALK MILESTONE"}</span>
           <h1>{info.name}</h1>
           <p><strong>Congratulations!</strong> {info.congrats}</p>
           <div className="achievement-date">
@@ -102,6 +111,9 @@ function MilestoneAchievement({ milestone, onBack }: { milestone: Milestone; onB
 export default function MilestonesScreen({ onNavigate, plan }: { onNavigate: (tab: MainTab) => void; plan: JourneyPlan }) {
   const progress = getProgress();
   const milestones = getMilestones();
+  const laterDays = getReachableMilestones().later;
+  const journeyMilestone = getJourneyMilestone();
+  const journeyInfo = getJourneyCompleteInfo();
   const length = formatCount(plan.days);
   const bookProgress = getBookProgress();
   const finishedBooks = bookProgress.filter((book) => book.finished);
@@ -129,10 +141,29 @@ export default function MilestonesScreen({ onNavigate, plan }: { onNavigate: (ta
           <div className="milestones-progress-track"><i style={{ width: progress.barWidth }}></i></div>
         </section>
 
+        {/* This journey's own badge: finishing it (Designed Experience: purple). */}
         <div className="milestones-section-title">
-          <span>ACHIEVEMENTS</span>
+          <span>THIS JOURNEY</span>
+          <p>{journeyMilestone.unlocked ? "Completed" : `${plural(Math.max(plan.days - progress.completedDays, 0), "day")} to go`}</p>
+        </div>
+        <section className="milestones-grid journey-complete-grid">
+          <button className={`milestone-card journey-complete-card ${journeyMilestone.unlocked ? "unlocked" : "locked"}`} disabled={!journeyMilestone.unlocked} onClick={() => setSelectedMilestone(journeyMilestone)}>
+            <div className="milestone-art"><MilestoneBadge milestone={journeyMilestone} experience={isPurple(journeyMilestone)} /></div>
+            <div>
+              <strong>{journeyInfo.name}</strong>
+              <em>{plan.type === "designed" ? "Experience" : "Journey"} complete · Day {length}</em>
+              <span>{journeyMilestone.unlocked ? "Completed" : "Final badge"}</span>
+            </div>
+            {journeyMilestone.unlocked && <i><AppIcon name="chevron" /></i>}
+          </button>
+        </section>
+
+        {/* Kathy: "cumulative based on bible reading days" — every completed day counts, in any journey. */}
+        <div className="milestones-section-title">
+          <span>PASSAGE WALK MILESTONES</span>
           <p>{milestones.filter((milestone) => milestone.unlocked).length} of {milestones.length} unlocked</p>
         </div>
+        <p className="milestones-ladder-note"><AppIcon name="steps" /><span><strong>{plural(progress.walkedDays, "day")} walked</strong> in Passage Walk. Every day you complete counts, in any journey.</span></p>
 
         <section className="milestones-grid">
           {milestones.map((milestone) => (
@@ -142,14 +173,17 @@ export default function MilestonesScreen({ onNavigate, plan }: { onNavigate: (ta
               onClick={() => setSelectedMilestone(milestone)}
               key={milestone.day}
             >
-              <div className="milestone-art"><MilestoneBadge milestone={milestone} experience={milestone.unlocked && getActivePlan().type === "designed"} /></div>
+              <div className="milestone-art"><MilestoneBadge milestone={milestone} /></div>
               <strong>Day {formatCount(milestone.day)}</strong>
               <em>{getMilestoneInfo(milestone.day).shortName}</em>
-              <span>{milestone.unlocked ? "Completed" : milestone.final ? "Final badge" : "Locked"}</span>
+              <span>{milestone.unlocked ? "Completed" : milestone.day === progress.nextMilestone ? `${plural(progress.daysToGo, "day")} to go` : "Locked"}</span>
               {milestone.unlocked && <i><AppIcon name="chevron" /></i>}
             </button>
           ))}
         </section>
+        {laterDays.length > 0 && (
+          <p className="milestones-later"><AppIcon name="milestones" /><span><strong>Keep walking after this journey:</strong> Day {formatLaterDays(laterDays)}. Your days keep counting in your next journey.</span></p>
+        )}
 
         {/* One book only: finishing it is the "Journey complete" badge above, so no separate book badges.
             A Designed Experience earns its own walk badges (often a chapter or two of a book), so no book badges either. */}

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { getBookChapterCount, getBookName } from "../data/bible";
 import { getActivePlan } from "../data/journeyStore";
-import { getMilestoneInfo } from "../data/milestones";
+import { getJourneyCompleteInfo, getMilestoneInfo } from "../data/milestones";
 import { playApplause } from "../sound";
 import AppIcon from "./AppIcon";
 import MilestoneBadge from "./MilestoneBadge";
@@ -38,14 +38,19 @@ export default function CelebrationScreen({ celebration, onContinue }: { celebra
       chip: "BOOK BADGE EARNED",
     }
     : celebration.kind === "journey"
-      ? {
-        eyebrow: getMilestoneInfo(celebration.day).phase ? "FINAL PHASE · JOURNEY COMPLETE" : "JOURNEY COMPLETE",
-        title: getMilestoneInfo(celebration.day).phase ? getMilestoneInfo(celebration.day).name : "You did it!",
-        body: celebration.day === 1
-          ? "I'm proud of you — you completed your Passage Walk."
-          : `Congratulations! You walked all ${celebration.day.toLocaleString("en-US")} days of your PassageWalk Journey. I'm proud of you!`,
-        chip: "CERTIFICATE OF COMPLETION EARNED",
-      }
+      ? (() => {
+        // The journey itself (33-Day Walk: Kathy's Power Walk, the final phase; Designed: the experience by name).
+        const info = getJourneyCompleteInfo();
+        const plan = getActivePlan();
+        return {
+          eyebrow: plan.type === "automatic" ? "FINAL PHASE · JOURNEY COMPLETE" : plan.type === "designed" ? "EXPERIENCE COMPLETE" : "JOURNEY COMPLETE",
+          title: plan.type === "custom" || plan.type === "bible" ? "You did it!" : info.name,
+          body: celebration.day === 1
+            ? "I'm proud of you — you completed your Passage Walk."
+            : `Congratulations! ${info.congrats} I'm proud of you!`,
+          chip: "CERTIFICATE OF COMPLETION EARNED",
+        };
+      })()
       : (() => {
         // Kathy's phases: "Congratulations! You have now completed the first phase…" (milestones.ts).
         const info = getMilestoneInfo(celebration.day);
@@ -80,7 +85,8 @@ export default function CelebrationScreen({ celebration, onContinue }: { celebra
         {celebration.kind === "book" ? (
           <div className="celebration-book-medal"><AppIcon name="book" /></div>
         ) : (
-          <div className="celebration-badge"><MilestoneBadge milestone={{ day: celebration.day, unlocked: true }} large experience={getActivePlan().type === "designed"} /></div>
+          // Passage Walk milestones are gold for every journey; only a finished Designed Experience is purple.
+          <div className="celebration-badge"><MilestoneBadge milestone={{ day: celebration.day, unlocked: true }} large experience={celebration.kind === "journey" && getActivePlan().type === "designed"} /></div>
         )}
       </div>
 

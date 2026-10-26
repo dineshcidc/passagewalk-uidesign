@@ -244,7 +244,7 @@ export default function JourneyScreen({ onNavigate, plan }: { onNavigate: (tab: 
   const bookProgress = getBookProgress();
   const chaptersRead = readBooks.length;
   const [booksOpen, setBooksOpen] = useState(false);
-  // Designed Experiences with a few books list them like your own books; the Every Book Walk shows the 66-book map.
+  // Designed Experiences (at most 7 books) list them like your own books; a plan of more than 10 books shows the 66-book map.
   const perBook = plan.type === "custom" || (plan.type === "designed" && plan.books.length <= 10);
   const typeDetail = plan.type === "designed"
     ? `${journeyName(plan)} · ${plan.books.length === 66 ? "All 66 books" : formatBookList(plan.books)} · ${readingOrderLabel(plan)}`

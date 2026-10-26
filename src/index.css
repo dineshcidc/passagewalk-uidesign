@@ -2852,3 +2852,26 @@ button.scripture-reading-version svg:last-child { width: 9px; height: 9px; margi
 /* Several chapters a day: Write Reflection needs a highlight in every chapter ("2 / 3"). */
 .scripture-highlight-bar > div strong small { color: var(--app-text-secondary); font-family: var(--app-font-ui); font-size: 12px; font-weight: 600; }
 .scripture-chapters-done.waiting { color: #7a5a14; }
+
+/* Work 1 Stage B: "This journey" complete badge (one wide card) + Passage Walk days note above the ladder. */
+.journey-complete-grid { grid-template-columns: 1fr; }
+.journey-complete-card { min-height: 0; padding: 12px 40px 12px 12px; flex-direction: row; align-items: center; gap: 12px; text-align: left; }
+.journey-complete-card .milestone-art { width: 64px; height: 70px; flex: 0 0 auto; }
+.journey-complete-card .milestone-badge { width: 58px; height: 66px; }
+.journey-complete-card > div:not(.milestone-art) { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; }
+.journey-complete-card strong { font-family: var(--app-font-editorial); font-size: 17px; font-weight: 600; line-height: 1.15; }
+.journey-complete-card em { margin-top: 3px; color: #7a5a14; font-family: var(--app-font-editorial); font-size: 11px; font-style: italic; }
+.journey-complete-card span { margin-top: 5px; color: #1f6a47; font-size: 9px; font-weight: 700; }
+.journey-complete-card.locked em, .journey-complete-card.locked span { color: #6b6e6a; }
+.journey-complete-card > i { top: 50%; transform: translateY(-50%); }
+.milestones-ladder-note { margin: 9px 0 0; padding: 9px 12px; display: flex; align-items: center; gap: 8px; border-radius: 12px; color: var(--app-text-secondary); background: var(--app-light-teal); font-size: 10.5px; line-height: 1.4; }
+.milestones-ladder-note svg { width: 15px; height: 15px; flex: 0 0 auto; color: var(--app-primary-text); }
+.milestones-ladder-note strong { color: var(--app-deep-navy); }
+.experience-milestones-note { margin: 6px 0 0; color: var(--app-text-secondary); font-size: 10.5px; line-height: 1.4; }
+/* The Designed Experience finishing badge is purple (client accent), as on Milestones and the celebration. */
+.experience-milestones .final { border-color: #dcc4ff; background: #f7f0ff; }
+.experience-milestones .final i { color: white; background: #7e00fc; }
+/* Badges beyond this journey: one quiet line, not a wall of locked cards. */
+.milestones-later { margin: 14px 0 0; padding: 11px 13px; display: flex; align-items: flex-start; gap: 9px; border: 1px dashed #d9dbd8; border-radius: 14px; color: var(--app-text-secondary); background: #fafaf8; font-size: 10.5px; line-height: 1.45; }
+.milestones-later svg { width: 16px; height: 16px; flex: 0 0 auto; margin-top: 1px; color: #7a5a14; }
+.milestones-later strong { color: var(--app-deep-navy); }

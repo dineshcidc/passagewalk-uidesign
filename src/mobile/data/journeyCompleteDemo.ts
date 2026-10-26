@@ -1,8 +1,7 @@
 import { getBookChapterCount, getBookIndex, getVerseCount, OLD_TESTAMENT_BOOKS } from "./bible";
 import { defaultJourneyPlan, formatCount } from "./journeyPlans";
 import { formatDayDate } from "./journeyStore";
-import { getMilestoneInfo } from "./milestones";
-import { getMilestoneDaysFor } from "./progress";
+import { getMilestoneInfo, MILESTONE_LADDER } from "./milestones";
 
 // Prototype demo (Settings → Prototype demo → Journey complete): what a user sees after saving the last
 // day of a 33-Day Walk. The app's mock journey is on Day 5, so this uses a finished sample walk instead.
@@ -37,7 +36,8 @@ export function getJourneyCompleteDemo() {
   const finished = books.filter((book) => book.total === 1).map((book) => book.book);
   // Robin: "you completed 20% of John and 15% of James" — the books they went furthest in.
   const furthest = [...books].sort((a, b) => b.percent - a.percent || a.total - b.total).slice(0, 5);
-  const badges = getMilestoneDaysFor(LENGTH, "automatic").map((day) => ({ day, name: getMilestoneInfo(day, plan, LENGTH).shortName }));
+  // The ladder badges a first 33-Day Walk earns: First Step + Kathy's five phases.
+  const badges = MILESTONE_LADDER.filter((day) => day <= LENGTH).map((day) => ({ day, name: getMilestoneInfo(day, plan, LENGTH).shortName }));
   const finalInfo = getMilestoneInfo(LENGTH, plan, LENGTH);
 
   return {

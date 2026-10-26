@@ -11,7 +11,7 @@ function FrequentlyAskedQuestions({ onBack }: { onBack: () => void }) {
     },
     {
       question: "How are daily scripture passages assigned?",
-      answer: "In the 33-Day Walk, your step count chooses each day's chapter, alternating Old and New Testament. A Designed Experience is a ready-made walk through chosen books, from 3 to 120 days. With Create a Journey you pick your own books or read the whole Bible — in order or randomly, as your steps choose. For the whole Bible you also pick a pace: finish in 1 year (3–4 chapters a day), 2 years (1–2 a day) or about 3 years (one a day).",
+      answer: "In the 33-Day Walk, your step count chooses each day's chapter, alternating Old and New Testament. A Designed Experience walks books that share the same number of chapters (like Obadiah, Philemon, 2 John, 3 John, and Jude, one chapter each), from 2 to 150 days. With Create a Journey you pick your own books or read the whole Bible — in order or randomly, as your steps choose. For the whole Bible you also pick a pace: finish in 1 year (3–4 chapters a day), 2 years (1–2 a day) or about 3 years (one a day).",
     },
     {
       question: "How do I enter my steps?",
@@ -27,7 +27,7 @@ function FrequentlyAskedQuestions({ onBack }: { onBack: () => void }) {
     },
     {
       question: "How do milestones and badges work?",
-      answer: "Badges celebrate meaningful progress through your journey, and finishing a book earns its own badge. Complete the required number of days to unlock each milestone and its achievement certificate.",
+      answer: "Milestones count every day you complete in Passage Walk, in any journey: Day 3 Resurrection Walk, Day 7 Creation Walk, Day 12 Apostle Walk, Day 21 Trinity Walk, Day 33 Power Walk, then Day 40, 66, 70, 120 and on to 365. If you change journeys, your days and badges carry on. Finishing a journey earns its own badge, and finishing a book earns a book badge. Each badge comes with a certificate.",
     },
   ];
 

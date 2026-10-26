@@ -14,7 +14,7 @@ import { resolveReading, type ReadingAssignment } from "./stepsRule";
 //   Entire Bible random, 1 year: Ruth 1–4 · Galatians 5 – Ephesians 1 · (missed) · Luke 1–4 pending
 //   Own, in order:       chapter 1 · chapter 2 · (missed) · chapter 4 pending · today chapter 5
 //   Own, steps choose:   e.g. Exodus + Leviticus → Leviticus 3 · Exodus 1 · (missed) · Leviticus 7 pending
-//   Designed:            the plan's chapters, in order (Courage Walk: Daniel 1 · 2 · missed · 4 pending) or by steps
+//   Designed:            the plan's chapters, in order (21-Day: Joel 1 · Joel 2 · missed · Nahum 1 pending · today Nahum 2) or by steps
 
 export type ReflectionAnswers = [string, string, string];
 export type DayRecord = { steps: string; time: string; reading: ReadingAssignment };
@@ -70,8 +70,19 @@ function assign(journeyDay: number, steps: string) {
 
 const chaptersKey = (reading: ReadingAssignment) => reading.chapters.map((ref) => `${ref.bookIndex}:${ref.chapter}`).join(",");
 
+// Passage Walk days from earlier journeys (the date each was completed, in order). Milestones count them too
+// (Kathy: "cumulative based on bible reading days"), so Change Journey keeps every badge already earned.
+const pastCompletedDates: string[] = [];
+
 // Starts a journey on the mock scenario above. Called when setup finishes, on Log In, and from Settings → Change Journey.
-export function activateJourney(nextPlan: JourneyPlan) {
+// carryOver = Change Journey: the journey being left adds its completed days to the Passage Walk total;
+// otherwise (first setup after Sign Up, a fresh Log In) the total starts again.
+export function activateJourney(nextPlan: JourneyPlan, carryOver = false) {
+  if (carryOver) {
+    Array.from({ length: plan.days }, (_, index) => index + 1).filter(isDayComplete).forEach((day) => pastCompletedDates.push(formatDayDate(day)));
+  } else {
+    pastCompletedDates.length = 0;
+  }
   plan = nextPlan;
   records.clear();
   reflections.clear();
@@ -120,6 +131,7 @@ function loadDayBooks(reading: ReadingAssignment) {
 activateJourney(defaultJourneyPlan);
 
 export const getActivePlan = () => plan;
+export const getPastCompletedDates = () => [...pastCompletedDates];
 export const getJourneyLength = () => plan.days;
 export const getTodayDay = () => today;
 

@@ -10,7 +10,7 @@ const steps: { icon: AppIconName; title: string; body: string }[] = [
 
 const journeys: { icon: AppIconName; title: string; body: string }[] = [
   { icon: "spark", title: "33-Day Walk", body: "One day for each year of Christ's life." },
-  { icon: "compass", title: "Designed Experience", body: "A ready-made walk through chosen books, 3 to 120 days." },
+  { icon: "compass", title: "Designed Experience", body: "Books with the same number of chapters, walked together — 2 to 150 days." },
   { icon: "edit", title: "Create a Journey", body: "Pick your own books, or read the whole Bible." },
 ];
 

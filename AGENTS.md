@@ -16,7 +16,7 @@ Run typecheck + build after every change.
 - `src/App.tsx` — renders `src/mobile/MobileApp.tsx` (Splash screen first)
 - `src/index.css` — all styles and `--app-*` design tokens; kept identical to the Figma Make CSS plus a few local rules at the end
 - `src/mobile/components/` — shared UI (`AppIcon`, `BottomNavigation`, `IOSDeviceFrame`, `HighlightedVersesCard`)
-- `src/mobile/data/` — mock data and prototype-only stores: `journeyStore.ts` (active journey + per-type mock scenario, steps/reflections/highlights), `stepsRule.ts` (steps → book + chapter for every journey type), `experiences.ts` (Designed Experience plans — placeholder books until Kathy sends hers), `bible.ts` (on-demand KJV Bible text), `progress.ts` (progress, milestones, totals every screen uses)
+- `src/mobile/data/` — mock data and prototype-only stores: `journeyStore.ts` (active journey + per-type mock scenario, steps/reflections/highlights), `stepsRule.ts` (steps → book + chapter for every journey type), `experiences.ts` (Designed Experiences = Kathy's "Targeted books" list: 31 groups of books with the same chapter count, 2–150 days), `milestones.ts` (one cumulative milestone ladder for every journey: 1, 3, 7, 12, 21, 33, 40 … 365, plus the journey-complete badge), `bible.ts` (on-demand KJV Bible text), `progress.ts` (progress, milestones in Passage Walk days, totals every screen uses)
 - `public/bible/kjv/NN.json` — public-domain King James Version (client choice), one file per book (verse counts in `data/bibleVerseCounts.ts`)
 - `src/mobile/screens/<feature>/` — one folder per feature (onboarding, auth, setup, home, journey, journal, milestones, profile)
 

@@ -63,8 +63,9 @@ export default function OnboardingFlow() {
 
   // Starting a journey resets the prototype data to that journey's mock scenario; the key remounts every tab.
   // walk = Welcome back → Start Today's Walk; any other start (setup, Change Journey) opens Home.
-  const startJourney = (plan: JourneyPlan, walk?: DailyFlowEntry) => {
-    activateJourney(plan);
+  // carryOver = Change Journey: Passage Walk days (and the badges they earned) continue into the new journey.
+  const startJourney = (plan: JourneyPlan, walk?: DailyFlowEntry, carryOver = false) => {
+    activateJourney(plan, carryOver);
     setOpenWalk(walk);
     setJourney(plan);
     setJourneyRun((run) => run + 1);
@@ -74,7 +75,7 @@ export default function OnboardingFlow() {
   if (stage === "app" && journey) {
     return (
       <IOSDeviceFrame>
-        <HomeScreen key={journeyRun} plan={journey} initialFlow={openWalk} onLogout={() => setStage("login")} onChangeJourney={(plan) => startJourney(plan)} />
+        <HomeScreen key={journeyRun} plan={journey} initialFlow={openWalk} onLogout={() => setStage("login")} onChangeJourney={(plan) => startJourney(plan, undefined, true)} />
       </IOSDeviceFrame>
     );
   }

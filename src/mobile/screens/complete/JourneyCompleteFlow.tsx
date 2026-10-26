@@ -5,6 +5,7 @@ import CertificateViewer from "../../components/CertificateViewer";
 import CompletionCertificate from "../../components/CompletionCertificate";
 import MilestoneBadge from "../../components/MilestoneBadge";
 import { downloadCertificate } from "../../certificate";
+import { experiences, getExperience } from "../../data/experiences";
 import { getJourneyCompleteDemo } from "../../data/journeyCompleteDemo";
 import { createJourneyPlan, formatCount } from "../../data/journeyPlans";
 import { getUser } from "../../data/user";
@@ -236,9 +237,10 @@ function Story({ demo, onBack, onNext }: { demo: ReturnType<typeof getJourneyCom
 // "Where do you want to walk next?" — Kathy: after the 33 "they can go to that 66, that 120, or… choose your own journey".
 function NextWalk({ demo, onBack, onChoose, onExit }: { demo: ReturnType<typeof getJourneyCompleteDemo>; onBack: () => void; onChoose: (plan: JourneyPlan) => void; onExit: () => void }) {
   const designed = (experience?: string): JourneyPlan => ({ type: "designed", books: [], order: "in-order", days: 0, experience });
+  const recommended = getExperience("targeted-isaiah")!;
   const options: { icon: AppIconName; title: string; body: string; meta: string[]; plan: JourneyPlan }[] = [
     { icon: "spark", title: "Walk the 33 days again", body: "A new 33-Day Walk — your steps will choose fresh readings.", meta: ["33 DAYS"], plan: createJourneyPlan("automatic") },
-    { icon: "compass", title: "Choose a Designed Experience", body: "Ready-made walks through chosen books of the Bible.", meta: ["66 DAYS", "120 DAYS", "+5 MORE"], plan: designed() },
+    { icon: "compass", title: "Choose a Designed Experience", body: "Books with the same number of chapters, walked together.", meta: ["2 TO 150 DAYS", `${experiences.length} WALKS`], plan: designed() },
     { icon: "edit", title: "Create a Journey", body: "Focus on the books you love — like Matthew, Mark, Luke, and John.", meta: ["YOUR BOOKS", "WHOLE BIBLE"], plan: createJourneyPlan("custom", ["Matthew", "Mark", "Luke", "John"]) },
   ];
 
@@ -257,13 +259,14 @@ function NextWalk({ demo, onBack, onChoose, onExit }: { demo: ReturnType<typeof 
           <p>You built a beautiful rhythm — {demo.days} days of steps, scripture, and reflection. Choose your next walk.</p>
         </div>
 
-        <button className="jc-recommended" onClick={() => onChoose(designed("every-book-walk"))}>
+        {/* Kathy (review call 4): after the 33 "they may decide… I really want to go to this 66 day experience and keep this going". */}
+        <button className="jc-recommended" onClick={() => onChoose(designed(recommended.id))}>
           <em><AppIcon name="spark" />RECOMMENDED FOR YOU</em>
           <div className="jc-recommended-body">
-            <div className="jc-recommended-days"><strong>66</strong><span>DAYS</span></div>
+            <div className="jc-recommended-days"><strong>{recommended.days}</strong><span>DAYS</span></div>
             <div>
-              <strong>Every Book Walk</strong>
-              <p>You've visited {demo.booksVisited} books. Now step into all 66 — one chapter from every book.</p>
+              <strong>{recommended.name}</strong>
+              <p>You've visited {demo.booksVisited} books. Keep going with Isaiah — the only book of the Bible with 66 chapters.</p>
               <small>DESIGNED EXPERIENCE</small>
             </div>
             <i><AppIcon name="chevron" /></i>
