@@ -11,7 +11,7 @@ function FrequentlyAskedQuestions({ onBack }: { onBack: () => void }) {
     },
     {
       question: "How are daily scripture passages assigned?",
-      answer: "In the 33-Day Walk, your step count chooses each day's chapter, alternating Old and New Testament. A Designed Experience is a ready-made walk through chosen books, from 3 to 120 days. With Create a Journey you pick your own books or read the whole Bible — in order or randomly, as your steps choose.",
+      answer: "In the 33-Day Walk, your step count chooses each day's chapter, alternating Old and New Testament. A Designed Experience is a ready-made walk through chosen books, from 3 to 120 days. With Create a Journey you pick your own books or read the whole Bible — in order or randomly, as your steps choose. For the whole Bible you also pick a pace: finish in 1 year (3–4 chapters a day), 2 years (1–2 a day) or about 3 years (one a day).",
     },
     {
       question: "How do I enter my steps?",

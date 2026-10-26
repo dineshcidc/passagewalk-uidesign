@@ -2,6 +2,7 @@ import type { JourneyPlan } from "../types";
 import { getBookChapterCount, getBookIndex, getBookName, getTestamentBooks, getTestamentPosition, type TestamentName } from "./bible";
 import { bibleBooks } from "./bibleBooks";
 import { getExperience, getExperienceSequence } from "./experiences";
+import { formatCount, getDayChapterCount, getDayChapterStart } from "./journeyPlans";
 
 // Steps → reading rules for the three journey types (prototype proposal; Kathy's journal PDF may refine the maths,
 // the screens stay the same). Explained for the team in Client-call/Journey-types/.
@@ -14,6 +15,9 @@ import { getExperience, getExperienceSequence } from "./experiences";
 // Entire Bible:    "Read randomly" → like 33-Day, but books may come back; a chapter already read → next unread chapter.
 //                  "Read in chapter order" → Day N reads chapter N of the Bible (Genesis 1 → Revelation 22), steps unlock it.
 // Designed:        like Choose Your Own, over the plan's own chapter list (experiences.ts).
+// Whole Bible pace (review call 4): a day can read several chapters (1 year = 3–4 a day). In chapter order the
+//                  day reads its share of Genesis 1 → Revelation 22; randomly, the steps pick the first chapter
+//                  and the day reads on from there, skipping chapters already read.
 
 export type ReadingRef = { bookIndex: number; chapter: number };
 
@@ -26,7 +30,44 @@ export type StepsExplanation = {
   lines: { value: string; text: string }[];
 };
 
-export type ReadingAssignment = ReadingRef & { explanation: StepsExplanation };
+// bookIndex / chapter = the day's first chapter; chapters = every chapter the day reads (one for most journeys).
+export type ReadingAssignment = ReadingRef & { chapters: ReadingRef[]; explanation: StepsExplanation };
+type SingleAssignment = ReadingRef & { explanation: StepsExplanation };
+
+const withChapters = (reading: SingleAssignment): ReadingAssignment => ({ ...reading, chapters: [{ bookIndex: reading.bookIndex, chapter: reading.chapter }] });
+
+// Genesis 1 → Revelation 22, the whole Bible as one list of 1,189 chapters.
+const bibleSequence: ReadingRef[] = bibleBooks.flatMap((book, bookIndex) => Array.from({ length: book.chapters }, (_, index) => ({ bookIndex, chapter: index + 1 })));
+
+// "Genesis 1–4", "Galatians 5 – Ephesians 1", "Genesis 1, 3–4", "Ruth 4, Matthew 1".
+export function formatReadingRefs(refs: ReadingRef[]) {
+  if (refs.length === 0) return "";
+  const position = (ref: ReadingRef) => bibleSequence.findIndex((item) => item.bookIndex === ref.bookIndex && item.chapter === ref.chapter);
+  const contiguous = refs.every((ref, index) => index === 0 || position(ref) === position(refs[index - 1]) + 1);
+  const first = refs[0];
+  const last = refs[refs.length - 1];
+  if (refs.length === 1) return `${getBookName(first.bookIndex)} ${first.chapter}`;
+  if (contiguous) {
+    return first.bookIndex === last.bookIndex
+      ? `${getBookName(first.bookIndex)} ${first.chapter}–${last.chapter}`
+      : `${getBookName(first.bookIndex)} ${first.chapter} – ${getBookName(last.bookIndex)} ${last.chapter}`;
+  }
+  // Not one run: each book with its chapter ranges.
+  const groups: { bookIndex: number; chapters: number[] }[] = [];
+  refs.forEach((ref) => {
+    const group = groups[groups.length - 1];
+    if (group && group.bookIndex === ref.bookIndex) group.chapters.push(ref.chapter);
+    else groups.push({ bookIndex: ref.bookIndex, chapters: [ref.chapter] });
+  });
+  return groups.map(({ bookIndex, chapters }) => {
+    const ranges: string[] = [];
+    chapters.forEach((chapter, index) => {
+      if (index > 0 && chapter === chapters[index - 1] + 1) ranges[ranges.length - 1] = `${ranges[ranges.length - 1].split("–")[0]}–${chapter}`;
+      else ranges.push(String(chapter));
+    });
+    return `${getBookName(bookIndex)} ${ranges.join(", ")}`;
+  }).join(", ");
+}
 
 const ordinal = (value: number) => {
   const tens = value % 100;
@@ -63,7 +104,7 @@ function pickChapter(bookIndex: number, raw: number, isRead: (chapter: number) =
   return chapter;
 }
 
-function resolveThirtyThree(journeyDay: number, steps: number, taken: ReadingRef[]): ReadingAssignment {
+function resolveThirtyThree(journeyDay: number, steps: number, taken: ReadingRef[]): SingleAssignment {
   const testament = getDayTestament(journeyDay);
   const list = getTestamentBooks(testament);
   const { digits, chapterDigit, sum } = readDigits(steps);
@@ -89,7 +130,7 @@ function resolveThirtyThree(journeyDay: number, steps: number, taken: ReadingRef
   return { bookIndex, chapter, explanation: { mode: "digits", digits, bookDigit: 0, chapterDigit, lines } };
 }
 
-function resolveEntireBible(journeyDay: number, steps: number, taken: ReadingRef[]): ReadingAssignment {
+function resolveEntireBible(journeyDay: number, steps: number, taken: ReadingRef[]): SingleAssignment {
   const isRead = (bookIndex: number, chapter: number) => taken.some((reading) => reading.bookIndex === bookIndex && reading.chapter === chapter);
   const unreadIn = (bookIndex: number) => Array.from({ length: getBookChapterCount(bookIndex) }, (_, index) => index + 1).some((chapter) => !isRead(bookIndex, chapter));
   const { digits, chapterDigit, sum } = readDigits(steps);
@@ -120,7 +161,7 @@ function resolveEntireBible(journeyDay: number, steps: number, taken: ReadingRef
   return { bookIndex, chapter, explanation: { mode: "digits", digits, bookDigit: 0, chapterDigit, lines } };
 }
 
-function resolveCustomInOrder(plan: JourneyPlan, journeyDay: number, steps: number): ReadingAssignment {
+function resolveCustomInOrder(plan: JourneyPlan, journeyDay: number, steps: number): SingleAssignment {
   const sequence = plan.books.flatMap((name) => {
     const bookIndex = getBookIndex(name);
     return Array.from({ length: getBookChapterCount(bookIndex) }, (_, index) => ({ bookIndex, chapter: index + 1 }));
@@ -128,7 +169,7 @@ function resolveCustomInOrder(plan: JourneyPlan, journeyDay: number, steps: numb
   return resolveInOrder(sequence, journeyDay, steps);
 }
 
-function resolveInOrder(sequence: ReadingRef[], journeyDay: number, steps: number): ReadingAssignment {
+function resolveInOrder(sequence: ReadingRef[], journeyDay: number, steps: number): SingleAssignment {
   const reading = sequence[Math.min(journeyDay, sequence.length) - 1];
   const name = getBookName(reading.bookIndex);
   return {
@@ -146,7 +187,7 @@ function resolveInOrder(sequence: ReadingRef[], journeyDay: number, steps: numbe
   };
 }
 
-function resolveCustomSteps(plan: JourneyPlan, steps: number, taken: ReadingRef[]): ReadingAssignment {
+function resolveCustomSteps(plan: JourneyPlan, steps: number, taken: ReadingRef[]): SingleAssignment {
   const list = plan.books.map(getBookIndex);
   const isRead = (bookIndex: number, chapter: number) => taken.some((reading) => reading.bookIndex === bookIndex && reading.chapter === chapter);
   const unreadIn = (bookIndex: number) => Array.from({ length: getBookChapterCount(bookIndex) }, (_, index) => index + 1).some((chapter) => !isRead(bookIndex, chapter));
@@ -185,7 +226,7 @@ function resolveCustomSteps(plan: JourneyPlan, steps: number, taken: ReadingRef[
 
 // Designed Experience, "Read randomly": like Create a Journey, but only the plan's own chapters count
 // (Every Book Walk reads chapter 1 of each book, so there the steps pick the book only).
-function resolveExperienceSteps(sequence: ReadingRef[], steps: number, taken: ReadingRef[]): ReadingAssignment {
+function resolveExperienceSteps(sequence: ReadingRef[], steps: number, taken: ReadingRef[]): SingleAssignment {
   const books = [...new Set(sequence.map((reading) => reading.bookIndex))];
   const chaptersIn = (bookIndex: number) => sequence.filter((reading) => reading.bookIndex === bookIndex).map((reading) => reading.chapter);
   const isRead = (bookIndex: number, chapter: number) => taken.some((reading) => reading.bookIndex === bookIndex && reading.chapter === chapter);
@@ -240,18 +281,56 @@ function resolveExperienceSteps(sequence: ReadingRef[], steps: number, taken: Re
   return { bookIndex, chapter, explanation: { mode: "digits", digits, bookDigit: 0, chapterDigit, lines } };
 }
 
-// taken = readings already given on other days of this journey.
+// Whole Bible, in chapter order: the day's share of the 1,189 chapters (1 year: Day 1 = Genesis 1–4, Day 2 = Genesis 5–7).
+function resolveBibleInOrder(plan: JourneyPlan, journeyDay: number, steps: number): ReadingAssignment {
+  const day = Math.min(journeyDay, plan.days);
+  const start = getDayChapterStart(plan.days, day);
+  const chapters = bibleSequence.slice(start - 1, start - 1 + getDayChapterCount(plan.days, day));
+  const end = start + chapters.length - 1;
+  const several = chapters.length > 1;
+  return {
+    ...chapters[0],
+    chapters,
+    explanation: {
+      mode: "unlock",
+      digits: String(steps).split(""),
+      bookDigit: null,
+      chapterDigit: null,
+      lines: [
+        { value: "✓", text: several ? `Steps entered — this day's ${chapters.length} chapters are unlocked` : "Steps entered — this day's chapter is unlocked" },
+        { value: `${several ? `${formatCount(start)}–${formatCount(end)}` : formatCount(start)} / ${formatCount(bibleSequence.length)}`, text: `Next in your journey, in order → ${formatReadingRefs(chapters)}` },
+      ],
+    },
+  };
+}
+
+// Whole Bible, randomly: the steps pick the first chapter (Entire Bible rule), then the day reads on from there —
+// through the rest of that book and into the next — skipping chapters already read.
+function resolveBibleSteps(plan: JourneyPlan, journeyDay: number, steps: number, taken: ReadingRef[]): ReadingAssignment {
+  const first = resolveEntireBible(journeyDay, steps, taken);
+  const count = getDayChapterCount(plan.days, Math.min(journeyDay, plan.days));
+  if (count === 1) return withChapters(first);
+  const isRead = (ref: ReadingRef) => taken.some((reading) => reading.bookIndex === ref.bookIndex && reading.chapter === ref.chapter);
+  const startAt = bibleSequence.findIndex((ref) => ref.bookIndex === first.bookIndex && ref.chapter === first.chapter);
+  const chapters: ReadingRef[] = [{ bookIndex: first.bookIndex, chapter: first.chapter }];
+  for (let step = 1; step < bibleSequence.length && chapters.length < count; step += 1) {
+    const next = bibleSequence[(startAt + step) % bibleSequence.length];
+    if (!isRead(next)) chapters.push(next);
+  }
+  const lines = [...first.explanation.lines, { value: `+${chapters.length - 1}`, text: `Your pace reads ${chapters.length} chapters a day → reading on: ${formatReadingRefs(chapters)}` }];
+  return { ...first, chapters, explanation: { ...first.explanation, lines } };
+}
+
+// taken = chapters already given on other days of this journey.
 export function resolveReading(plan: JourneyPlan, journeyDay: number, steps: number, taken: ReadingRef[]): ReadingAssignment {
-  if (plan.type === "automatic") return resolveThirtyThree(journeyDay, steps, taken);
+  if (plan.type === "bible") return plan.order === "in-order" ? resolveBibleInOrder(plan, journeyDay, steps) : resolveBibleSteps(plan, journeyDay, steps, taken);
+  if (plan.type === "automatic") return withChapters(resolveThirtyThree(journeyDay, steps, taken));
   if (plan.type === "designed") {
     const experience = getExperience(plan.experience);
     const sequence = experience ? getExperienceSequence(experience) : [];
-    return plan.order === "in-order" ? resolveInOrder(sequence, journeyDay, steps) : resolveExperienceSteps(sequence, steps, taken);
+    return withChapters(plan.order === "in-order" ? resolveInOrder(sequence, journeyDay, steps) : resolveExperienceSteps(sequence, steps, taken));
   }
-  if (plan.type === "bible") {
-    return plan.order === "in-order" ? resolveCustomInOrder({ ...plan, books: bibleBooks.map((book) => book.name) }, journeyDay, steps) : resolveEntireBible(journeyDay, steps, taken);
-  }
-  return plan.order === "in-order" ? resolveCustomInOrder(plan, journeyDay, steps) : resolveCustomSteps(plan, steps, taken);
+  return withChapters(plan.order === "in-order" ? resolveCustomInOrder(plan, journeyDay, steps) : resolveCustomSteps(plan, steps, taken));
 }
 
 export const describeBookPosition = (bookIndex: number) =>

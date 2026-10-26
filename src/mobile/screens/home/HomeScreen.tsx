@@ -5,7 +5,7 @@ import { useBibleRevision } from "../../data/bible";
 import { getChapter, getDayHighlights } from "../../data/chapters";
 import { getLastCompletedEntry } from "../../data/journal";
 import { formatDayDate, formatShortDate } from "../../data/journeyStore";
-import { formatBookList, formatCount, journeyName, journeyTypeLabels, plural } from "../../data/journeyPlans";
+import { formatBookList, formatCount, getBiblePace, journeyName, journeyTypeLabels, planChaptersPerDay, plural } from "../../data/journeyPlans";
 import { getBookName } from "../../data/bible";
 import { getMilestoneInfo } from "../../data/milestones";
 import { getUnreadCount } from "../../data/notifications";
@@ -55,7 +55,7 @@ export default function HomeScreen({
   const lastHighlights = lastEntry ? getDayHighlights(lastEntry.journeyDay).length : 0;
   const today = getTodayDay();
   const length = getJourneyLength();
-  const journeyLabel = plan.type === "designed" ? journeyName(plan).toUpperCase() : plan.type === "custom" ? formatBookList(plan.books).toUpperCase() : plan.type === "bible" ? "THE WHOLE BIBLE" : `YOUR ${length}-DAY WALK`;
+  const journeyLabel = plan.type === "designed" ? journeyName(plan).toUpperCase() : plan.type === "custom" ? formatBookList(plan.books).toUpperCase() : plan.type === "bible" ? `THE WHOLE BIBLE · ${getBiblePace(plan.pace).years.toUpperCase()}` : `YOUR ${length}-DAY WALK`;
   // Milestone track: 33-Day spans the whole journey; longer journeys show their first milestones (up to Day 33).
   const trackDays = Math.min(length, 33);
   const trackMilestones = getMilestoneDays().filter((day) => day > 1 && day < trackDays).slice(0, 4);
@@ -276,7 +276,7 @@ export default function HomeScreen({
             <AppIcon name="library" />
             <span>
               {plan.type === "bible"
-                ? "Your journey through all 66 books and 1,189 chapters of the Bible."
+                ? `Your journey through all 66 books and 1,189 chapters of the Bible — ${planChaptersPerDay(plan)}.`
                 : `Every chapter you've read across the whole Bible — not just your ${plan.type === "designed" ? journeyName(plan) : plan.type === "custom" ? formatBookList(plan.books) : `${formatCount(length)}-day walk`}.`}
             </span>
           </p>

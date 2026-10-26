@@ -1,8 +1,8 @@
-import { getBookChapterCount, getBookIndex, getVerseCount, OLD_TESTAMENT_BOOKS } from "./bible";
+import { getBookChapterCount, getBookIndex, OLD_TESTAMENT_BOOKS } from "./bible";
 import { bibleBooks } from "./bibleBooks";
 import { getExperience } from "./experiences";
 import type { JourneyType } from "../types";
-import { formatDayDate, getActivePlan, getDayRecord, getJourneyLength, getRecordedDays, getTodayDay, isDayComplete } from "./journeyStore";
+import { formatDayDate, getActivePlan, getDayChapters, getDayRecord, getDayVerseCount, getJourneyLength, getRecordedDays, getTodayDay, isDayComplete } from "./journeyStore";
 
 export { getJourneyLength, getTodayDay, isDayComplete };
 
@@ -83,15 +83,12 @@ export function getPendingDays() {
 
 // Client definition: passage = verse.
 // Total steps = every day with steps entered (today's steps count as soon as they are entered).
-// Total passages = verses of chapters actually completed (reflection saved).
+// Total passages = verses of chapters actually completed (reflection saved) — every chapter of the day.
 export function getJourneyTotals() {
   const stepDays = getRecordedDays();
   const readDays = stepDays.filter(isDayComplete);
   const steps = stepDays.reduce((total, day) => total + (getDayStepCount(day) ?? 0), 0);
-  const passages = readDays.reduce((total, day) => {
-    const reading = getDayRecord(day)?.reading;
-    return total + (reading ? getVerseCount(reading.bookIndex, reading.chapter) : 0);
-  }, 0);
+  const passages = readDays.reduce((total, day) => total + getDayVerseCount(day), 0);
   return {
     steps: steps.toLocaleString("en-US"),
     stepDays: stepDays.length,
@@ -106,9 +103,8 @@ export function getPassagesGrowth() {
   let total = 0;
   return Array.from({ length: getTodayDay() }, (_, index) => {
     const day = index + 1;
-    const reading = getDayRecord(day)?.reading;
     const complete = isDayComplete(day);
-    if (complete && reading) total += getVerseCount(reading.bookIndex, reading.chapter);
+    if (complete) total += getDayVerseCount(day);
     return { day, steps: getDayStepCount(day), total, complete, status: getDayStatus(day) };
   });
 }
@@ -119,12 +115,12 @@ export function getBookProgress() {
   const plan = getActivePlan();
   const bookIndexes = plan.type === "custom" || plan.type === "designed" ? plan.books.map(getBookIndex) : plan.type === "bible" ? bibleBooks.map((_, index) => index) : [];
   const experience = getExperience(plan.experience);
-  const completeReadings = getRecordedDays().filter(isDayComplete).map((day) => getDayRecord(day)!.reading);
-  const todayReading = getDayRecord(getTodayDay())?.reading;
+  const completeReadings = getRecordedDays().filter(isDayComplete).flatMap(getDayChapters);
+  const todayBooks = getDayChapters(getTodayDay()).map((reading) => reading.bookIndex);
   return bookIndexes.map((bookIndex) => {
     const read = new Set(completeReadings.filter((reading) => reading.bookIndex === bookIndex).map((reading) => reading.chapter)).size;
     const total = experience?.books.find((book) => getBookIndex(book.name) === bookIndex)?.chapters.length ?? getBookChapterCount(bookIndex);
-    return { bookIndex, read, total, finished: read === getBookChapterCount(bookIndex), current: todayReading?.bookIndex === bookIndex };
+    return { bookIndex, read, total, finished: read === getBookChapterCount(bookIndex), current: todayBooks.includes(bookIndex) };
   });
 }
 
@@ -134,10 +130,7 @@ const OLD_TESTAMENT_CHAPTERS = bibleBooks.slice(0, OLD_TESTAMENT_BOOKS).reduce((
 const BIBLE_CHAPTERS = bibleBooks.reduce((total, book) => total + book.chapters, 0);
 
 export function getBibleProgress() {
-  const chapters = new Set(getRecordedDays().filter(isDayComplete).map((day) => {
-    const { bookIndex, chapter } = getDayRecord(day)!.reading;
-    return `${bookIndex}:${chapter}`;
-  }));
+  const chapters = new Set(getRecordedDays().filter(isDayComplete).flatMap(getDayChapters).map(({ bookIndex, chapter }) => `${bookIndex}:${chapter}`));
   const readings = [...chapters].map((key) => key.split(":").map(Number) as [number, number]);
   const oldRead = readings.filter(([bookIndex]) => bookIndex < OLD_TESTAMENT_BOOKS).length;
   const newRead = readings.length - oldRead;

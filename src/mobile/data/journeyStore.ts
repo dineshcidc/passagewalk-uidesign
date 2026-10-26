@@ -10,6 +10,8 @@ import { resolveReading, type ReadingAssignment } from "./stepsRule";
 //   33-Day:              Genesis 1 · Matthew 5 · (missed) · Romans 8 pending · today Old Testament
 //   Entire Bible random: Ruth 1 · Galatians 5 · (missed) · Luke 1 pending · today Old Testament
 //   Entire Bible order:  Genesis 1 · Genesis 2 · (missed) · Genesis 4 pending · today Genesis 5
+//     at 1 year (3–4 a day): Genesis 1–4 · 5–7 · (missed) · Genesis 11–14 pending · today Genesis 15–17
+//   Entire Bible random, 1 year: Ruth 1–4 · Galatians 5 – Ephesians 1 · (missed) · Luke 1–4 pending
 //   Own, in order:       chapter 1 · chapter 2 · (missed) · chapter 4 pending · today chapter 5
 //   Own, steps choose:   e.g. Exodus + Leviticus → Leviticus 3 · Exodus 1 · (missed) · Leviticus 7 pending
 //   Designed:            the plan's chapters, in order (Courage Walk: Daniel 1 · 2 · missed · 4 pending) or by steps
@@ -62,9 +64,11 @@ const nowTime = () => new Intl.DateTimeFormat("en-US", { hour: "numeric", minute
 const toNumber = (steps: string) => Number(steps.replace(/,/g, ""));
 
 function assign(journeyDay: number, steps: string) {
-  const taken = [...records.entries()].filter(([day]) => day !== journeyDay).map(([, record]) => record.reading);
+  const taken = [...records.entries()].filter(([day]) => day !== journeyDay).flatMap(([, record]) => record.reading.chapters);
   return resolveReading(plan, journeyDay, toNumber(steps), taken);
 }
+
+const chaptersKey = (reading: ReadingAssignment) => reading.chapters.map((ref) => `${ref.bookIndex}:${ref.chapter}`).join(",");
 
 // Starts a journey on the mock scenario above. Called when setup finishes, on Log In, and from Settings → Change Journey.
 export function activateJourney(nextPlan: JourneyPlan) {
@@ -100,11 +104,17 @@ export function activateJourney(nextPlan: JourneyPlan) {
     if (seed.answers) {
       reflections.set(day, { answers: seed.answers, time: seed.time });
       const count = getVerseCount(reading.bookIndex, reading.chapter);
-      highlights.set(day, seed.highlights ?? [...new Set([1, Math.max(1, Math.ceil(count / 2))])]);
+      // Highlight keys = chapter slot × 1000 + verse (chapters.ts); a several-chapter day also gets one in its last chapter.
+      const lastSlot = reading.chapters.length > 1 ? [(reading.chapters.length - 1) * 1000 + 1] : [];
+      highlights.set(day, [...(seed.highlights ?? [...new Set([1, Math.max(1, Math.ceil(count / 2))])]), ...lastSlot]);
     }
   });
 
-  records.forEach((record) => void loadBook(record.reading.bookIndex));
+  records.forEach((record) => loadDayBooks(record.reading));
+}
+
+function loadDayBooks(reading: ReadingAssignment) {
+  new Set(reading.chapters.map((ref) => ref.bookIndex)).forEach((bookIndex) => void loadBook(bookIndex));
 }
 
 activateJourney(defaultJourneyPlan);
@@ -136,11 +146,15 @@ export function saveDaySteps(journeyDay: number, steps: string) {
     return existing.reading;
   }
   const reading = assign(journeyDay, steps);
-  if (existing && (existing.reading.bookIndex !== reading.bookIndex || existing.reading.chapter !== reading.chapter)) highlights.delete(journeyDay);
+  if (existing && chaptersKey(existing.reading) !== chaptersKey(reading)) highlights.delete(journeyDay);
   records.set(journeyDay, { steps, time: nowTime(), reading });
-  void loadBook(reading.bookIndex);
+  loadDayBooks(reading);
   return reading;
 }
+
+// Every chapter a day reads (several on a faster whole-Bible pace) and their verses — "passages read".
+export const getDayChapters = (journeyDay: number) => records.get(journeyDay)?.reading.chapters ?? [];
+export const getDayVerseCount = (journeyDay: number) => getDayChapters(journeyDay).reduce((total, ref) => total + getVerseCount(ref.bookIndex, ref.chapter), 0);
 
 export function saveDayReflection(journeyDay: number, answers: ReflectionAnswers) {
   reflections.set(journeyDay, { answers, time: nowTime() });

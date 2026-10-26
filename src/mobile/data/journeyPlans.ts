@@ -1,10 +1,10 @@
 import type { AppIconName } from "../components/AppIcon";
-import type { JourneyPlan, JourneyType, ReadingOrder } from "../types";
+import type { BiblePace, JourneyPlan, JourneyType, ReadingOrder } from "../types";
 import { bibleBooks } from "./bibleBooks";
 import { getExperience, type Experience } from "./experiences";
 
 export const THIRTY_THREE_DAY_LENGTH = 33;
-// 66 books · 1,189 chapters — one chapter a day.
+// 66 books · 1,189 chapters — read at the chosen pace (one chapter a day = about 3 years).
 export const BIBLE_CHAPTER_COUNT = bibleBooks.reduce((total, book) => total + book.chapters, 0);
 
 // Both "Your Own" and "Whole Bible" journeys are made with Create a Journey.
@@ -41,10 +41,55 @@ export function getChapterTotal(books: string[]) {
   return books.reduce((total, name) => total + getBookChapters(name), 0);
 }
 
-export function createJourneyPlan(type: Exclude<JourneyType, "designed">, books: string[] = [], order: ReadingOrder = "in-order"): JourneyPlan {
+// Whole Bible pace (review call 4, Kathy: "give them the option… finish in a year or three years if they read one chapter").
+export const biblePaces: { value: BiblePace; days: number; title: string; years: string; body: string; tag?: string }[] = [
+  { value: "1-year", days: 365, title: "Finish in 1 year", years: "1 year", body: "Three or four chapters a day — the classic Bible-in-a-year pace.", tag: "POPULAR" },
+  { value: "2-years", days: 730, title: "Finish in 2 years", years: "2 years", body: "One or two chapters a day — a steady middle pace." },
+  { value: "3-years", days: BIBLE_CHAPTER_COUNT, title: "Finish in about 3 years", years: "About 3 years", body: "One chapter a day — a gentle walk through every chapter." },
+];
+export const DEFAULT_BIBLE_PACE: BiblePace = "1-year";
+export const getBiblePace = (pace: BiblePace = DEFAULT_BIBLE_PACE) => biblePaces.find((option) => option.value === pace)!;
+
+// Chapters spread evenly over the days: 1,189 over 365 = 94 days of 4 and 271 of 3 (Day 1 reads 4).
+export function getDayChapterCount(days: number, journeyDay: number, total = BIBLE_CHAPTER_COUNT) {
+  return Math.ceil((journeyDay * total) / days) - Math.ceil(((journeyDay - 1) * total) / days);
+}
+// First chapter (1-based, Genesis 1 = 1) a day reads, counted through the whole Bible.
+export const getDayChapterStart = (days: number, journeyDay: number, total = BIBLE_CHAPTER_COUNT) => Math.ceil(((journeyDay - 1) * total) / days) + 1;
+
+// "3–4 chapters a day", "1–2 chapters a day", "1 chapter a day".
+export function chaptersPerDayLabel(days: number) {
+  const counts = Array.from({ length: Math.min(days, 12) }, (_, index) => getDayChapterCount(days, index + 1));
+  const min = Math.min(...counts);
+  const max = Math.max(...counts);
+  return min === max ? `${plural(min, "chapter")} a day` : `${min}–${max} chapters a day`;
+}
+
+// A journey's daily reading in words: "3–4 chapters a day" (whole Bible at its pace) or "one chapter a day".
+export const planChaptersPerDay = (plan: JourneyPlan) => (plan.type === "bible" ? chaptersPerDayLabel(plan.days) : "one chapter a day");
+// How many chapters a given day reads (several only on a faster whole-Bible pace).
+export const planDayChapterCount = (plan: JourneyPlan, journeyDay: number) => (plan.type === "bible" ? getDayChapterCount(plan.days, Math.min(journeyDay, plan.days)) : 1);
+
+// Whole Bible chapter N (1-based) → "Genesis 4"; a day's run → "Genesis 1–4" or "Genesis 49 – Exodus 2".
+function bibleChapterAt(position: number) {
+  let left = position;
+  for (const book of bibleBooks) {
+    if (left <= book.chapters) return { book: book.name, chapter: left };
+    left -= book.chapters;
+  }
+  return { book: "Revelation", chapter: 22 };
+}
+export function formatChapterRun(start: number, count: number) {
+  const first = bibleChapterAt(start);
+  const last = bibleChapterAt(start + count - 1);
+  if (count === 1) return `${first.book} ${first.chapter}`;
+  return first.book === last.book ? `${first.book} ${first.chapter}–${last.chapter}` : `${first.book} ${first.chapter} – ${last.book} ${last.chapter}`;
+}
+
+export function createJourneyPlan(type: Exclude<JourneyType, "designed">, books: string[] = [], order: ReadingOrder = "in-order", pace: BiblePace = DEFAULT_BIBLE_PACE): JourneyPlan {
   if (type === "automatic") return { type, books: [], order: "steps", days: THIRTY_THREE_DAY_LENGTH };
-  // Entire Bible: in chapter order (Genesis → Revelation) or randomly, guided by the steps.
-  if (type === "bible") return { type, books: [], order, days: BIBLE_CHAPTER_COUNT };
+  // Entire Bible: in chapter order (Genesis → Revelation) or randomly, guided by the steps, at the chosen pace.
+  if (type === "bible") return { type, books: [], order, days: getBiblePace(pace).days, pace };
   const sorted = sortBooks(books);
   return { type, books: sorted, order, days: getChapterTotal(sorted) };
 }

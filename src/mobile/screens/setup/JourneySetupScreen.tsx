@@ -5,16 +5,17 @@ import BibleBooksGrid from "../../components/BibleBooksGrid";
 import BibleVersionList from "../../components/BibleVersionList";
 import { BIBLE_VERSION, getBookIndex, getBookName } from "../../data/bible";
 import { EXPERIENCE_LENGTHS, experiences, formatBookChapters, getExperience, getExperienceSequence, type Experience } from "../../data/experiences";
-import { BIBLE_CHAPTER_COUNT, createExperiencePlan, createJourneyPlan, experienceThrough, formatBookList, formatCount, getChapterPreview, getChapterTotal, plural, sortBooks, THIRTY_THREE_DAY_LENGTH } from "../../data/journeyPlans";
+import { BIBLE_CHAPTER_COUNT, biblePaces, chaptersPerDayLabel, createExperiencePlan, createJourneyPlan, DEFAULT_BIBLE_PACE, experienceThrough, formatBookList, formatChapterRun, formatCount, getBiblePace, getChapterPreview, getChapterTotal, getDayChapterCount, getDayChapterStart, plural, sortBooks, THIRTY_THREE_DAY_LENGTH } from "../../data/journeyPlans";
 import { getMilestoneDaysFor } from "../../data/progress";
 import type { ReadingRef } from "../../data/stepsRule";
-import type { JourneyPlan, JourneyType, ReadingOrder } from "../../types";
+import type { BiblePace, JourneyPlan, JourneyType, ReadingOrder } from "../../types";
 
 // choose = the 3 ways to walk (review call 3: 33-Day Walk · Designed Experience · Create a Journey);
 // experience → plan = Designed Experience list, then the chosen plan's details;
 // build = Create a Journey → pick books or read the whole Bible;
+// pace = whole Bible only: finish in 1, 2 or about 3 years (review call 4);
 // bible = the Bible version, last step for every journey (review call 3: "where they select the version").
-type SetupStep = "choose" | "experience" | "plan" | "build" | "books" | "order" | "bible";
+type SetupStep = "choose" | "experience" | "plan" | "build" | "books" | "order" | "pace" | "bible";
 type WalkChoice = "automatic" | "designed" | "create";
 
 const stepLabels: Record<SetupStep, string> = {
@@ -24,16 +25,17 @@ const stepLabels: Record<SetupStep, string> = {
   build: "Create a journey",
   books: "Your books",
   order: "Your reading order",
+  pace: "Your pace",
   bible: "Your Bible",
 };
 
 // Header step count includes the "journey ready" screen that follows: 33-Day Walk = Bible version + ready (3 steps),
-// Designed Experience adds list + details + reading order (6 steps), Create a Journey adds build + reading order
-// (whole Bible, 5 steps) or build + books + reading order (6 steps).
+// Designed Experience adds list + details + reading order (6 steps), Create a Journey adds build + reading order + pace
+// (whole Bible, 6 steps) or build + books + reading order (6 steps).
 function SetupHeader({ step, choice, journeyType, askVersion, onBack }: { step: SetupStep; choice: WalkChoice; journeyType: JourneyType; askVersion: boolean; onBack: () => void }) {
   const route: SetupStep[] = choice === "automatic" ? ["choose"]
     : choice === "designed" ? ["choose", "experience", "plan", "order"]
-      : journeyType === "bible" ? ["choose", "build", "order"] : ["choose", "build", "books", "order"];
+      : journeyType === "bible" ? ["choose", "build", "order", "pace"] : ["choose", "build", "books", "order"];
   const steps: SetupStep[] = askVersion ? [...route, "bible"] : route;
   const number = String(steps.indexOf(step) + 1).padStart(2, "0");
   const total = String(steps.length + 1).padStart(2, "0");
@@ -78,18 +80,26 @@ const buildOptions: ChoiceCard<"custom" | "bible">[] = [
     value: "custom",
     icon: "book",
     title: "Pick your books",
-    body: "Choose one or more books. Their chapters set the length of your walk.",
+    body: "Choose one or more books, one chapter a day. Their chapters set the length of your walk.",
     meta: ["YOUR BOOKS", "EXODUS + LEVITICUS = 67 DAYS"],
   },
   {
     value: "bible",
     icon: "library",
     title: "Read the whole Bible",
-    body: "All 66 books, one chapter a day, in chapter order or randomly as your steps choose.",
-    meta: ["66 BOOKS", `${formatCount(BIBLE_CHAPTER_COUNT)} DAYS · ABOUT 3 YEARS`],
+    body: "All 66 books at your own pace — finish in 1, 2 or about 3 years, in chapter order or as your steps choose.",
+    meta: ["66 BOOKS", "1 TO 3 YEARS · YOUR PACE"],
     tag: "ALL 66",
   },
 ];
+
+// Pace preview: the first two days' readings. In chapter order they are known ("Genesis 1–4");
+// randomly, the steps pick the book, so only the day's chapter count is shown.
+const pacePreview = (days: number, order: ReadingOrder) =>
+  [1, 2].map((day) => {
+    const count = getDayChapterCount(days, day);
+    return `Day ${day} · ${order === "in-order" ? formatChapterRun(getDayChapterStart(days, day), count) : plural(count, "chapter")}`;
+  });
 
 function ChoiceList<T extends string>({ options, selected, onSelect }: { options: ChoiceCard<T>[]; selected: T; onSelect: (value: T) => void }) {
   return (
@@ -231,6 +241,7 @@ export default function JourneySetupScreen({
   const [query, setQuery] = useState("");
   const [selectedBooks, setSelectedBooks] = useState<string[]>(initialPlan?.type === "custom" ? initialPlan.books : []);
   const [order, setOrder] = useState<ReadingOrder>(initialPlan && initialPlan.type !== "automatic" ? initialPlan.order : "in-order");
+  const [pace, setPace] = useState<BiblePace>(initialPlan?.pace ?? DEFAULT_BIBLE_PACE);
 
   const filteredBooks = useMemo(() => bibleBooks.filter((book) => {
     const matchesTestament = testament === "All" || book.testament === testament;
@@ -244,7 +255,8 @@ export default function JourneySetupScreen({
   };
 
   const goBack = () => {
-    if (step === "bible") setStep(choice === "automatic" ? "choose" : "order");
+    if (step === "bible") setStep(choice === "automatic" ? "choose" : choice === "create" && journeyType === "bible" ? "pace" : "order");
+    else if (step === "pace") setStep("order");
     else if (step === "order") setStep(choice === "designed" ? "plan" : journeyType === "bible" ? "build" : "books");
     else if (step === "plan") setStep("experience");
     else if (step === "books") setStep("build");
@@ -255,7 +267,7 @@ export default function JourneySetupScreen({
   const finish = () => {
     if (choice === "automatic") onComplete(createJourneyPlan("automatic"));
     else if (choice === "designed" && experience) onComplete(createExperiencePlan(experience, order));
-    else onComplete(journeyType === "bible" ? createJourneyPlan("bible", [], order) : createJourneyPlan("custom", selectedBooks, order));
+    else onComplete(journeyType === "bible" ? createJourneyPlan("bible", [], order, pace) : createJourneyPlan("custom", selectedBooks, order));
   };
   // The Bible version is a reading preference, so only first-time setup asks; Change Journey keeps it (Settings has its own row).
   const toVersionOrFinish = () => (askVersion ? setStep("bible") : finish());
@@ -283,6 +295,9 @@ export default function JourneySetupScreen({
     } else if (step === "books") {
       setStep("order");
     } else if (step === "order") {
+      if (choice === "create" && journeyType === "bible") setStep("pace");
+      else toVersionOrFinish();
+    } else if (step === "pace") {
       toVersionOrFinish();
     } else {
       finish();
@@ -311,7 +326,7 @@ export default function JourneySetupScreen({
   const continueLabel = step === "books"
     ? selectedBooks.length ? `Continue with ${formatCount(chapterTotal)} ${chapterTotal === 1 ? "day" : "days"}` : "Select at least one book"
     : step === "experience" ? experience ? `View ${experience.name}` : "Choose a walk"
-      : step === "plan" ? "Choose This Walk" : step === "bible" ? `Continue with ${BIBLE_VERSION.short}` : "Continue";
+      : step === "plan" ? "Choose This Walk" : step === "pace" ? `Continue with ${plural(getBiblePace(pace).days, "day")}` : step === "bible" ? `Continue with ${BIBLE_VERSION.short}` : "Continue";
   const continueDisabled = (step === "books" && selectedBooks.length === 0) || (step === "experience" && !experience);
 
   return (
@@ -331,7 +346,7 @@ export default function JourneySetupScreen({
 
       {step === "build" && (
         <div className="setup-content journey-options-content" key="build">
-          <div className="setup-heading"><span>CREATE A JOURNEY</span><h1>What would you like to read?</h1><p>Every chapter is one day of your walk. You can switch journeys later in Settings.</p></div>
+          <div className="setup-heading"><span>CREATE A JOURNEY</span><h1>What would you like to read?</h1><p>Your own books, or every book of the Bible. You can switch journeys later in Settings.</p></div>
           <ChoiceList options={buildOptions} selected={journeyType === "bible" ? "bible" : "custom"} onSelect={setJourneyType} />
         </div>
       )}
@@ -372,7 +387,7 @@ export default function JourneySetupScreen({
               <>
                 <span>66 BOOKS · {formatCount(BIBLE_CHAPTER_COUNT)} CHAPTERS</span>
                 <h1>How should we walk through the Bible?</h1>
-                <p>One chapter a day through the whole Bible. You can switch journeys later in Settings.</p>
+                <p>Choose the order first — next, how fast you'd like to finish. You can switch journeys later in Settings.</p>
               </>
             ) : (
               <>
@@ -396,6 +411,38 @@ export default function JourneySetupScreen({
                     <span key={reading}>{index > 0 && <AppIcon name="chevron" />}<b>{reading}</b></span>
                   ))}
                   {(isDesigned ? experience.days > 3 : isBible || chapterTotal > 3) && <span className="order-preview-more">…</span>}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {step === "pace" && (
+        <div className="setup-content setup-order-content setup-pace-content" key="pace">
+          <div className="setup-heading">
+            <span>THE WHOLE BIBLE · {order === "in-order" ? "IN CHAPTER ORDER" : "RANDOMLY"}</span>
+            <h1>How fast do you want to finish?</h1>
+            <p>Pick a daily pace for all {formatCount(BIBLE_CHAPTER_COUNT)} chapters. Each day of your walk reads that many.</p>
+          </div>
+          <div className="journey-choice-list order-choice-list">
+            {biblePaces.map((option) => (
+              <button className={`journey-choice-card pace-choice-card ${pace === option.value ? "selected" : ""}`} onClick={() => setPace(option.value)} key={option.value} aria-pressed={pace === option.value}>
+                <div className="journey-choice-top">
+                  <div className="journey-choice-icon pace-per-day" aria-hidden="true">
+                    <strong>{chaptersPerDayLabel(option.days).split(" ")[0]}</strong>
+                    <span>CH / DAY</span>
+                  </div>
+                  <div className="journey-choice-title"><strong>{option.title}</strong>{option.tag && <em>{option.tag}</em>}</div>
+                  <span className="journey-radio"><i></i></span>
+                </div>
+                <p>{option.body}</p>
+                <div className="journey-choice-meta"><span>{plural(option.days, "DAY", "DAYS")}</span><i></i><span>{chaptersPerDayLabel(option.days).toUpperCase()}</span></div>
+                <div className="order-preview" aria-label="First days">
+                  {pacePreview(option.days, order).map((reading, index) => (
+                    <span key={reading}>{index > 0 && <AppIcon name="chevron" />}<b>{reading}</b></span>
+                  ))}
+                  <span className="order-preview-more">…</span>
                 </div>
               </button>
             ))}

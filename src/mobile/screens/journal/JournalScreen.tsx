@@ -3,7 +3,7 @@ import AppIcon from "../../components/AppIcon";
 import BottomNavigation from "../../components/BottomNavigation";
 import HighlightedVersesCard from "../../components/HighlightedVersesCard";
 import DailyFlowScreen, { type DailyFlowEntry } from "../home/DailyFlowScreen";
-import { getDayHighlights, getHighlightGroups, getKeyVerse, type HighlightGroup } from "../../data/chapters";
+import { getChapter, getDayHighlights, getHighlightGroups, getKeyVerse, type HighlightGroup } from "../../data/chapters";
 import { deleteJournalEntry, getVisibleJournalEntries, type JournalEntry } from "../../data/journal";
 import { reflectionQuestions } from "../../data/reflections";
 import type { MainTab } from "../../types";
@@ -24,7 +24,7 @@ function JournalEntryDetails({
   const isInProgress = entry.status === "in-progress";
   const keyVerse = getKeyVerse(entry.journeyDay);
   const highlights = getDayHighlights(entry.journeyDay);
-  const chapterNumber = entry.reference.split(" ").pop();
+  const several = (getChapter(entry.journeyDay)?.parts.length ?? 1) > 1;
   // Days 1–2 are seeded history; from Day 3 on (caught-up Day 3, pending Day 4, today) the daily flow can be reopened.
   const canEdit = entry.journeyDay >= 3;
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -53,10 +53,10 @@ function JournalEntryDetails({
           {keyVerse && <blockquote>“{keyVerse}”</blockquote>}
         </section>
 
-        {isInProgress && <HighlightedVersesCard className="journal-detail-highlights" reference={entry.reference} verses={highlights} onReadChapter={onReadChapter} />}
+        {isInProgress && <HighlightedVersesCard className="journal-detail-highlights" reference={entry.reference} verses={highlights} onReadChapter={onReadChapter} readLabel={several ? "Read Chapters" : "Read Chapter"} />}
 
         {!isInProgress && highlights.length > 0 && (
-          <HighlightedVersesCard className="journal-completed-highlights" reference={entry.reference} verses={highlights} verseLabel={(verse) => `${chapterNumber}:${verse.number}`} />
+          <HighlightedVersesCard className="journal-completed-highlights" reference={entry.reference} verses={highlights} verseLabel={(verse) => verse.label} />
         )}
 
         <section className="journal-reflections">
@@ -145,8 +145,8 @@ function JournalHighlights({ groups, onBack }: { groups: HighlightGroup[]; onBac
                 </header>
                 {openDay === group.journeyDay && <div>
                   {group.verses.map((verse) => (
-                    <div className="journal-highlight-verse" key={verse.number}>
-                      <span>{group.reference.split(" ").pop()}:{verse.number}</span>
+                    <div className="journal-highlight-verse" key={verse.key}>
+                      <span>{verse.label}</span>
                       <p>{verse.text}</p>
                     </div>
                   ))}

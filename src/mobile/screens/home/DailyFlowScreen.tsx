@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AppIcon from "../../components/AppIcon";
 import BibleVersionList from "../../components/BibleVersionList";
 import HighlightedVersesCard from "../../components/HighlightedVersesCard";
@@ -7,7 +7,7 @@ import StepsLedCard from "../../components/StepsLedCard";
 import { getBookProgress, getJourneyLength, getMilestoneDays, getUnlockedMilestones } from "../../data/progress";
 import { BIBLE_VERSION, useBibleRevision } from "../../data/bible";
 import { getChapter, saveDayHighlights } from "../../data/chapters";
-import { formatDayDate, getActivePlan, getDayRecord, getHighlightNumbers, getRecordedDays, getTodayDay } from "../../data/journeyStore";
+import { formatDayDate, getActivePlan, getDayChapters, getDayRecord, getHighlightNumbers, getRecordedDays, getTodayDay } from "../../data/journeyStore";
 import { getDayReflection, reflectionQuestions, saveDayReflection, saveDaySteps, type ReflectionAnswers } from "../../data/reflections";
 
 export type DailyFlowEntry = "entry" | "reading" | "reflection";
@@ -55,10 +55,14 @@ export default function DailyFlowScreen({
   const [reflectionSource, setReflectionSource] = useState<"home" | "ready" | "reading">(initialPhase === "reflection" ? "home" : "ready");
   const [reflectionSaved, setReflectionSaved] = useState(false);
   const [answers, setAnswers] = useState<ReflectionAnswers>(() => savedReflection?.answers ?? ["", "", ""]);
+  // Verse keys (chapters.ts): plain verse numbers on a one-chapter day, chapter slot × 1000 + verse otherwise.
   const [highlightedVerses, setHighlightedVerses] = useState<number[]>(() => getHighlightNumbers(journeyDay));
   const [readingReturn, setReadingReturn] = useState<"reflection" | null>(null);
   const [celebrations, setCelebrations] = useState<Celebration[]>([]);
   const [versionSheet, setVersionSheet] = useState(false);
+  // Whole Bible at a faster pace: the Reading screen shows one of the day's chapters at a time.
+  const [activeSlot, setActiveSlot] = useState(0);
+  const readingContent = useRef<HTMLElement>(null);
 
   const saveReflection = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -109,9 +113,26 @@ export default function DailyFlowScreen({
   const dayLabel = `DAY ${String(journeyDay).padStart(2, "0")}`;
   const verseCount = chapter?.verseCount ?? 0;
   const reference = chapter?.reference ?? "";
-  const selectedVerses = verses.filter((verse) => highlightedVerses.includes(verse.number));
+  const selectedVerses = verses.filter((verse) => highlightedVerses.includes(verse.key));
+  const parts = chapter?.parts ?? [];
+  const several = parts.length > 1;
+  const activePart = parts[Math.min(activeSlot, Math.max(parts.length - 1, 0))];
+  const partVerses = several ? activePart?.verses ?? null : chapter?.verses ?? null;
+  const crossesBooks = new Set(parts.map((part) => part.bookIndex)).size > 1;
+  // Reflection rule: a highlighted verse in every chapter of the day (one-chapter day: at least one verse),
+  // so a several-chapter day can't be reflected on after reading only its first chapter.
+  const markedSlots = new Set(selectedVerses.map((verse) => verse.slot));
+  const unmarkedParts = parts.filter((part) => !markedSlots.has(part.slot));
+  const canReflect = several ? unmarkedParts.length === 0 : selectedVerses.length > 0;
+  const unmarkedNames = unmarkedParts.map((part) => (crossesBooks ? part.reference : `Chapter ${part.chapter}`));
+  const unmarkedList = unmarkedNames.length > 1 ? `${unmarkedNames.slice(0, -1).join(", ")} and ${unmarkedNames[unmarkedNames.length - 1]}` : unmarkedNames[0] ?? "";
   // Books read on other days, shown on the 66-book grid next to today's book.
-  const visitedBooks = getRecordedDays().filter((day) => day !== journeyDay).map((day) => getDayRecord(day)!.reading.bookIndex);
+  const visitedBooks = getRecordedDays().filter((day) => day !== journeyDay).flatMap((day) => getDayChapters(day).map((reading) => reading.bookIndex));
+
+  const openSlot = (slot: number) => {
+    setActiveSlot(slot);
+    readingContent.current?.scrollTo({ top: 0 });
+  };
 
   // Highlights save as soon as a verse is tapped, so Journal sees them even before the reflection is saved.
   useEffect(() => {
@@ -122,14 +143,15 @@ export default function DailyFlowScreen({
     saveDaySteps(journeyDay, formattedSteps);
     // New steps can lead to a different chapter, which starts with no highlights.
     setHighlightedVerses(getHighlightNumbers(journeyDay));
+    setActiveSlot(0);
     setPhase("generating");
   };
 
-  const toggleVerse = (verseNumber: number) => {
+  const toggleVerse = (verseKey: number) => {
     setReflectionSaved(false);
-    setHighlightedVerses((current) => current.includes(verseNumber)
-      ? current.filter((number) => number !== verseNumber)
-      : [...current, verseNumber].sort((a, b) => a - b));
+    setHighlightedVerses((current) => current.includes(verseKey)
+      ? current.filter((key) => key !== verseKey)
+      : [...current, verseKey].sort((a, b) => a - b));
   };
 
   const openChapterFromReflection = () => {
@@ -154,9 +176,11 @@ export default function DailyFlowScreen({
     setPhase("reflection");
   };
 
+  // Copies the highlights (all of the day's chapters), else the chapter on screen.
   const copyPassage = async () => {
-    const versesToCopy = selectedVerses.length ? selectedVerses : verses;
-    await navigator.clipboard?.writeText(`${reference}\n${versesToCopy.map((verse) => `${verse.number} ${verse.text}`).join("\n")}`);
+    const versesToCopy = selectedVerses.length ? selectedVerses : partVerses ?? [];
+    const title = selectedVerses.length ? reference : activePart?.reference ?? reference;
+    await navigator.clipboard?.writeText(`${title}\n${versesToCopy.map((verse) => `${selectedVerses.length ? verse.tag : verse.number} ${verse.text}`).join("\n")}`);
     setPassageCopied(true);
     window.setTimeout(() => setPassageCopied(false), 1800);
   };
@@ -192,7 +216,7 @@ export default function DailyFlowScreen({
           <p className="passage-ready-steps">{chapter.explanation.mode === "unlock" ? "Unlocked by" : "Based on"} your {formattedSteps} {Number(stepValue) === 1 ? "step" : "steps"} {isToday ? "today" : `on ${shortDate}`}</p>
           <StepsLedCard chapter={chapter} visitedBooks={visitedBooks} isToday={isToday} />
           <div className="passage-ready-actions">
-            <button className="passage-read-button" onClick={() => setPhase("reading")}><AppIcon name="book" />Read Chapter</button>
+            <button className="passage-read-button" onClick={() => { openSlot(0); setPhase("reading"); }}><AppIcon name="book" />{several ? "Read Chapters" : "Read Chapter"}</button>
             <button className="passage-reflect-button" onClick={() => { setReflectionSource("ready"); setPhase("reflection"); }}><AppIcon name="journal" />Write Reflection</button>
           </div>
           <button className="passage-later-button" onClick={onBack}>Do this later</button>
@@ -207,7 +231,7 @@ export default function DailyFlowScreen({
       <div className="scripture-reading-screen">
         <header className="scripture-reading-header">
           <button className="scripture-reading-back" onClick={leaveReading} aria-label="Back"><AppIcon name="back" /></button>
-          <div><strong>{reference}</strong><span>{verseCount} VERSES · {chapter.testament} · {BIBLE_VERSION.short}</span></div>
+          <div><strong>{reference}</strong><span>{several ? `${parts.length} CHAPTERS · ${verseCount} VERSES` : `${verseCount} VERSES · ${chapter.testament}`} · {BIBLE_VERSION.short}</span></div>
           <div className="scripture-reading-actions">
             <button className={passageCopied ? "active" : ""} onClick={copyPassage} aria-label={passageCopied ? "Passage copied" : "Copy passage"}>
               {passageCopied ? (
@@ -219,24 +243,39 @@ export default function DailyFlowScreen({
           </div>
         </header>
 
-        <main className="scripture-reading-content">
+        <main className="scripture-reading-content" ref={readingContent}>
           <div className="scripture-reading-label"><span>PASSAGE WALK</span><i></i><span>{dayLabel}</span></div>
-          <h1>{reference}</h1>
+          <h1>{several ? activePart.reference : reference}</h1>
           <button className="scripture-reading-version" onClick={() => setVersionSheet(true)} aria-label={`${BIBLE_VERSION.name}. Change Bible version`}>
             <AppIcon name="book" />{BIBLE_VERSION.name}<AppIcon name="chevron" />
           </button>
-          <p className="scripture-reading-intro">Tap any verse to highlight what speaks to you.</p>
+
+          {/* Several chapters today: one tab each (a dot = highlights in it); the list shows the chosen one. */}
+          {several && (
+            <div className="scripture-chapter-tabs" role="tablist" aria-label="Today's chapters">
+              {parts.map((part) => {
+                const marked = selectedVerses.some((verse) => verse.slot === part.slot);
+                return (
+                  <button className={part.slot === activePart.slot ? "active" : ""} role="tab" aria-selected={part.slot === activePart.slot} onClick={() => openSlot(part.slot)} key={part.slot}>
+                    {crossesBooks ? part.reference : `Chapter ${part.chapter}`}
+                    {marked && <i aria-label="has highlights"></i>}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+          <p className="scripture-reading-intro">{several ? `Chapter ${activePart.slot + 1} of ${parts.length} · ` : ""}Tap any verse to highlight what speaks to you.</p>
 
           <div className="scripture-chapter-list">
-            {chapter.verses === null && <p className="scripture-loading">Opening {reference}…</p>}
-            {verses.map((verse) => {
-              const highlighted = highlightedVerses.includes(verse.number);
+            {partVerses === null && <p className="scripture-loading">Opening {several ? activePart.reference : reference}…</p>}
+            {(partVerses ?? []).map((verse) => {
+              const highlighted = highlightedVerses.includes(verse.key);
               return (
                 <button
                   className={`scripture-chapter-verse ${highlighted ? "highlighted" : ""}`}
-                  onClick={() => toggleVerse(verse.number)}
+                  onClick={() => toggleVerse(verse.key)}
                   aria-pressed={highlighted}
-                  key={verse.number}
+                  key={verse.key}
                 >
                   <span>{verse.number}</span>
                   <p>{verse.text}</p>
@@ -244,11 +283,34 @@ export default function DailyFlowScreen({
               );
             })}
           </div>
+
+          {several && (activePart.slot < parts.length - 1 ? (
+            <button className="scripture-next-chapter" onClick={() => openSlot(activePart.slot + 1)}>
+              <span>NEXT CHAPTER · {activePart.slot + 2} OF {parts.length}</span>
+              <strong>{parts[activePart.slot + 1].reference}</strong>
+              <AppIcon name="chevron" />
+            </button>
+          ) : (
+            canReflect
+              ? <p className="scripture-chapters-done"><AppIcon name="check" />That's all {parts.length} chapters for {isToday ? "today" : `Day ${journeyDay}`} — write your reflection when you're ready.</p>
+              : <p className="scripture-chapters-done waiting"><AppIcon name="info" />Highlight a verse in {unmarkedList} to write your reflection.</p>
+          ))}
         </main>
 
         <div className="scripture-highlight-bar">
-          <div><strong>{selectedVerses.length}</strong><span>{selectedVerses.length === 1 ? "verse highlighted" : "verses highlighted"}</span></div>
-          <button onClick={reflectFromReading}><AppIcon name="journal" />Write Reflection</button>
+          {/* Same rule as Save Reflection: a highlighted verse in every chapter of the day. */}
+          {several ? (
+            <div>
+              <strong>{markedSlots.size}<small> / {parts.length}</small></strong>
+              <span>{canReflect ? "chapters highlighted" : "Highlight a verse in each chapter to reflect"}</span>
+            </div>
+          ) : (
+            <div>
+              <strong>{selectedVerses.length}</strong>
+              <span>{selectedVerses.length === 0 ? "Highlight a verse to reflect" : selectedVerses.length === 1 ? "verse highlighted" : "verses highlighted"}</span>
+            </div>
+          )}
+          <button onClick={reflectFromReading} disabled={!canReflect}><AppIcon name="journal" />Write Reflection</button>
         </div>
 
         {/* Version pill → change the Bible version without leaving the chapter. */}
@@ -280,7 +342,7 @@ export default function DailyFlowScreen({
         </header>
 
         <form className="reflection-form" onSubmit={saveReflection}>
-          <HighlightedVersesCard reference={reference} verses={selectedVerses} onReadChapter={openChapterFromReflection} />
+          <HighlightedVersesCard reference={reference} verses={selectedVerses} onReadChapter={openChapterFromReflection} readLabel={several ? "Read Chapters" : "Read Chapter"} />
           {reflectionQuestions.map((question, index) => (
             <label key={question.label}>
               <span>{question.label}</span>
@@ -298,8 +360,8 @@ export default function DailyFlowScreen({
 
           {/* A reflection needs at least one highlighted verse (pending client confirmation). */}
           <div className="reflection-save-dock">
-            {selectedVerses.length === 0 && <p>Highlight at least one verse to save your reflection.</p>}
-            <button className={`reflection-save-button ${reflectionSaved ? "saved" : ""}`} type="submit" disabled={selectedVerses.length === 0}>
+            {!canReflect && <p>{several ? `Highlight a verse in ${unmarkedList} to save your reflection.` : "Highlight at least one verse to save your reflection."}</p>}
+            <button className={`reflection-save-button ${reflectionSaved ? "saved" : ""}`} type="submit" disabled={!canReflect}>
               {reflectionSaved ? (
                 <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m4 9 3 3 7-7" /></svg>
               ) : <AppIcon name="journal" />}
@@ -333,7 +395,7 @@ export default function DailyFlowScreen({
 
           <div className="reflection-success-summary">
             <div><span>Steps Entered</span><strong>{formattedSteps}</strong></div>
-            <div><span>Chapter</span><strong>{reference}</strong></div>
+            <div><span>{several ? "Chapters" : "Chapter"}</span><strong>{reference}</strong></div>
             <div><span>Passage Read</span><strong>{verseCount} verses</strong></div>
             <div><span>Verses Highlighted</span><strong>{selectedVerses.length}</strong></div>
             <div><span>Date</span><strong>{currentDate}</strong></div>

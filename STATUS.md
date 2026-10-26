@@ -1,6 +1,20 @@
 # Passage Walk — Status
 
-**Last updated:** 2026-10-22 (day close)
+**Last updated:** 2026-10-26
+
+## ▶️ 2026-10-26 — Review call 4 (Fri Oct 23): client accepted ALL UI + flows → 2 new works
+
+Transcript: `Client-call/Review-calls/Review-call-4/Review-call-4-transcript.md`. Kathy's list: `Review-call-4/PW Targeted Bible List.pdf`.
+- **Work 1 (next) — Designed Experience = Kathy's "same chapter count" algorithm**: books with the same number of chapters grouped (Obadiah + Philemon + 2 John + 3 John + Jude = 5-day, Haggai = 2-day, 3-chapter books ×7 = 21-day …, all = 1,189 chapters ≈ 3 years). Replaces our 7 placeholder walks in `data/experiences.ts`. Badges: Kathy — no separate badge set per experience (Day 3 = Resurrection Walk everywhere) + continuity badges ("70 days of Passage Walk") — decide with Work 1.
+- **Work 2 ✅ DONE — Whole Bible pace** (Dinesh idea, Kathy approved): Finish in 1 year (365 days, 3–4 chapters a day, POPULAR default) / 2 years (730, 1–2) / about 3 years (1,189, 1). Chapters spread evenly (1 year = 94 days × 4 + 271 × 3).
+  - Setup: whole Bible card "1 TO 3 YEARS · YOUR PACE" → reading order → 🆕 **Your pace** step ("How fast do you want to finish?", ch/day tile + Day 1/2 preview) → version → You're set (365 DAYS, Pace row). Header 06 steps (Change Journey 05).
+  - Daily: in chapter order = day's share of Genesis 1 → Revelation 22 (Day 5 = Genesis 15–17); randomly = steps pick the first chapter, day reads on (skips read chapters). Passage Ready chapter list + "Read Chapters"; Reading = chapter tabs (gold dot = highlights) + "Next chapter" card + "That's all 3 chapters" note; highlights keyed per chapter (15:1, 16:2); Reflection Saved "Chapters Genesis 15–17".
+  - Rest: Home band "THE WHOLE BIBLE · 1 YEAR", totals / Bible progress / books count every chapter; Journey type line + "7 of 1,189 chapters read" (bug fix: was plan.days); Settings Length + Pace rows; Welcome back / FAQ wording. 33-Day / Designed / your books unchanged (1 chapter).
+  - Checked: typecheck + build, headless Stage 1 / 2 / 3 suites all pass, 0 contrast / 0 text / 0 console errors. Unlock-mode step chips → primary-strong (contrast 3.7 → 4.7).
+  - **User review corrections ✅:** less green on Passage Ready — step-line chips (✓, "15–17 / 1,189", digits 5 / 4) light green tint + green text (all journey types), chapter list neutral card with grey number circles (dark green result card only); Reading chapter tabs 16px above / 14px below, active tab no shadow; **Reflection rule: a highlighted verse in EVERY chapter of the day** (3-chapter day = 1 verse in each of 3; one-chapter day = 1 verse, as before). Reading bar "2 / 3 · Highlight a verse in each chapter to reflect" + Write Reflection disabled; last chapter note "Highlight a verse in Chapter 17 to write your reflection"; Save Reflection blocked too ("Highlight a verse in Chapter 15, Chapter 16 and Chapter 17 to save…").
+- **Open (no work now):** Robin — change journey midway keeps progress? (circle back); combine experiences = dropped; explainer video + other languages + admin download alert = version 2.
+
+---
 
 ## ▶️ NAALAIKU / NEXT SESSION — first idha padi
 

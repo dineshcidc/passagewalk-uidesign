@@ -1,7 +1,7 @@
 import AppIcon from "../../components/AppIcon";
 import { BIBLE_VERSION } from "../../data/bible";
 import { getExperience } from "../../data/experiences";
-import { experienceThrough, formatBookList, formatCount, journeyTypeIcons, journeyTypeLabels, plural, readingOrderLabel, readingStyle, withArticle } from "../../data/journeyPlans";
+import { BIBLE_CHAPTER_COUNT, chaptersPerDayLabel, experienceThrough, formatBookList, formatCount, getBiblePace, journeyTypeIcons, journeyTypeLabels, plural, readingOrderLabel, readingStyle, withArticle } from "../../data/journeyPlans";
 import type { JourneyPlan } from "../../types";
 
 // Journey confirmation after setup (client slide 16): "You're set for a 67-day sequential Passage Walk".
@@ -10,9 +10,13 @@ export default function JourneyReadyScreen({ plan, onStart, onChange, startLabel
   const experience = getExperience(plan.experience);
   // "One chapter a day through Exodus and Leviticus." + how the steps work for this journey.
   const through = experience ? experienceThrough(experience) : plan.type === "custom" ? formatBookList(plan.books) : plan.type === "bible" ? "the whole Bible" : "the Old and New Testaments";
+  // Whole Bible at its pace: "3–4 chapters a day"; every other journey reads one chapter a day.
+  const pace = plan.type === "bible" ? getBiblePace(plan.pace) : null;
+  const perDay = pace ? chaptersPerDayLabel(plan.days) : "one chapter a day";
+  const dayReading = pace && pace.days < BIBLE_CHAPTER_COUNT ? "chapters" : "chapter";
   const stepsLine = plan.type !== "automatic" && plan.order === "in-order"
-    ? "Your steps unlock each day's chapter, in order."
-    : "Your steps will guide you to each day's chapter.";
+    ? `Your steps unlock each day's ${dayReading}, in order.`
+    : `Your steps will guide you to each day's ${dayReading}.`;
   const details: { label: string; value: string; note?: string }[] = experience
     ? [
       { label: "Walk", value: experience.name },
@@ -28,8 +32,8 @@ export default function JourneyReadyScreen({ plan, onStart, onChange, startLabel
     ]
     : plan.type === "bible"
       ? [
-        { label: "Books", value: "All 66 books" },
-        { label: "Chapters", value: `${days} chapters · about 3 years` },
+        { label: "Books", value: "All 66 books", note: `${formatCount(BIBLE_CHAPTER_COUNT)} chapters` },
+        { label: "Pace", value: pace!.title, note: perDay },
         { label: "Reading order", value: readingOrderLabel(plan) },
       ]
       : [
@@ -65,7 +69,7 @@ export default function JourneyReadyScreen({ plan, onStart, onChange, startLabel
       <div className="moment-copy">
         <span>YOUR JOURNEY IS READY</span>
         <h1>You're set for {withArticle(plan.days)}-day {readingStyle(plan) && `${readingStyle(plan)} `}Passage Walk</h1>
-        <p>{experience ? `${experience.name}: one chapter a day through ${through}.` : `One chapter a day through ${through}.`} {stepsLine}</p>
+        <p>{experience ? `${experience.name}: one chapter a day through ${through}.` : `${perDay[0].toUpperCase()}${perDay.slice(1)} through ${through}.`} {stepsLine}</p>
       </div>
 
       <div className="journey-ready-card">

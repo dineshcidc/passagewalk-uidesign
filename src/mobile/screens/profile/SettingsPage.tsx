@@ -4,7 +4,7 @@ import BibleVersionList from "../../components/BibleVersionList";
 import MilestoneBadge from "../../components/MilestoneBadge";
 import JourneyCompleteFlow from "../complete/JourneyCompleteFlow";
 import { BIBLE_VERSION } from "../../data/bible";
-import { formatBookList, formatCount, journeyName, journeyTypeIcons, journeyTypeLabels, plural, readingOrderLabel } from "../../data/journeyPlans";
+import { formatBookList, formatCount, getBiblePace, journeyName, journeyTypeIcons, journeyTypeLabels, planChaptersPerDay, plural, readingOrderLabel } from "../../data/journeyPlans";
 import { getTodayDay } from "../../data/progress";
 import type { JourneyPlan } from "../../types";
 import JourneyReadyScreen from "../setup/JourneyReadyScreen";
@@ -74,7 +74,8 @@ export default function SettingsPage({
   }
 
   const details = [
-    { label: "Length", value: `${plural(plan.days, "day")} · one chapter a day` },
+    { label: "Length", value: `${plural(plan.days, "day")} · ${planChaptersPerDay(plan)}` },
+    ...(plan.type === "bible" ? [{ label: "Pace", value: getBiblePace(plan.pace).title }] : []),
     ...(plan.type === "designed" ? [{ label: "Walk", value: journeyName(plan) }] : []),
     plan.type === "custom" || plan.type === "designed"
       ? { label: "Books", value: plan.books.length === 66 ? "All 66 books" : formatBookList(plan.books) }

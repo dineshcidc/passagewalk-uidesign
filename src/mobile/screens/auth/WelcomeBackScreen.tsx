@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 import AppIcon from "../../components/AppIcon";
+import { planDayChapterCount } from "../../data/journeyPlans";
+import { getActivePlan } from "../../data/journeyStore";
 import { getDayStatus, getJourneyTotals, getProgress, getTodayDay } from "../../data/progress";
 import { getUser } from "../../data/user";
 import { playApplause } from "../../sound";
@@ -23,7 +25,7 @@ export default function WelcomeBackScreen({ onContinue, onStartWalk }: { onConti
   const todayLine = status === "complete"
     ? { title: `Day ${today} is complete.`, body: "Your walk and reflection are done for today. Well done!" }
     : status === "in-progress"
-      ? { title: `Day ${today} is waiting for you.`, body: "Your steps are in. Read your chapter and add your reflection." }
+      ? { title: `Day ${today} is waiting for you.`, body: `Your steps are in. Read your ${planDayChapterCount(getActivePlan(), today) > 1 ? "chapters" : "chapter"} and add your reflection.` }
       : { title: `Day ${today} is waiting for you.`, body: "Enter today's steps to unlock your passage." };
 
   return (

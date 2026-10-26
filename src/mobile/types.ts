@@ -5,6 +5,9 @@ export type JourneyType = "automatic" | "designed" | "custom" | "bible";
 export type MainTab = "home" | "journey" | "journal" | "milestones" | "profile";
 // "in-order" = chapter by chapter (chosen books, or the whole Bible); "steps" = "Read randomly", the day's steps pick an unread chapter.
 export type ReadingOrder = "in-order" | "steps";
+// Whole Bible pace (review call 4): finish in 1 year (3–4 chapters a day), 2 years (1–2) or about 3 years (1).
+export type BiblePace = "1-year" | "2-years" | "3-years";
 // One chapter = one day, so a custom journey lasts as many days as its books have chapters.
-// experience = the Designed Experience id (designed journeys only).
-export type JourneyPlan = { type: JourneyType; books: string[]; order: ReadingOrder; days: number; experience?: string };
+// The whole Bible is the exception: its pace sets the days, and a day can read several chapters.
+// experience = the Designed Experience id (designed journeys only); pace = whole Bible journeys only.
+export type JourneyPlan = { type: JourneyType; books: string[]; order: ReadingOrder; days: number; experience?: string; pace?: BiblePace };

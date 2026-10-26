@@ -5,8 +5,8 @@ import BibleBooksGrid from "../../components/BibleBooksGrid";
 import { getBookName } from "../../data/bible";
 import { getChapter, getDayHighlights } from "../../data/chapters";
 import { getJournalEntries } from "../../data/journal";
-import { formatBookList, formatCount, journeyName, journeyTypeIcons, journeyTypeLabels, plural, readingOrderLabel } from "../../data/journeyPlans";
-import { getDayDate, getDayRecord, getRecordedDays } from "../../data/journeyStore";
+import { BIBLE_CHAPTER_COUNT, formatBookList, formatCount, getBiblePace, journeyName, journeyTypeIcons, journeyTypeLabels, planChaptersPerDay, planDayChapterCount, plural, readingOrderLabel } from "../../data/journeyPlans";
+import { getActivePlan, getDayChapters, getDayDate, getRecordedDays } from "../../data/journeyStore";
 import { getBookProgress, getDayStatus, getDayStepCount, getProgress, getTodayDay, isDayComplete, type DayStatus } from "../../data/progress";
 import type { JourneyPlan, MainTab } from "../../types";
 import DailyFlowScreen, { type DailyFlowEntry } from "../home/DailyFlowScreen";
@@ -42,7 +42,7 @@ function JourneyDayDetails({ day, onBack, onEnterSteps, onReadChapter }: { day: 
   const entry = getJournalEntries().find((item) => item.journeyDay === day.journeyDay);
   const inProgress = entry?.status !== "complete";
   const highlights = getDayHighlights(day.journeyDay);
-  const chapterNumber = passage?.chapter;
+  const several = (passage?.parts.length ?? 1) > 1;
   // First line of the steps → reading explanation, e.g. "4 · 4th book of the New Testament → John".
   const stepsLink = passage?.explanation.lines[0];
 
@@ -58,7 +58,7 @@ function JourneyDayDetails({ day, onBack, onEnterSteps, onReadChapter }: { day: 
           <div className="journey-waiting-mark"><AppIcon name="steps" /></div>
           <span>NOT ENTERED YET</span>
           <h2>Today&apos;s walk is waiting</h2>
-          <p>Enter today&apos;s steps to unlock your chapter and reflection.</p>
+          <p>Enter today&apos;s steps to unlock your {planDayChapterCount(getActivePlan(), day.journeyDay) > 1 ? "chapters" : "chapter"} and reflection.</p>
 
           <div className="journey-waiting-status">
             <div><span><AppIcon name="steps" /></span><div><small>DAILY STEPS</small><strong>Not entered</strong></div><i></i></div>
@@ -109,9 +109,9 @@ function JourneyDayDetails({ day, onBack, onEnterSteps, onReadChapter }: { day: 
             )}
             {inProgress ? (
               <div className="journey-reading-pending">
-                <p>Your steps are recorded. Read the chapter and highlight the verses that speak to you.</p>
+                <p>Your steps are recorded. Read {several ? `the ${passage.parts.length} chapters` : "the chapter"} and highlight the verses that speak to you.</p>
                 <button onClick={onReadChapter}>
-                  <AppIcon name="book" />Read Chapter
+                  <AppIcon name="book" />{several ? "Read Chapters" : "Read Chapter"}
                 </button>
               </div>
             ) : (
@@ -119,8 +119,8 @@ function JourneyDayDetails({ day, onBack, onEnterSteps, onReadChapter }: { day: 
                 <div className="journey-highlighted-verses">
                   <div><span>HIGHLIGHTED VERSES</span><strong>{plural(highlights.length, "verse")} from {passage.reference}</strong></div>
                   {highlights.map((verse) => (
-                    <article key={verse.number}>
-                      <span>{chapterNumber}:{verse.number}</span>
+                    <article key={verse.key}>
+                      <span>{verse.label}</span>
                       <p>{verse.text}</p>
                     </article>
                   ))}
@@ -238,8 +238,9 @@ export default function JourneyScreen({ onNavigate, plan }: { onNavigate: (tab: 
     ? `${plan.days === 1 ? "1 day" : `All ${plural(plan.days, "day")}`} · Today is Day ${formatCount(today)}`
     : page === todayPage ? `${pageRange} · Today is Day ${formatCount(today)}` : pageRange;
   // Books read so far (completed days) and the latest reading, for the book progress section.
-  const readBooks = getRecordedDays().filter(isDayComplete).map((day) => getDayRecord(day)!.reading.bookIndex);
-  const latestBook = getDayRecord(getRecordedDays().slice(-1)[0] ?? 0)?.reading.bookIndex ?? null;
+  // One entry per chapter read (a whole-Bible day at a faster pace reads several).
+  const readBooks = getRecordedDays().filter(isDayComplete).flatMap((day) => getDayChapters(day).map((reading) => reading.bookIndex));
+  const latestBook = getDayChapters(getRecordedDays().slice(-1)[0] ?? 0).slice(-1)[0]?.bookIndex ?? null;
   const bookProgress = getBookProgress();
   const chaptersRead = readBooks.length;
   const [booksOpen, setBooksOpen] = useState(false);
@@ -249,7 +250,7 @@ export default function JourneyScreen({ onNavigate, plan }: { onNavigate: (tab: 
     ? `${journeyName(plan)} · ${plan.books.length === 66 ? "All 66 books" : formatBookList(plan.books)} · ${readingOrderLabel(plan)}`
     : plan.type === "custom"
     ? `${formatBookList(plan.books)} · ${readingOrderLabel(plan)}`
-    : plan.type === "bible" ? `All 66 books · ${readingOrderLabel(plan)}` : "Old & New Testaments, alternating";
+    : plan.type === "bible" ? `All 66 books · ${getBiblePace(plan.pace).years} · ${planChaptersPerDay(plan)} · ${readingOrderLabel(plan)}` : "Old & New Testaments, alternating";
 
   if (dailyFlow) {
     return <DailyFlowScreen journeyDay={dailyFlow.journeyDay} initialPhase={dailyFlow.phase} doneLabel="Back to My Journey" onBack={() => setDailyFlow(null)} />;
@@ -311,7 +312,8 @@ export default function JourneyScreen({ onNavigate, plan }: { onNavigate: (tab: 
           )}
           {plan.type === "bible" && (
             <p className="journey-books-count">
-              <span><strong>{chaptersRead} of {formatCount(plan.days)}</strong> {plan.days === 1 ? "chapter" : "chapters"} read</span>
+              {/* All 1,189 chapters, whatever the pace (1 year = 365 days, but still 1,189 chapters). */}
+              <span><strong>{formatCount(chaptersRead)} of {formatCount(BIBLE_CHAPTER_COUNT)}</strong> chapters read</span>
               <i></i>
               <span><strong>{bookProgress.filter((book) => book.read > 0).length} of 66</strong> books started</span>
             </p>
