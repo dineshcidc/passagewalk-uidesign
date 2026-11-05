@@ -79,3 +79,7 @@ PNG of every page in the app (as of 2026-10-28), taken from the live prototype. 
 | `12-variant-whole-bible/` | 7 | Same pages for the whole Bible (1 year, chapter order: 3–4 chapters a day, chapter tabs) |
 
 Animated screens (splash, celebrations, Journey Complete confetti) are one still frame. Run the prototype to see the motion.
+
+## 4. Top banner logo + background — `top-banner/`
+
+The green header card on Log In / Sign Up / Forgot / Reset password. `passagewalk-logo.png` = book + path mark and "Passage Walk" text in one transparent PNG. Banner colour: gradient `#34501E` → `#4F7029` at 145°.

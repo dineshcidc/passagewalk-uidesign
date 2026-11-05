@@ -1,6 +1,11 @@
 # Passage Walk — Status
 
-**Last updated:** 2026-10-26
+**Last updated:** 2026-10-30
+
+## ▶️ 2026-10-30 — Mobile dev ask: top banner logo + colour ✅
+
+- `design-assets/top-banner/passagewalk-logo.png` = auth top banner logo (book + path mark + "Passage Walk" text ore PNG, transparent, 228 × 192, display 76 × 64). Banner colour = `--app-hero-gradient` (`src/index.css:26`) `#34501E` → `#4F7029` 145°, `.auth-top` (`src/index.css:202`) 138 height, bottom corners 30. CSS dev chat la share pannom.
+- **Day close:** `design-assets/README.md` + `design-assets/top-banner/` innum commit aagala.
 
 ## ▶️ 2026-10-26 — Review call 4 (Fri Oct 23): client accepted ALL UI + flows → 2 new works
 
