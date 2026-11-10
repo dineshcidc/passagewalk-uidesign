@@ -53,13 +53,6 @@ export default function LearnMoreScreen({ onBack, onCreateAccount, onSignIn }: {
             </div>
           ))}
         </section>
-
-        <section className="learn-bible-facts" aria-label="The Bible in numbers">
-          <div><strong>66</strong><span>books</span></div>
-          <div><strong>1,189</strong><span>chapters</span></div>
-          <div><strong>31,102</strong><span>verses</span></div>
-          <p><AppIcon name="spark" />Learn the books of the Bible, one step at a time.</p>
-        </section>
       </div>
 
       <div className="learn-footer">

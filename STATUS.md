@@ -1,11 +1,49 @@
 # Passage Walk — Status
 
-**Last updated:** 2026-10-30
+**Last updated:** 2026-11-10
+
+## ▶️ 2026-11-10 — Client call answer: badges after Day 365
+
+- **Question (Dinesh):** Whole Bible 2 year (730 days) / 3 year (1,189 days) pace la namba ladder 365 la mudinjidudhu. 365 ku appram badges venumaa, illa 365 la stop pannalaamaa?
+- **Kathy answer = YES, 365 ku appram badges venum.** ("There do need to be badges after 365 days.") Eppadi kudukkanum nu **Peloton** app oda long-term badge system ah base ah vechu decide pannuvaanga. Screenshots anuppuvaanga, illa **Robin oda spreadsheet** la list poduvaanga.
+- Transcript note: "768 / 118 days" = transcription mistake (correct 730 / 1,189). "Karthi" = Kathy.
+- **Innum client kitta irundhu varanum:** (1) 365 ku appram endha days la badges (730? 1,000? 1,189?) + names / copy, (2) Day 40 · 66 · 70 · 120 … 365 names (Kathy share pannuvaanga nu sonnaanga).
+- **Namba work ippo illa, wait.** List vandhaa: `MILESTONE_LADDER` (`data/milestones.ts`) ah 365 ku appram extend pannanum. Appo 2 year / 3 year users ku `getReachableMilestones` (progress.ts) vazhiya Milestones screen la pudhu badges varum. "Keep walking after this journey" line um check pannanum. Full regression pannanum.
+
+## ▶️ NAALAIKU (2026-11-06) — first idha padi
+
+**Day close 2026-11-05:** user leave. Code change edhuvum illa (STATUS.md + docs mattum). Uncommitted: `STATUS.md` (commit pannalaam). `Client-call/` gitignore la irukku.
+
+**Inniku mudinjadhu:**
+1. Full app quick test ✅ 326/326 + extra flows, 0 errors (keela details).
+2. Client ku PPT question text ready (Kathy): (1) milestone names Day 40 · 66 · 70 · 120 · 150 · 180 · 210 · 240 · 270 · 300 · 330 · 365, (2) Day 365 ku appram badges venuma (730 / 1,189 days), (3) ovvoru Designed Experience ku thani verse + description venuma. User PPT la add pannuvaaru.
+3. Phase 2 list ready (call 3 + 4 la irundhu): Group · AI topic journeys · Audio Bible · repeat badges · real multi-version text · explainer video · other languages · admin download alert. **Hold** — wearable work mudinja appram.
+4. **Wearable step sync** (pudhu goal) → designer doc `Client-call/Wearable-integration/wearable-step-sync-explained.md` (Tanglish, design mattum):
+   - Eppadi work aagum: watch → phone Health app (iPhone = **Apple Health**, Android = **Health Connect**) → Passage Walk. UI la 2 connect option mattum, brand wise button venaam.
+   - **Watch connect + manual keypad rendum irukkum** → big UI change illa. 4 examples (Apple Watch user, watch illadhavanga, watch veetla vittavanga, missed day catch-up prefill).
+   - Pudhu screens: setup "Your steps" step, permission explain screen, Home synced / no steps / permission off states, keypad prefill + "Entered by you", catch-up prefill, Settings "Step source", FAQ.
+   - **Design doubt (section 4):** Generate appram um Home steps yerum, aana **oru naal = oru passage**. Passage ah endha number decide pannum? Suggestion = **Generate tap pannra neram number lock** (Option 1). Client question English text file la ready (PPT ku).
+   - Note: ippo prototype la reflection save ku **munnadi** "Update Steps" pannina passage maarudhu — Option 1 confirm aana appram andha behaviour um maathanum.
+
+**Wearable — background (dev side, namba work illa):** PM ask = Apple Watch / Health, Garmin fēnix + Venu, Pixel Watch / Fitbit, Samsung estimates, Friday client call ku munnadi. Dev sheet: HealthKit + Health Connect core 58–96 h (mid 77), direct Fitbit add-on 15–24 h. **Order: dev estimate → client accept → appram dhaan design.** PM: safety ku munnadiye analyse pannu.
+
+**Naalaiku work (order padi):**
+1. User doc padichu doubt irundha clear pannanum.
+2. Wearable **flow plan** — pudhu screens list → flow order (setup → Home states → Settings → catch-up), ippo irukkura screens la enga maarum nu map. Client accept varra varaikum **code / design start panna venaam**, plan mattum.
+3. Friday client call ku: Kathy 3 questions + steps lock question PPT la irukka nu check.
+4. Client answers vandhaa: milestone names → `data/milestones.ts`; steps lock rule → design final.
+
+## ▶️ 2026-11-05 — Open items update + quick full-app test before Phase 2
+
+- **Milestone day names** (Day 40, 66, 70, 120 … 365 + after 365) — innum client side la irundhu varanum. Vandha appram `data/milestones.ts` la name / copy mattum maathanum.
+- **Robin answer = YES: change journey midway → progress keep pannanum.** Old journey data (dates, steps, readings, reflections, highlights) developers store pannanum — new journey start aanaalum pazhaya journey history delete aagakoodadhu. (Prototype la ippo `pastCompletedDates` mattum keep aagudhu, milestone count ku.) Dev handoff note.
+- **Next main work = Phase 2** (already sonna Phase 2 items + client pudhu work um Phase 2 dhaan) — discuss pannradhuku munnadi current app quick full test.
+- **Quick full test ✅ (production build, headless Chrome):** typecheck + build pass. 9 journey types (33-Day · Designed 18 / 5 / 2-Day · Ex+Lev order · Ruth+John random · Whole Bible 1 yr random / 2 yr / 3 yr order) — sign up → setup → Home → notifications → today's walk (steps → Passage Ready → read → highlight every chapter → reflection) → celebration → saved → Day 4 catch-up → Journey / Journal / Milestones + Day 1 certificate / Settings → Log Out → Log In → Welcome back → Dashboard = **326/326 pass**. Extra: 5-Day full finish (Day 5 → Day 4 → missed Day 3 catch-up → purple Experience Complete) ✓, onboarding back, Learn more, Forgot → Reset → Log In ✓, You sub-pages, Bible version, Journey Complete demo (celebrate → story → next walk), Change Journey (Keep Current / Yes, Change → 7-Day, milestones count on 2 + 2 = 4 days) ✓. **0 console errors, 0 text issues (undefined / NaN / plural), 0 horizontal overflow.** Code change illa.
 
 ## ▶️ 2026-10-30 — Mobile dev ask: top banner logo + colour ✅
 
 - `design-assets/top-banner/passagewalk-logo.png` = auth top banner logo (book + path mark + "Passage Walk" text ore PNG, transparent, 228 × 192, display 76 × 64). Banner colour = `--app-hero-gradient` (`src/index.css:26`) `#34501E` → `#4F7029` 145°, `.auth-top` (`src/index.css:202`) 138 height, bottom corners 30. CSS dev chat la share pannom.
-- **Day close:** `design-assets/README.md` + `design-assets/top-banner/` innum commit aagala.
+- ~~Day close: `design-assets/README.md` + `design-assets/top-banner/` innum commit aagala.~~ ✅ commit `5b77fea` (2026-11-05, audio assets um serthu).
 
 ## ▶️ 2026-10-26 — Review call 4 (Fri Oct 23): client accepted ALL UI + flows → 2 new works
 
