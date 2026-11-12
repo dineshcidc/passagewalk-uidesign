@@ -1,10 +1,31 @@
 # Passage Walk — Status
 
-**Last updated:** 2026-11-10
+**Last updated:** 2026-11-12
 
-## ▶️ NAALAIKU (2026-11-11) — first idha padi
+## ▶️ NAALAIKU (2026-11-13) — first idha padi
 
-**Day close 2026-11-10:** user leave. **Uncommitted:** `STATUS.md`, `src/mobile/screens/milestones/MilestonesScreen.tsx`, `src/mobile/screens/onboarding/LearnMoreScreen.tsx`, `src/index.css`. Typecheck + build pass ✅. **Browser la innum paakala.**
+**Day close 2026-11-12:** user leave. **Uncommitted (carousel work):** `src/index.css`, `src/mobile/screens/onboarding/OnboardingFlow.tsx`, pudhu `src/mobile/screens/onboarding/OnboardingCarousel.tsx` + 6 images `src/assets/Onboarding{1,2,3}-*.jpg` (`git add` pannanum), `STATUS.md`. Build pass ✅, headless check pass ✅. User browser la paathu OK → commit.
+
+**Inniku mudinjadhu:**
+1. **Passage Ready UI correction (PM) ✅ commit `6dd381a`:**
+   - "Your steps led you here" trail (digit chips + book / chapter lines) + Old / New Testament 66-book grid **hide** — PM: order theriyum (33-Day OT / NT alternate), user next passage guess pannuvaanga. Code delete pannala: `StepsLedCard.tsx` la `SHOW_STEPS_TRAIL = false` (true = thirumba varum).
+   - Pudhu layout: ellam oru white card (padding 20px) ulla — pill, TODAY'S SCRIPTURE, "Your Passage Is Ready", "Based on your N steps" (DailyFlowScreen `children` ah pass pannudhu) → green card. Green card: icon + title, title keela subtext, gold badge thani row. Page content vertical center (auto margins, long whole-Bible day mela irundhu scroll), section gaps adhigam. Range title "4–6" udaiyaadhu (word joiner), multi-chapter title 18px.
+   - Regression: 9 journey suites **326/326**, 5-Day full + You pages + Change Journey + Journey Complete pass, Learn more → Log In → Forgot 4/4. 0 console errors. (Pazhaya `app.json` la "Learn" / "Back" label test-side mismatch — app bug illa.)
+2. **Onboarding top banner carousel (client ask) ✅ — uncommitted:**
+   - 3 onboarding page ovvonnulayum 3 images: first = client original photo, + 2 Unsplash placeholders (client images innum varala). P1: forest path, sunlit valley · P2: stone steps (shoes), open Bible · P3: hikers + snowy mountains, mountain sunrise.
+   - Behaviour: 5.2s ku oru thadava random next image (same back-to-back illa), 1.6s cross-fade + 7s slow zoom. Page maarina client image la irundhu restart. Reduced motion = zoom off. Images `src/assets` la bundled (offline OK).
+   - Client images vandhaa: andha 6 files replace pannina podhum (same file names), code change venaam.
+   - Check: 3 pages la 3 images um rotate ✓, 0 console errors, 33-Day journey 40/40, Learn more / Log In 4/4.
+3. **Dev team question (Bible version change) — answer anuppiyaachu (dev handle pannuvaanga):** (1) version change = ella readings um (past days kooda) new version la, passage maaraadhu, reflections maaraadhu; (2) highlights verse reference + saved text + version label oda store, reader la new version la um same verse highlight, Journal la original text + "KJV" label, MSG maadhiri paraphrase verse mapping edge case dev handle; (3) today's reading open la irundhaa text udane switch, passage + highlights same.
+
+**Naalaiku work (order padi):**
+1. Carousel browser la user check → OK → commit `main` (6 images `git add`).
+2. PM kitta: Passage Ready green card subtext "Book 5 of 66 · 5th book of the Old Testament" um order hint kudukkum — adhuvum hide pannanuma nu confirm.
+3. Client images vandhaa carousel images replace.
+4. Kathy list wait: Day 40 … 365 names + 365 ku appram badges (keela 2026-11-10 section).
+5. Wearable flow plan (2026-11-05 section point 2) innum pending.
+
+## ✅ 2026-11-10 / 11 — Milestones + Learn more PM corrections (commit `745a39c`)
 
 **Inniku PM corrections (UI mattum, data / logic touch pannala):**
 1. Milestones: green progress card keela irundha grey "THIS JOURNEY" card remove. Ippo green card la track keela "THIS JOURNEY · N days to go" row (gold text). Journey complete aana appram "Completed · View badge ›" → journey badge + certificate page (grey card illaadhadhaala badge open panna idhu dhaan vazhi; PM venaam sonnaa remove).
@@ -12,11 +33,7 @@
 3. Learn more ("How Passage Walk works"): 66 books / 1,189 chapters / 31,102 verses green card remove.
 - Dead CSS remove: `.journey-complete-*`, `.milestones-later`, `.learn-bible-facts`. Pudhu `.milestones-progress-journey`.
 
-**Naalaiku work (order padi):**
-1. Browser / headless check: Milestones (not complete + Journey Complete demo → View badge), Learn more. Alignment + contrast + 0 console errors.
-2. User OK → commit `main`.
-3. Kathy list wait: Day 40 … 365 names + 365 ku appram badges (keela section).
-4. Wearable flow plan (2026-11-05 section point 2) innum pending.
+- Committed `745a39c`. 2026-11-12 full regression (326/326 + app-wide) la Milestones / Learn more flows pass.
 
 ## ▶️ 2026-11-10 — Client call answer: badges after Day 365
 

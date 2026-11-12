@@ -129,9 +129,19 @@ html:has(.design-pages-canvas)::-webkit-scrollbar, body:has(.design-pages-canvas
   width: 100%; height: 100%; display: block; object-fit: cover; object-position: center 54%;
   animation: onboarding-image-in .85s cubic-bezier(.22,1,.36,1) both;
 }
-.onboarding-screen-1 .onboarding-photo-wrap img { object-position: 60% center; }
-.onboarding-screen-2 .onboarding-photo-wrap img { object-position: center 53%; }
-.onboarding-screen-3 .onboarding-photo-wrap img { object-position: center 62%; }
+/* Top banner carousel (3 images per page): stacked, slow cross-fade, gentle zoom on the showing image.
+   Per-image object-position comes from OnboardingFlow. */
+.onboarding-carousel { position: absolute; inset: 0; animation: onboarding-image-in .85s cubic-bezier(.22,1,.36,1) both; }
+.onboarding-carousel img { position: absolute; inset: 0; opacity: 0; transition: opacity 1.6s ease-in-out; animation: none; }
+.onboarding-carousel img.is-active { opacity: 1; }
+.onboarding-carousel img.zoom-0 { animation: onboarding-zoom-a 7s linear both; }
+.onboarding-carousel img.zoom-1 { animation: onboarding-zoom-b 7s linear both; }
+@keyframes onboarding-zoom-a { from { transform: scale(1); } to { transform: scale(1.08); } }
+@keyframes onboarding-zoom-b { from { transform: scale(1); } to { transform: scale(1.08); } }
+@media (prefers-reduced-motion: reduce) {
+  .onboarding-carousel, .onboarding-carousel img.zoom-0, .onboarding-carousel img.zoom-1 { animation: none; }
+  .onboarding-carousel img { transition-duration: .4s; }
+}
 .onboarding-photo-badge {
   position: absolute; z-index: 2; right: 30px; bottom: 38px; width: 52px; height: 52px;
   display: grid; place-items: center; border: 1px solid rgba(255,255,255,.38); border-radius: 18px;

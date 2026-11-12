@@ -2,6 +2,13 @@ import { useState } from "react";
 import onboardingImage1 from "../../../assets/Onboarding1.jpg";
 import onboardingImage2 from "../../../assets/Onboarding2.jpg";
 import onboardingImage3 from "../../../assets/Onboarding3.jpg";
+// Placeholder carousel photos (Unsplash) until the client shares their images.
+import onboardingForestPath from "../../../assets/Onboarding1-forest-path.jpg";
+import onboardingSunlitValley from "../../../assets/Onboarding1-sunlit-valley.jpg";
+import onboardingBible from "../../../assets/Onboarding2-bible.jpg";
+import onboardingSteps from "../../../assets/Onboarding2-steps.jpg";
+import onboardingHikers from "../../../assets/Onboarding3-hikers.jpg";
+import onboardingSunrise from "../../../assets/Onboarding3-sunrise.jpg";
 import AppIcon from "../../components/AppIcon";
 import IOSDeviceFrame from "../../components/IOSDeviceFrame";
 import { defaultJourneyPlan } from "../../data/journeyPlans";
@@ -14,6 +21,7 @@ import type { DailyFlowEntry } from "../home/DailyFlowScreen";
 import HomeScreen from "../home/HomeScreen";
 import JourneySetupFlow from "../setup/JourneySetupFlow";
 import LearnMoreScreen from "./LearnMoreScreen";
+import OnboardingCarousel from "./OnboardingCarousel";
 import WelcomeScreen from "./WelcomeScreen";
 
 const onboardingContent = [
@@ -21,22 +29,32 @@ const onboardingContent = [
     eyebrow: "A DAILY DEVOTIONAL RHYTHM",
     title: "Walk With Purpose",
     body: "Passage Walk connects the steps you take with scripture—creating a rhythm of movement, reflection, and faith that brings you closer to God each day.",
-    image: onboardingImage1,
-    imageAlt: "A stone path leading down a hillside toward a sunlit valley",
+    // Top banner carousel: first = original client photo, then 2 more (random order, slow fade).
+    images: [
+      { src: onboardingImage1, alt: "A stone path leading down a hillside toward a sunlit valley", position: "60% center" },
+      { src: onboardingForestPath, alt: "Morning light falling on a path through a tall forest" },
+      { src: onboardingSunlitValley, alt: "A person standing on a rock above a sunlit mountain valley", position: "center 60%" },
+    ],
   },
   {
     eyebrow: "HOW PASSAGE WALK WORKS",
     title: "Your Steps, Your Scripture",
     body: "Enter your daily steps and receive a meaningful passage selected for your journey. Read at your own pace, then pause for a quiet moment of reflection.",
-    image: onboardingImage2,
-    imageAlt: "A hiker walking along a peaceful forest trail",
+    images: [
+      { src: onboardingImage2, alt: "A hiker walking along a peaceful forest trail", position: "center 53%" },
+      { src: onboardingSteps, alt: "Walking shoes stepping up stone stairs" },
+      { src: onboardingBible, alt: "Hands holding an open Bible" },
+    ],
   },
   {
     eyebrow: "ONE DAY AT A TIME",
     title: "A 33-Day Walk",
     body: "Build a lasting devotional habit through daily reading and personal reflection. Your steps uniquely determine your Bible reading. Follow your progress and celebrate meaningful milestones along the way.",
-    image: onboardingImage3,
-    imageAlt: "A hiker walking along a mountain trail toward a distant peak",
+    images: [
+      { src: onboardingImage3, alt: "A hiker walking along a mountain trail toward a distant peak", position: "center 62%" },
+      { src: onboardingHikers, alt: "Two hikers on a trail below snowy mountains" },
+      { src: onboardingSunrise, alt: "The sun rising over layered mountain ridges" },
+    ],
   },
 ];
 
@@ -138,9 +156,9 @@ export default function OnboardingFlow() {
           {activeScreen > 0 && (
             <button className="onboarding-back" onClick={() => setActiveScreen((current) => current - 1)} aria-label="Previous screen"><AppIcon name="back" /></button>
           )}
-          <div className="onboarding-visual-stage" key={content.image}>
+          <div className="onboarding-visual-stage" key={activeScreen}>
             <div className="onboarding-photo-wrap">
-              <img src={content.image} alt={content.imageAlt} />
+              <OnboardingCarousel images={content.images} />
               <div className={`onboarding-photo-badge onboarding-photo-badge-${activeScreen + 1}`}>
                 {activeScreen < 2 ? (
                   <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
