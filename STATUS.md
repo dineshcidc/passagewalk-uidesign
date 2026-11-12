@@ -2,6 +2,22 @@
 
 **Last updated:** 2026-11-10
 
+## ▶️ NAALAIKU (2026-11-11) — first idha padi
+
+**Day close 2026-11-10:** user leave. **Uncommitted:** `STATUS.md`, `src/mobile/screens/milestones/MilestonesScreen.tsx`, `src/mobile/screens/onboarding/LearnMoreScreen.tsx`, `src/index.css`. Typecheck + build pass ✅. **Browser la innum paakala.**
+
+**Inniku PM corrections (UI mattum, data / logic touch pannala):**
+1. Milestones: green progress card keela irundha grey "THIS JOURNEY" card remove. Ippo green card la track keela "THIS JOURNEY · N days to go" row (gold text). Journey complete aana appram "Completed · View badge ›" → journey badge + certificate page (grey card illaadhadhaala badge open panna idhu dhaan vazhi; PM venaam sonnaa remove).
+2. Milestones: bottom "Keep walking after this journey: Day 40, 66 … 365" line remove (PM: confusing).
+3. Learn more ("How Passage Walk works"): 66 books / 1,189 chapters / 31,102 verses green card remove.
+- Dead CSS remove: `.journey-complete-*`, `.milestones-later`, `.learn-bible-facts`. Pudhu `.milestones-progress-journey`.
+
+**Naalaiku work (order padi):**
+1. Browser / headless check: Milestones (not complete + Journey Complete demo → View badge), Learn more. Alignment + contrast + 0 console errors.
+2. User OK → commit `main`.
+3. Kathy list wait: Day 40 … 365 names + 365 ku appram badges (keela section).
+4. Wearable flow plan (2026-11-05 section point 2) innum pending.
+
 ## ▶️ 2026-11-10 — Client call answer: badges after Day 365
 
 - **Question (Dinesh):** Whole Bible 2 year (730 days) / 3 year (1,189 days) pace la namba ladder 365 la mudinjidudhu. 365 ku appram badges venumaa, illa 365 la stop pannalaamaa?

@@ -213,11 +213,13 @@ export default function DailyFlowScreen({
       <div className="passage-ready-screen">
         <button className="step-entry-back" onClick={() => setPhase("entry")} aria-label="Back to step entry"><AppIcon name="back" /></button>
         <div className="passage-ready-content with-steps">
-          <p className="walk-encouragement">{walkMessage(Number(stepValue), isToday)}</p>
-          <span className="passage-ready-label">{isToday ? "TODAY'S SCRIPTURE" : `${dayLabel} · CATCH UP`}</span>
-          <h1>Your Passage Is Ready</h1>
-          <p className="passage-ready-steps">{chapter.explanation.mode === "unlock" ? "Unlocked by" : "Based on"} your {formattedSteps} {Number(stepValue) === 1 ? "step" : "steps"} {isToday ? "today" : `on ${shortDate}`}</p>
-          <StepsLedCard chapter={chapter} visitedBooks={visitedBooks} isToday={isToday} />
+          {/* Title block sits inside the white card, above the passage card. */}
+          <StepsLedCard chapter={chapter} visitedBooks={visitedBooks} isToday={isToday}>
+            <p className="walk-encouragement">{walkMessage(Number(stepValue), isToday)}</p>
+            <span className="passage-ready-label">{isToday ? "TODAY'S SCRIPTURE" : `${dayLabel} · CATCH UP`}</span>
+            <h1>Your Passage Is Ready</h1>
+            <p className="passage-ready-steps">{chapter.explanation.mode === "unlock" ? "Unlocked by" : "Based on"} your {formattedSteps} {Number(stepValue) === 1 ? "step" : "steps"} {isToday ? "today" : `on ${shortDate}`}</p>
+          </StepsLedCard>
           <div className="passage-ready-actions">
             <button className="passage-read-button" onClick={() => { openSlot(0); setPhase("reading"); }}><AppIcon name="book" />{several ? "Read Chapters" : "Read Chapter"}</button>
             <button className="passage-reflect-button" onClick={() => { setReflectionSource("ready"); setPhase("reflection"); }}><AppIcon name="journal" />Write Reflection</button>

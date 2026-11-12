@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { BIBLE_VERSION } from "../data/bible";
 import type { Chapter } from "../data/chapters";
 import { plural } from "../data/journeyPlans";
@@ -7,7 +8,12 @@ import BibleBooksGrid from "./BibleBooksGrid";
 
 // Passage Ready: shows HOW the user's steps led to today's chapter (Kathy: "connect and share how their steps
 // took them to that reading" so they learn the 66 books). Digit chips: gold = book digit, teal = chapter digit.
-export default function StepsLedCard({ chapter, visitedBooks, isToday = true }: { chapter: Chapter; visitedBooks: number[]; isToday?: boolean }) {
+// Hidden for now (PM, 2026-11-12): the digit → book / chapter trail and the 66-book grid let the user
+// guess the order (33-Day alternates Old / New Testament), so the next passage is no surprise.
+// Only the result card (and a multi-chapter day's list) shows. Set to true to bring them back.
+const SHOW_STEPS_TRAIL = false;
+
+export default function StepsLedCard({ chapter, visitedBooks, isToday = true, children }: { chapter: Chapter; visitedBooks: number[]; isToday?: boolean; children?: ReactNode }) {
   const { explanation } = chapter;
   const unlock = explanation.mode === "unlock";
   // Whole Bible at a faster pace: the day reads several chapters, listed under the result.
@@ -15,7 +21,9 @@ export default function StepsLedCard({ chapter, visitedBooks, isToday = true }: 
   const unlocked = `${isToday ? "TODAY'S" : "THIS DAY'S"} ${several ? "CHAPTERS" : "CHAPTER"}`;
 
   return (
-    <section className={`steps-led-card ${unlock ? "unlock" : ""}`}>
+    <section className={`steps-led-card ${unlock ? "unlock" : ""} ${SHOW_STEPS_TRAIL ? "" : "result-only"} ${several ? "several" : ""}`}>
+      {children && <header className="steps-led-head">{children}</header>}
+      {SHOW_STEPS_TRAIL && (<>
       <span className="steps-led-eyebrow">{unlock ? `YOUR STEPS UNLOCKED ${unlocked}` : "YOUR STEPS LED YOU HERE"}</span>
 
       {/* "In order": the step count unlocks the next chapter, so the digits don't matter — show the total. */}
@@ -41,11 +49,13 @@ export default function StepsLedCard({ chapter, visitedBooks, isToday = true }: 
           <li key={index}><b>{line.value}</b><span>{line.text}</span></li>
         ))}
       </ol>
+      </>)}
 
       <div className="steps-led-result">
         <i><AppIcon name="book" /></i>
         <div>
-          <strong>{chapter.reference}</strong>
+          {/* Word joiners keep a range like "4–6" together, so a long title only wraps between words. */}
+          <strong>{chapter.reference.replace(/–/g, "⁠–⁠")}</strong>
           <span>{describeBookPosition(chapter.bookIndex)}</span>
         </div>
         <em>{several ? `${chapter.parts.length} chapters` : `${chapter.verseCount} verses · ${BIBLE_VERSION.short}`}</em>
@@ -60,7 +70,7 @@ export default function StepsLedCard({ chapter, visitedBooks, isToday = true }: 
         </ol>
       )}
 
-      <BibleBooksGrid current={chapter.bookIndex} visited={visitedBooks} compact />
+      {SHOW_STEPS_TRAIL && <BibleBooksGrid current={chapter.bookIndex} visited={visitedBooks} compact />}
     </section>
   );
 }

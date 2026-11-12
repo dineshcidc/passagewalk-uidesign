@@ -2077,6 +2077,27 @@ footer p { margin: 0; }
 .steps-led-result span { display: block; margin-top: 2px; color: #e2efd0; font-size: 9px; }
 .steps-led-result > em { padding: 4px 7px; border-radius: 999px; color: #3f2c05; background: #f3c96f; font-size: 8.5px; font-style: normal; font-weight: 700; white-space: nowrap; }
 .steps-led-card .bible-books-map { margin-top: 12px; }
+/* Trail + book grid hidden (PM): white card (20px padding) holds just the result card; page content
+   centred top-to-bottom (auto margins, so a long multi-chapter day still scrolls from the top) with roomier gaps. */
+.steps-led-card.result-only { margin-top: 28px; padding: 20px; }
+/* Title block (pill, label, heading, steps line) inside the white card, centred above the passage card. */
+.steps-led-head { margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+/* Passage card rows: icon beside title + subtext · gold tag on its own row. */
+.steps-led-card.result-only .steps-led-result {
+  margin-top: 0; padding: 14px; grid-template-columns: 34px 1fr; grid-template-areas: "icon title" "icon sub" "tag tag"; column-gap: 10px; row-gap: 0;
+}
+.steps-led-card.result-only .steps-led-result > div { display: contents; }
+.steps-led-card.result-only .steps-led-result > i { grid-area: icon; }
+.steps-led-card.result-only .steps-led-result strong { grid-area: title; }
+.steps-led-card.result-only .steps-led-result span { grid-area: sub; margin-top: 3px; font-size: 10px; line-height: 1.4; }
+.steps-led-card.result-only .steps-led-result > em { grid-area: tag; justify-self: start; margin-top: 12px; }
+.steps-led-card.result-only .steps-led-chapters { margin-top: 12px; }
+.passage-ready-content.with-steps:has(.steps-led-card.result-only) { padding-top: 18px; }
+.passage-ready-content.with-steps:has(.steps-led-card.result-only) > :first-child { margin-top: auto; }
+.passage-ready-content.with-steps:has(.steps-led-card.result-only) > :last-child { margin-bottom: auto; }
+.passage-ready-content.with-steps:has(.steps-led-card.result-only) .walk-encouragement { margin-bottom: 18px; }
+.passage-ready-content.with-steps:has(.steps-led-card.result-only) .passage-ready-actions { margin-top: 28px; }
+.passage-ready-content.with-steps:has(.steps-led-card.result-only) .passage-later-button { margin-top: 22px; }
 
 .bible-books-grid { display: flex; align-items: center; gap: 14px; }
 .bible-books-group > span { display: block; color: var(--app-text-secondary); font-size: 7px; font-weight: 700; letter-spacing: .1em; white-space: nowrap; }
