@@ -5,7 +5,7 @@ import CertificateViewer from "../../components/CertificateViewer";
 import CompletionCertificate from "../../components/CompletionCertificate";
 import MilestoneBadge from "../../components/MilestoneBadge";
 import { downloadCertificate } from "../../certificate";
-import { experiences, getExperience } from "../../data/experiences";
+import { getExperience } from "../../data/experiences";
 import { getJourneyCompleteDemo } from "../../data/journeyCompleteDemo";
 import { createJourneyPlan, formatCount } from "../../data/journeyPlans";
 import { getUser } from "../../data/user";
@@ -236,13 +236,8 @@ function Story({ demo, onBack, onNext }: { demo: ReturnType<typeof getJourneyCom
 
 // "Where do you want to walk next?" — Kathy: after the 33 "they can go to that 66, that 120, or… choose your own journey".
 function NextWalk({ demo, onBack, onChoose, onExit }: { demo: ReturnType<typeof getJourneyCompleteDemo>; onBack: () => void; onChoose: (plan: JourneyPlan) => void; onExit: () => void }) {
-  const designed = (experience?: string): JourneyPlan => ({ type: "designed", books: [], order: "in-order", days: 0, experience });
+  const designed = (experience: string): JourneyPlan => ({ type: "designed", books: [], order: "in-order", days: 0, experience });
   const recommended = getExperience("targeted-isaiah")!;
-  const options: { icon: AppIconName; title: string; body: string; meta: string[]; plan: JourneyPlan }[] = [
-    { icon: "spark", title: "Walk the 33 days again", body: "A new 33-Day Walk — your steps will choose fresh readings.", meta: ["33 DAYS"], plan: createJourneyPlan("automatic") },
-    { icon: "compass", title: "Choose a Designed Experience", body: "Books with the same number of chapters, walked together.", meta: ["2 TO 150 DAYS", `${experiences.length} WALKS`], plan: designed() },
-    { icon: "edit", title: "Create a Journey", body: "Focus on the books you love — like Matthew, Mark, Luke, and John.", meta: ["YOUR BOOKS", "WHOLE BIBLE"], plan: createJourneyPlan("custom", ["Matthew", "Mark", "Luke", "John"]) },
-  ];
 
   return (
     <div className="jc-next">
@@ -261,7 +256,11 @@ function NextWalk({ demo, onBack, onChoose, onExit }: { demo: ReturnType<typeof 
 
         {/* Kathy (review call 4): after the 33 "they may decide… I really want to go to this 66 day experience and keep this going". */}
         <button className="jc-recommended" onClick={() => onChoose(designed(recommended.id))}>
-          <em><AppIcon name="spark" />RECOMMENDED FOR YOU</em>
+          {/* Badge left, small chevron circle right; the text below gets the card's full width. */}
+          <div className="jc-recommended-head">
+            <em><AppIcon name="spark" />RECOMMENDED FOR YOU</em>
+            <i><AppIcon name="chevron" /></i>
+          </div>
           <div className="jc-recommended-body">
             <div className="jc-recommended-days"><strong>{recommended.days}</strong><span>DAYS</span></div>
             <div>
@@ -269,26 +268,16 @@ function NextWalk({ demo, onBack, onChoose, onExit }: { demo: ReturnType<typeof 
               <p>You've visited {demo.booksVisited} books. Keep going with Isaiah — the only book of the Bible with 66 chapters.</p>
               <small>DESIGNED EXPERIENCE</small>
             </div>
-            <i><AppIcon name="chevron" /></i>
           </div>
         </button>
 
+        {/* Dev team (2026-11-12): the 3 journey-type cards all led to the same Choose Your Journey page, so one
+            button opens it instead. Badges / certificate line removed. */}
         <span className="jc-next-label">OR CHOOSE YOUR WAY</span>
-        <div className="jc-next-list">
-          {options.map((option) => (
-            <button onClick={() => onChoose(option.plan)} key={option.title}>
-              <i><AppIcon name={option.icon} /></i>
-              <div>
-                <strong>{option.title}</strong>
-                <p>{option.body}</p>
-                <span>{option.meta.map((item) => <b key={item}>{item}</b>)}</span>
-              </div>
-              <AppIcon name="chevron" />
-            </button>
-          ))}
-        </div>
+        <button className="jc-choose-own" onClick={() => onChoose(createJourneyPlan("automatic"))}>
+          <AppIcon name="compass" />Choose your own journey<AppIcon name="chevron" />
+        </button>
 
-        <p className="jc-next-badges"><AppIcon name="milestones" />Your {demo.badges.length} badges and certificate stay with you in Milestones.</p>
         <button className="jc-later" onClick={onExit}>Maybe later</button>
       </div>
     </div>
