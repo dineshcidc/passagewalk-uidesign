@@ -174,6 +174,12 @@ function JourneyDayDetails({ day, onBack, onEnterSteps, onReadChapter }: { day: 
 // Journeys up to 5 weeks (33-Day, short custom) fit on one page; longer journeys page month by month.
 const SINGLE_PAGE_DAYS = 35;
 
+// Hidden for now (PM, 2026-11-13): "THE 66 BOOKS · Where your steps have led" (33-Day Walk; also any Designed
+// Experience over 10 books, none today) maps the books the steps picked, so the user can guess the order — same reason as the
+// Passage Ready steps trail (StepsLedCard SHOW_STEPS_TRAIL). Whole Bible keeps its card (chapter progress).
+// Set to true to bring it back.
+const SHOW_STEPS_BOOK_MAP = false;
+
 type CalendarPage = { firstDay: number; lastDay: number; title: string | null };
 
 function getCalendarPages(totalDays: number): CalendarPage[] {
@@ -290,7 +296,7 @@ export default function JourneyScreen({ onNavigate, plan }: { onNavigate: (tab: 
           <p className="journey-summary-detail">{typeDetail}</p>
         </section>
 
-        <section className={`journey-books-card ${perBook ? `accordion ${booksOpen ? "open" : ""}` : ""}`}>
+        {(perBook || plan.type === "bible" || SHOW_STEPS_BOOK_MAP) && <section className={`journey-books-card ${perBook ? `accordion ${booksOpen ? "open" : ""}` : ""}`}>
           {perBook ? (
             // Create a Journey (your books) can hold many books, so the per-book list opens and closes.
             <button className="journey-books-heading journey-books-toggle" onClick={() => setBooksOpen((open) => !open)} aria-expanded={booksOpen}>
@@ -331,7 +337,7 @@ export default function JourneyScreen({ onNavigate, plan }: { onNavigate: (tab: 
           ) : (
             <BibleBooksGrid current={latestBook} visited={readBooks} finished={bookProgress.filter((book) => book.finished).map((book) => book.bookIndex)} />
           )}
-        </section>
+        </section>}
 
         <section className="journey-calendar">
           <div className="journey-calendar-month-nav">

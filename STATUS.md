@@ -2,29 +2,35 @@
 
 **Last updated:** 2026-11-12
 
+## ▶️ 2026-11-13 — Journey tab "THE 66 BOOKS" hide (uncommitted)
+
+- PM correction (Passage Ready trail hide panna adhe reason, user next passage guess panna koodaadhu): Journey tab-la **"THE 66 BOOKS · Where your steps have led"** card hide. Idhu 33-Day Walk-la mattum dhaan vandhuchu (Designed Experiences ellam max 7 books, adhanaala avanga per-book list kaattuvaanga). `JourneyScreen.tsx` `SHOW_STEPS_BOOK_MAP = false` (true = thirumba varum), code delete pannala.
+- Appdiye irukkudhu: Whole Bible card ("Your walk through the Bible", X of 1,189 chapters read), Create a Journey / small Designed "Chapters read per book" accordion.
+- Typecheck + build pass. 9 journey suites + pudhu Journey-tab checks **362/362** (33-Day card illa, Designed / your books / whole Bible card irukku, calendar gap 15px ella type-layum), 0 console errors. Commit pending.
+- Point 1 (green card subtext "Book 5 of 66 · 5th book of the Old Testament") = PM kitta kekkanum. Suggestion: "Old Testament · Books of the Law" maadhiri, number illaama.
+
 ## ▶️ NAALAIKU (2026-11-13) — first idha padi
 
-**Day close 2026-11-12:** user leave. **Uncommitted (carousel work):** `src/index.css`, `src/mobile/screens/onboarding/OnboardingFlow.tsx`, pudhu `src/mobile/screens/onboarding/OnboardingCarousel.tsx` + 6 images `src/assets/Onboarding{1,2,3}-*.jpg` (`git add` pannanum), `STATUS.md`. Build pass ✅, headless check pass ✅. User browser la paathu OK → commit.
+**Day close 2026-11-12:** user leave. **Ellam commit aagiduchu** (`6dd381a` Passage Ready, `79aae55` carousel, `bc61fab` carousel timing + Next Walk) — working tree clean. Build + headless checks pass ✅.
 
 **Inniku mudinjadhu:**
 1. **Passage Ready UI correction (PM) ✅ commit `6dd381a`:**
    - "Your steps led you here" trail (digit chips + book / chapter lines) + Old / New Testament 66-book grid **hide** — PM: order theriyum (33-Day OT / NT alternate), user next passage guess pannuvaanga. Code delete pannala: `StepsLedCard.tsx` la `SHOW_STEPS_TRAIL = false` (true = thirumba varum).
    - Pudhu layout: ellam oru white card (padding 20px) ulla — pill, TODAY'S SCRIPTURE, "Your Passage Is Ready", "Based on your N steps" (DailyFlowScreen `children` ah pass pannudhu) → green card. Green card: icon + title, title keela subtext, gold badge thani row. Page content vertical center (auto margins, long whole-Bible day mela irundhu scroll), section gaps adhigam. Range title "4–6" udaiyaadhu (word joiner), multi-chapter title 18px.
    - Regression: 9 journey suites **326/326**, 5-Day full + You pages + Change Journey + Journey Complete pass, Learn more → Log In → Forgot 4/4. 0 console errors. (Pazhaya `app.json` la "Learn" / "Back" label test-side mismatch — app bug illa.)
-2. **Onboarding top banner carousel (client ask) ✅ — uncommitted:**
+2. **Onboarding top banner carousel (client ask) ✅ commit `79aae55` + `bc61fab`:**
    - 3 onboarding page ovvonnulayum 3 images: first = client original photo, + 2 Unsplash placeholders (client images innum varala). P1: forest path, sunlit valley · P2: stone steps (shoes), open Bible · P3: hikers + snowy mountains, mountain sunrise.
    - Behaviour: 3.5s ku oru thadava random next image (same back-to-back illa), 1.1s cross-fade + 5s slow zoom (user: first 5.2s / 1.6s / 7s romba slow). Page maarina client image la irundhu restart. Reduced motion = zoom off. Images `src/assets` la bundled (offline OK).
    - Client images vandhaa: andha 6 files replace pannina podhum (same file names), code change venaam.
    - Check: 3 pages la 3 images um rotate ✓, 0 console errors, 33-Day journey 40/40, Learn more / Log In 4/4.
-3. **Dev team correction — Journey Complete demo "Your Next Walk" page ✅ — uncommitted (`JourneyCompleteFlow.tsx`, `src/index.css`):** "OR CHOOSE YOUR WAY" keela irundha 3 journey-type cards (33 days again / Designed Experience / Create a Journey) ellam same Choose Your Journey page ku dhaan pogudhu → remove, adhukku badhil oru white pill button **"Choose your own journey"** → Choose Your Journey page (`createJourneyPlan("automatic")`, 33-Day pre-selected). "Your N badges and certificate stay with you in Milestones" line remove. "OR CHOOSE YOUR WAY" label center. Recommended card: badge left + chinna gold chevron circle (24px) right same row, keela 66 tile + text (full width, title one line). Recommended (66-Day Isaiah → details) + Maybe later behaviour appdiye. Dead CSS `.jc-next-list*`, `.jc-next-badges*` remove. Check: 10/10 (button → Choose your journey, Recommended → 66-Day details, Maybe later → Settings), 0 console errors.
+3. **Dev team correction — Journey Complete demo "Your Next Walk" page ✅ commit `bc61fab` (`JourneyCompleteFlow.tsx`, `src/index.css`):** "OR CHOOSE YOUR WAY" keela irundha 3 journey-type cards (33 days again / Designed Experience / Create a Journey) ellam same Choose Your Journey page ku dhaan pogudhu → remove, adhukku badhil oru white pill button **"Choose your own journey"** → Choose Your Journey page (`createJourneyPlan("automatic")`, 33-Day pre-selected). "Your N badges and certificate stay with you in Milestones" line remove. "OR CHOOSE YOUR WAY" label center. Recommended card: badge left + chinna gold chevron circle (24px) right same row, keela 66 tile + text (full width, title one line). Recommended (66-Day Isaiah → details) + Maybe later behaviour appdiye. Dead CSS `.jc-next-list*`, `.jc-next-badges*` remove. Check: 10/10 (button → Choose your journey, Recommended → 66-Day details, Maybe later → Settings), 0 console errors.
 4. **Dev team question (Bible version change) — answer anuppiyaachu (dev handle pannuvaanga):** (1) version change = ella readings um (past days kooda) new version la, passage maaraadhu, reflections maaraadhu; (2) highlights verse reference + saved text + version label oda store, reader la new version la um same verse highlight, Journal la original text + "KJV" label, MSG maadhiri paraphrase verse mapping edge case dev handle; (3) today's reading open la irundhaa text udane switch, passage + highlights same.
 
 **Naalaiku work (order padi):**
-1. Carousel + Next Walk correction browser la user check → OK → commit `main` (6 images + `OnboardingCarousel.tsx` `git add`).
-2. PM kitta: Passage Ready green card subtext "Book 5 of 66 · 5th book of the Old Testament" um order hint kudukkum — adhuvum hide pannanuma nu confirm.
-3. Client images vandhaa carousel images replace.
-4. Kathy list wait: Day 40 … 365 names + 365 ku appram badges (keela 2026-11-10 section).
-5. Wearable flow plan (2026-11-05 section point 2) innum pending.
+1. PM kitta: Passage Ready green card subtext "Book 5 of 66 · 5th book of the Old Testament" um order hint kudukkum — adhuvum hide pannanuma nu confirm.
+2. Client images vandhaa carousel images replace.
+3. Kathy list wait: Day 40 … 365 names + 365 ku appram badges (keela 2026-11-10 section).
+4. Wearable flow plan (2026-11-05 section point 2) innum pending.
 
 ## ✅ 2026-11-10 / 11 — Milestones + Learn more PM corrections (commit `745a39c`)
 
