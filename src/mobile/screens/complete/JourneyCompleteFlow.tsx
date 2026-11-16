@@ -284,11 +284,13 @@ function NextWalk({ demo, onBack, onChoose, onExit }: { demo: ReturnType<typeof 
   );
 }
 
-export default function JourneyCompleteFlow({ onExit, onChoose }: { onExit: () => void; onChoose: (plan: JourneyPlan) => void }) {
+// Settings → Completed Journeys opens the flow part-way (no celebration): startAt "story" = the journey card,
+// "next" = its "Where to Next?" pill. Back on the first screen shown leaves the flow.
+export default function JourneyCompleteFlow({ onExit, onChoose, startAt = "celebrate" }: { onExit: () => void; onChoose: (plan: JourneyPlan) => void; startAt?: Stage }) {
   const demo = useMemo(getJourneyCompleteDemo, []);
-  const [stage, setStage] = useState<Stage>("celebrate");
+  const [stage, setStage] = useState<Stage>(startAt);
 
-  if (stage === "story") return <Story demo={demo} onBack={() => setStage("celebrate")} onNext={() => setStage("next")} />;
-  if (stage === "next") return <NextWalk demo={demo} onBack={() => setStage("story")} onChoose={onChoose} onExit={onExit} />;
+  if (stage === "story") return <Story demo={demo} onBack={() => (startAt === "story" ? onExit() : setStage("celebrate"))} onNext={() => setStage("next")} />;
+  if (stage === "next") return <NextWalk demo={demo} onBack={() => (startAt === "next" ? onExit() : setStage("story"))} onChoose={onChoose} onExit={onExit} />;
   return <Celebrate demo={demo} onNext={() => setStage("story")} onExit={onExit} />;
 }

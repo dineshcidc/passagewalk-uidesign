@@ -1,15 +1,22 @@
 # Passage Walk — Status
 
-**Last updated:** 2026-11-12
+**Last updated:** 2026-11-13
 
-## ▶️ 2026-11-13 — Journey tab "THE 66 BOOKS" hide (uncommitted)
+## ▶️ NAALAIKU (Mon 2026-11-16) — first idha padi
 
-- PM correction (Passage Ready trail hide panna adhe reason, user next passage guess panna koodaadhu): Journey tab-la **"THE 66 BOOKS · Where your steps have led"** card hide. Idhu 33-Day Walk-la mattum dhaan vandhuchu (Designed Experiences ellam max 7 books, adhanaala avanga per-book list kaattuvaanga). `JourneyScreen.tsx` `SHOW_STEPS_BOOK_MAP = false` (true = thirumba varum), code delete pannala.
-- Appdiye irukkudhu: Whole Bible card ("Your walk through the Bible", X of 1,189 chapters read), Create a Journey / small Designed "Chapters read per book" accordion.
-- Typecheck + build pass. 9 journey suites + pudhu Journey-tab checks **362/362** (33-Day card illa, Designed / your books / whole Bible card irukku, calendar gap 15px ella type-layum), 0 console errors. Commit pending.
-- Point 1 (green card subtext "Book 5 of 66 · 5th book of the Old Testament") = PM kitta kekkanum. Suggestion: "Old Testament · Books of the Law" maadhiri, number illaama.
+**Day close 2026-11-13 (Fri):** user leave. Journey tab change **commit `faed05e`** aagiduchu. Indha day-close STATUS.md update mattum uncommitted (commit pannalaam). Typecheck + build pass ✅, regression 362/362 ✅.
 
-## ▶️ NAALAIKU (2026-11-13) — first idha padi
+**Inniku mudinjadhu:**
+1. **Journey tab "THE 66 BOOKS" hide (PM correction) ✅ commit `faed05e`:** Passage Ready trail hide panna adhe reason (user next passage guess panna koodaadhu). Journey tab-la **"THE 66 BOOKS · Where your steps have led"** card hide. Idhu 33-Day Walk-la mattum dhaan vandhuchu (Designed Experiences ellam max 7 books, adhanaala avanga per-book list kaattuvaanga). `JourneyScreen.tsx` `SHOW_STEPS_BOOK_MAP = false` (true = thirumba varum), code delete pannala.
+   - Appdiye irukkudhu: Whole Bible card ("Your walk through the Bible", X of 1,189 chapters read), Create a Journey / Designed "Chapters read per book" accordion.
+   - Check: 9 journey suites + pudhu Journey-tab checks **362/362** (33-Day card illa, Designed / your books / whole Bible card irukku, calendar gap 15px ella type-layum), 0 console errors.
+2. **Point 1 suggestion ready (PM ku kekkanum):** Passage Ready green card subtext "Book 5 of 66 · 5th book of the Old Testament" — steps 5,326 + "Book 5" = first digit = book number nu user kandupidippaanga. Suggestion **Option B:** "Old Testament · Books of the Law" maadhiri (testament + section, number illa). Option A = line full remove. PM English message chat la ready aachu.
+
+**Naalaiku work (order padi):**
+1. PM answer (Point 1) vandhaa implement: `describeBookPosition` (`data/stepsRule.ts`) maathanum, 66 books section map add (Option B).
+2. Wait (ippo venaam, user 2026-11-13): client carousel images · Kathy Day 40 … 365 names + 365 ku appram badges · Wearable flow plan.
+
+## ✅ 2026-11-12 — Passage Ready + carousel + Next Walk (committed)
 
 **Day close 2026-11-12:** user leave. **Ellam commit aagiduchu** (`6dd381a` Passage Ready, `79aae55` carousel, `bc61fab` carousel timing + Next Walk) — working tree clean. Build + headless checks pass ✅.
 

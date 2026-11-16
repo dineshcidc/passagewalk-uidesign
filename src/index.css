@@ -2884,3 +2884,30 @@ button.scripture-reading-version svg:last-child { width: 9px; height: 9px; margi
 /* The Designed Experience finishing badge is purple (client accent), as on Milestones and the celebration. */
 .experience-milestones .final { border-color: #dcc4ff; background: #f7f0ff; }
 .experience-milestones .final i { color: white; background: #7e00fc; }
+
+/* Settings → Completed Journeys (dev team 2026-11-16): reopen a finished journey's story. */
+.completed-journeys-list { margin-top: 18px; display: grid; gap: 10px; }
+.completed-journey-item { display: grid; justify-items: center; gap: 10px; }
+.completed-journey-card { width: 100%; padding: 12px 14px; display: flex; align-items: center; gap: 12px; border: 1px solid var(--app-border); border-radius: 16px; color: var(--app-deep-navy); background: white; text-align: left; font-family: var(--app-font-ui); cursor: pointer; }
+/* Small white pill on its own row under the card, centred: straight to Your Next Walk. */
+.completed-journey-next { padding: 7px 12px 7px 14px; display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--app-border); border-radius: 999px; color: var(--app-primary-text); background: white; font-family: var(--app-font-ui); font-size: 10.5px; font-weight: 700; cursor: pointer; }
+.completed-journey-next svg { width: 11px; height: 11px; }
+/* Short "—— or ——" line between the card and the pill. */
+.completed-journey-or { width: 140px; display: flex; align-items: center; gap: 8px; color: #6b6e6a; font-size: 9.5px; }
+.completed-journey-or:before, .completed-journey-or:after { content: ""; height: 1px; flex: 1; background: var(--app-border); }
+.completed-journey-card > i { width: 44px; height: 44px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 12px; background: #fff6df; }
+.completed-journey-card > i .milestone-badge { width: 32px; height: 36px; }
+.completed-journey-card > div { min-width: 0; flex: 1; }
+.completed-journey-card span { display: block; color: #7a5a14; font-size: 7px; font-weight: 700; letter-spacing: .12em; }
+.completed-journey-card strong { display: block; margin-top: 3px; font-size: 14px; font-weight: 600; }
+.completed-journey-card small { display: block; margin-top: 2px; color: var(--app-text-secondary); font-size: 10px; }
+.completed-journey-card > svg { width: 14px; height: 14px; color: #6b6e6a; }/* Settings prototype-only state tabs (Journey in progress / Journey completed). */
+.settings-state-demo { margin-bottom: 18px; padding: 10px; border: 1px dashed #e0c98e; border-radius: 14px; background: #fffaf0; }
+.settings-state-demo > span { display: block; margin: 0 0 7px 2px; color: #7a5a14; font-size: 7px; font-weight: 700; letter-spacing: .14em; }
+.current-journey-card > i.done { display: inline-flex; align-items: center; gap: 3px; color: #1f6a47; background: #e3f4ea; }
+.current-journey-card > i.done svg { width: 9px; height: 9px; }
+.completed-journeys-empty { padding: 26px 20px; display: grid; justify-items: center; gap: 6px; border: 1px dashed var(--app-border); border-radius: 16px; background: white; text-align: center; }
+.completed-journeys-empty i { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; color: #6b6e6a; background: var(--app-icon-tile); }
+.completed-journeys-empty i svg { width: 18px; height: 18px; }
+.completed-journeys-empty strong { margin-top: 4px; font-size: 13px; font-weight: 600; }
+.completed-journeys-empty p { margin: 0; color: var(--app-text-secondary); font-size: 10.5px; line-height: 1.5; }
