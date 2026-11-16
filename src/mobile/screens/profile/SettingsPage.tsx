@@ -139,15 +139,17 @@ export default function SettingsPage({
     );
   }
 
-  const details = [
-    { label: "Length", value: `${plural(plan.days, "day")} · ${planChaptersPerDay(plan)}` },
-    ...(plan.type === "bible" ? [{ label: "Pace", value: getBiblePace(plan.pace).title }] : []),
-    ...(plan.type === "designed" ? [{ label: "Walk", value: journeyName(plan) }] : []),
-    plan.type === "custom" || plan.type === "designed"
-      ? { label: "Books", value: plan.books.length === 66 ? "All 66 books" : formatBookList(plan.books) }
-      : { label: "Books", value: plan.type === "bible" ? "All 66 books" : "Old & New Testaments, alternating" },
-    { label: "Reading order", value: readingOrderLabel(plan) },
+  // Same rows on both tabs: the running journey, or the finished one.
+  const journeyDetails = (journey: JourneyPlan) => [
+    { label: "Length", value: `${plural(journey.days, "day")} · ${planChaptersPerDay(journey)}` },
+    ...(journey.type === "bible" ? [{ label: "Pace", value: getBiblePace(journey.pace).title }] : []),
+    ...(journey.type === "designed" ? [{ label: "Walk", value: journeyName(journey) }] : []),
+    journey.type === "custom" || journey.type === "designed"
+      ? { label: "Books", value: journey.books.length === 66 ? "All 66 books" : formatBookList(journey.books) }
+      : { label: "Books", value: journey.type === "bible" ? "All 66 books" : "Old & New Testaments, alternating" },
+    { label: "Reading order", value: readingOrderLabel(journey) },
   ];
+  const details = journeyDetails(plan);
 
   return (
     <div className="profile-subpage">
@@ -208,8 +210,7 @@ export default function SettingsPage({
             </section>
 
             <dl className="current-journey-details">
-              <div><dt>Length</dt><dd>{completed.days} of {completed.days} days</dd></div>
-              <div><dt>Walked</dt><dd>{shortDate(completed.startDate)} – {shortDate(completed.endDate, true)}</dd></div>
+              {journeyDetails(completed.plan).map((item) => <div key={item.label}><dt>{item.label}</dt><dd>{item.value}</dd></div>)}
             </dl>
 
             <button className="change-journey-button" onClick={() => { setFlowReturn("overview"); setStep("next"); }}>

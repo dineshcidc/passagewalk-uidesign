@@ -2904,7 +2904,7 @@ button.scripture-reading-version svg:last-child { width: 9px; height: 9px; margi
 .completed-journey-card > svg { width: 14px; height: 14px; color: #6b6e6a; }/* Settings prototype-only state tabs (Journey in progress / Journey completed). */
 .settings-state-demo { margin-bottom: 18px; padding: 10px; border: 1px dashed #e0c98e; border-radius: 14px; background: #fffaf0; }
 .settings-state-demo > span { display: block; margin: 0 0 7px 2px; color: #7a5a14; font-size: 7px; font-weight: 700; letter-spacing: .14em; }
-.current-journey-card > i.done { display: inline-flex; align-items: center; gap: 3px; color: #1f6a47; background: #e3f4ea; }
+.current-journey-card > i.done { display: inline-flex; align-items: center; gap: 3px; }
 .current-journey-card > i.done svg { width: 9px; height: 9px; }
 .completed-journeys-empty { padding: 26px 20px; display: grid; justify-items: center; gap: 6px; border: 1px dashed var(--app-border); border-radius: 16px; background: white; text-align: center; }
 .completed-journeys-empty i { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; color: #6b6e6a; background: var(--app-icon-tile); }
