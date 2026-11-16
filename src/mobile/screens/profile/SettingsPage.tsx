@@ -264,9 +264,11 @@ export default function SettingsPage({
             <div className="logout-dialog-icon"><AppIcon name="journey" /></div>
             <h2 id="change-journey-title">Start a new journey?</h2>
             <p>
-              Your current journey ({journeyTypeLabels[plan.type]}) is on Day {getTodayDay()} of {formatCount(plan.days)}. Changing your journey
-              will stop it here, and its progress won&apos;t carry over to the new one.
+              {/* PW-281: completed days stay in the old journey; days not completed stay incomplete; new journey = Day 1 today. */}
+              Your {journeyTypeLabels[plan.type]} ends at Day {getTodayDay()} of {formatCount(plan.days)}. Days not completed will <strong>stay incomplete</strong>.
             </p>
+            <p>Your new journey starts <strong>today as Day 1</strong>.</p>
+            <p className="change-journey-dialog-keep">Completed days and badges stay with you.</p>
             <div>
               <button onClick={() => setConfirmChange(false)}>Keep Current</button>
               <button onClick={() => { setConfirmChange(false); setStep("setup"); }}>Yes, Change</button>

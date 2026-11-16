@@ -265,7 +265,8 @@ function NextWalk({ demo, onBack, onChoose, onExit }: { demo: ReturnType<typeof 
             <div className="jc-recommended-days"><strong>{recommended.days}</strong><span>DAYS</span></div>
             <div>
               <strong>{recommended.name}</strong>
-              <p>You've visited {demo.booksVisited} books. Keep going with Isaiah — the only book of the Bible with 66 chapters.</p>
+              {/* PW-287: same recommendation for everyone (Kathy: after the 33, the 66), so no "keep going" wording. */}
+              <p>Ready for a longer walk? Try Isaiah — the only book of the Bible with 66 chapters, one for each day.</p>
               <small>DESIGNED EXPERIENCE</small>
             </div>
           </div>
