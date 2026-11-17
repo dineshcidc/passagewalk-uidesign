@@ -1,0 +1,246 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Passage Walk preview editor</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@700&family=Newsreader:ital,opsz,wght@1,6..72,500&display=swap" rel="stylesheet">
+<style>html,body{margin:0;background:#111}canvas{display:block}</style></head>
+<body><canvas id="c" width="886" height="1920"></canvas>
+<script>
+// App Preview editor: cuts / speeds the slow-motion screen recording, adds caption overlays + music,
+// and records the result with Chrome's MediaRecorder (H.264 High 4.0 + AAC, MP4).
+const W = 886, H = 1920, FPS = 30;
+const C = document.getElementById("c"), X = C.getContext("2d");
+
+// Scenes: source range in 1x seconds (recording time / F), playback speed, caption.
+let SCENES = [];
+function buildScenes(M) {
+  // M = marker name -> 1x seconds
+  const sc = [
+    { from: M.home + 0.2,     to: M.steps - 0.38,      speed: 1,    eyebrow: "PASSAGE WALK",        text: "Walk with God, one step at a time" },
+    { from: M.steps - 0.38,   to: M.generating,        speed: 1.15, eyebrow: "YOUR DAILY STEPS",    text: "Your steps choose today’s scripture" },
+    { from: M.generating,     to: M.passage,           speed: 1 },
+    { from: M.passage,        to: M.reading,           speed: 1.3,  eyebrow: "TODAY’S SCRIPTURE",   text: "A passage made for your walk" },
+    { from: M.reading,        to: M.reflection,        speed: 1.5,  eyebrow: "KING JAMES VERSION",  text: "Highlight what speaks to you", fit: true },
+    { from: M.reflection,     to: M.celebration,       speed: 1.2,  eyebrow: "PRIVATE JOURNAL",     text: "Pause, reflect, write it down" },
+    { from: M.celebration,    to: M.celebration + 4.3, speed: 1,    eyebrow: "MILESTONES & BADGES", text: "Celebrate every milestone", bell: true },
+    { from: M.journey,        to: M.journey + 2.2,     speed: 1,    eyebrow: "MY JOURNEY",          text: "See your walk, day by day", fadeIn: 0.35 },
+    { from: M.milestones,     to: M.milestones + 2.4,  speed: 1,    end: true },
+  ];
+  // fit inside 29.4 s by speeding up the reading scene
+  const total = () => sc.reduce((a, s) => a + (s.to - s.from) / s.speed, 0);
+  const r = sc.find((s) => s.fit);
+  while (total() > 29.4) r.speed += 0.02;
+  return sc;
+}
+
+let frames, F, t0;
+const out = []; // per output frame: { src: frame index, scene, local time }
+function buildTimeline() {
+  let T = 0;
+  SCENES.forEach((s, si) => {
+    const dur = (s.to - s.from) / s.speed; s.start = T; s.dur = dur;
+    const n = Math.round(dur * FPS);
+    for (let k = 0; k < n; k++) {
+      const src = s.from + (k / FPS) * s.speed, raw = t0 + src * F;
+      let lo = 0, hi = frames.length - 1;
+      while (lo < hi) { const m = (lo + hi + 1) >> 1; if (frames[m].t <= raw) lo = m; else hi = m - 1; }
+      out.push({ src: lo, si, local: k / FPS });
+    }
+    T += n / FPS;
+  });
+  return T;
+}
+
+// ---------- captions ----------
+const ease = (x) => x < 0 ? 0 : x > 1 ? 1 : 1 - Math.pow(1 - x, 3);
+function roundRect(x, y, w, h, r) { X.beginPath(); X.moveTo(x + r, y); X.arcTo(x + w, y, x + w, y + h, r); X.arcTo(x + w, y + h, x, y + h, r); X.arcTo(x, y + h, x, y, r); X.arcTo(x, y, x + w, y, r); X.closePath(); }
+function caption(eyebrow, text, a, rise) {
+  if (a <= 0) return;
+  X.save(); X.globalAlpha = a;
+  // split into two balanced lines
+  const words = text.split(" "); let best = [text, ""], diff = 1e9;
+  X.font = "italic 500 56px Newsreader";
+  for (let k = 1; k < words.length; k++) { const l1 = words.slice(0, k).join(" "), l2 = words.slice(k).join(" "); const d = Math.abs(X.measureText(l1).width - X.measureText(l2).width); if (d < diff) { diff = d; best = [l1, l2]; } }
+  const tw = Math.max(X.measureText(best[0]).width, X.measureText(best[1]).width);
+  X.font = "700 22px DM Sans"; X.letterSpacing = "5px"; const ew = X.measureText(eyebrow).width;
+  const w = Math.max(tw, ew) + 96, h = 222, x = (W - w) / 2, y = 128 + (1 - rise) * 24;
+  roundRect(x, y, w, h, 44); X.fillStyle = "rgba(37,56,24,0.95)"; X.fill();
+  X.strokeStyle = "rgba(243,201,111,0.5)"; X.lineWidth = 2; X.stroke();
+  X.textAlign = "center"; X.fillStyle = "#f3c96f"; X.font = "700 22px DM Sans"; X.letterSpacing = "5px";
+  X.fillText(eyebrow, W / 2 + 2.5, y + 56);
+  X.letterSpacing = "0px"; X.fillStyle = "#fbf8ef"; X.font = "italic 500 56px Newsreader";
+  X.fillText(best[0], W / 2, y + 124); X.fillText(best[1], W / 2, y + 184);
+  X.restore();
+}
+function endCard(a) {
+  if (a <= 0) return;
+  X.save(); X.globalAlpha = a;
+  const g = X.createLinearGradient(0, 0, 0, H); g.addColorStop(0, "#45682a"); g.addColorStop(.5, "#34501e"); g.addColorStop(1, "#1d2c12");
+  X.fillStyle = g; X.fillRect(0, 0, W, H);
+  X.textAlign = "center";
+  X.fillStyle = "#f3c96f"; X.font = "700 28px DM Sans"; X.letterSpacing = "7px"; X.fillText("STEPS · SCRIPTURE · REFLECTION", W / 2 + 3.5, 900);
+  X.letterSpacing = "0px"; X.fillStyle = "#fbf8ef"; X.font = "italic 500 128px Newsreader"; X.fillText("Passage Walk", W / 2, 1050);
+  X.fillStyle = "rgba(251,248,239,.8)"; X.font = "italic 500 50px Newsreader"; X.fillText("Walk with God, one step at a time", W / 2, 1150);
+  X.restore();
+}
+
+// ---------- music (composed here, rendered offline) ----------
+async function renderMusic(seconds, bellAt) {
+  const sr = 48000, ctx = new OfflineAudioContext(2, Math.ceil(seconds * sr), sr);
+  const master = ctx.createGain(); master.gain.value = 0;
+  master.gain.setValueAtTime(0, 0); master.gain.linearRampToValueAtTime(0.9, 0.8);
+  master.gain.setValueAtTime(0.9, seconds - 2.2); master.gain.linearRampToValueAtTime(0, seconds - 0.05);
+  const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -16; comp.ratio.value = 3;
+  master.connect(comp).connect(ctx.destination);
+  // reverb
+  const ir = ctx.createBuffer(2, sr * 3, sr);
+  for (let ch = 0; ch < 2; ch++) { const d = ir.getChannelData(ch); for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 3.2); }
+  const verb = ctx.createConvolver(); verb.buffer = ir; const wet = ctx.createGain(); wet.gain.value = 0.34; verb.connect(wet).connect(master);
+  const dry = ctx.createGain(); dry.gain.value = 0.8; dry.connect(master);
+  const bus = (node) => { node.connect(dry); node.connect(verb); };
+  const hz = (m) => 440 * Math.pow(2, (m - 69) / 12);
+  const bpm = 76, beat = 60 / bpm, bar = beat * 4;
+  // I – vi – IV – V in D major, warm voicings (midi)
+  const chords = [
+    { bass: 38, pad: [62, 66, 69, 73], arp: [74, 78, 81, 85, 81, 78] },  // Dmaj7
+    { bass: 35, pad: [59, 62, 66, 69], arp: [71, 74, 78, 81, 78, 74] },  // Bm7
+    { bass: 31, pad: [59, 62, 66, 67], arp: [71, 74, 79, 83, 79, 74] },  // Gmaj7
+    { bass: 33, pad: [61, 64, 69, 71], arp: [73, 76, 81, 83, 81, 76] },  // A6sus
+  ];
+  const pan = (p) => { const n = ctx.createStereoPanner(); n.pan.value = p; return n; };
+  for (let t = 0, i = 0; t < seconds; t += bar, i++) {
+    const c = chords[i % 4];
+    // pad
+    for (const [j, m] of c.pad.entries()) for (const det of [-6, 6]) {
+      const o = ctx.createOscillator(); o.type = "triangle"; o.frequency.value = hz(m); o.detune.value = det;
+      const f = ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 1400;
+      const g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.022, t + 0.9); g.gain.setValueAtTime(0.022, t + bar - 0.2); g.gain.linearRampToValueAtTime(0, t + bar + 1.2);
+      const p = pan(det < 0 ? -0.35 : 0.35);
+      o.connect(f).connect(g).connect(p); bus(p); o.start(t); o.stop(t + bar + 1.3);
+    }
+    // bass
+    { const o = ctx.createOscillator(); o.type = "sine"; o.frequency.value = hz(c.bass);
+      const g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.16, t + 0.08); g.gain.exponentialRampToValueAtTime(0.03, t + bar);
+      o.connect(g); g.connect(dry); o.start(t); o.stop(t + bar + 0.1); }
+    // plucked arpeggio (soft piano-ish): 8th notes
+    for (let k = 0; k < 8; k++) {
+      const nt = t + k * beat / 2; if (nt > seconds - 1.5) break;
+      const m = c.arp[k % c.arp.length];
+      const g = ctx.createGain(); g.gain.setValueAtTime(0, nt); g.gain.linearRampToValueAtTime(k % 2 ? 0.05 : 0.075, nt + 0.012); g.gain.exponentialRampToValueAtTime(0.0008, nt + 1.6);
+      const p = pan(((k % 4) - 1.5) * 0.18); g.connect(p); bus(p);
+      for (const [mult, amp] of [[1, 1], [2, 0.32], [3, 0.12]]) {
+        const o = ctx.createOscillator(); o.type = "sine"; o.frequency.value = hz(m) * mult;
+        const ga = ctx.createGain(); ga.gain.value = amp; o.connect(ga).connect(g); o.start(nt); o.stop(nt + 1.7);
+      }
+    }
+  }
+  // celebration bell shimmer
+  for (const [k, m] of [86, 90, 93, 98, 102].entries()) {
+    const nt = bellAt + k * 0.09;
+    const g = ctx.createGain(); g.gain.setValueAtTime(0, nt); g.gain.linearRampToValueAtTime(0.06, nt + 0.01); g.gain.exponentialRampToValueAtTime(0.0006, nt + 2.6);
+    const p = pan((k - 2) * 0.25); g.connect(p); bus(p);
+    for (const [mult, amp] of [[1, 1], [2.76, 0.4], [5.4, 0.15]]) { const o = ctx.createOscillator(); o.frequency.value = hz(m) * mult; const ga = ctx.createGain(); ga.gain.value = amp; o.connect(ga).connect(g); o.start(nt); o.stop(nt + 2.7); }
+  }
+  return ctx.startRendering();
+}
+
+// ---------- frames ----------
+const cache = new Map();
+async function bitmap(i) {
+  if (!cache.has(i)) cache.set(i, fetch("frames/" + frames[i].f).then((r) => r.blob()).then(createImageBitmap));
+  return cache.get(i);
+}
+function prefetch(k) { for (let j = k; j < Math.min(out.length, k + 40); j++) bitmap(out[j].src); }
+function evict(k) { for (const [i, p] of cache) if (i < out[Math.max(0, k - 8)].src) { p.then((b) => b.close()); cache.delete(i); } }
+
+async function drawFrame(k) {
+  const o = out[k], s = SCENES[o.si];
+  X.drawImage(await bitmap(o.src), 0, 0, W, H);
+  // cross-fade into scenes that jump in time
+  if (s.fadeIn && o.local < s.fadeIn) {
+    const prev = out[out.findIndex((q) => q.si === o.si) - 1];
+    X.save(); X.globalAlpha = 1 - o.local / s.fadeIn; X.drawImage(await bitmap(prev.src), 0, 0, W, H); X.restore();
+  }
+  if (s.text) {
+    const inA = ease((o.local - 0.15) / 0.45), outA = 1 - ease((o.local - 2.0) / 0.4);
+    caption(s.eyebrow, s.text, Math.min(inA, outA), inA);
+  }
+  if (s.end) endCard(ease((o.local - 0.7) / 0.4));
+}
+
+window.render = async function () {
+  frames = await (await fetch("frames.json")).json();
+  const mk = await (await fetch("markers.json")).json(); F = mk.F; t0 = frames[0].t;
+  SCENES = buildScenes(Object.fromEntries(mk.markers.map((m) => [m.name, (m.t - t0) / F])));
+  await document.fonts.load("italic 500 60px Newsreader"); await document.fonts.load("700 25px DM Sans");
+  const total = buildTimeline();
+  const bellAt = SCENES[6].start + 0.35;
+  const music = await renderMusic(total, bellAt);
+
+  const ac = new AudioContext({ sampleRate: 48000 });
+  const dest = ac.createMediaStreamDestination(); dest.channelCount = 2;
+  const srcNode = ac.createBufferSource(); srcNode.buffer = music; srcNode.connect(dest);
+  const vstream = C.captureStream(0), vtrack = vstream.getVideoTracks()[0];
+  const stream = new MediaStream([vtrack, ...dest.stream.getAudioTracks()]);
+  const rec = new MediaRecorder(stream, { mimeType: "video/mp4;codecs=avc1.640028,mp4a.40.2", videoBitsPerSecond: 11000000, audioBitsPerSecond: 256000 });
+  const chunks = []; rec.ondataavailable = (e) => e.data.size && chunks.push(e.data);
+  const done = new Promise((r) => (rec.onstop = r));
+
+  prefetch(0); await Promise.all(out.slice(0, 40).map((o) => bitmap(o.src)));
+  await drawFrame(0);
+  rec.start(1000); await ac.resume();
+  const startAt = performance.now(); srcNode.start();
+  let late = 0;
+  for (let k = 0; k < out.length; k++) {
+    prefetch(k + 1);
+    await drawFrame(k); vtrack.requestFrame();
+    evict(k);
+    const due = startAt + ((k + 1) * 1000) / FPS, now = performance.now();
+    if (now > due + 10) late++;
+    await new Promise((r) => setTimeout(r, Math.max(0, due - performance.now())));
+  }
+  await new Promise((r) => setTimeout(r, 300));
+  rec.stop(); await done; srcNode.stop();
+  const blob = new Blob(chunks, { type: "video/mp4" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "passagewalk-app-preview.mp4"; document.body.appendChild(a); a.click();
+  // also export a poster still at 5 s
+  return { seconds: +total.toFixed(2), frames: out.length, late, bytes: blob.size, mime: rec.mimeType };
+};
+
+
+// Exact constant-frame-rate H.264 (WebCodecs): every frame k at k/30 s, no drops. Audio is muxed in later.
+window.encodeCFR = async function () {
+  frames = await (await fetch("frames.json")).json();
+  const mk = await (await fetch("markers.json")).json(); F = mk.F; t0 = frames[0].t;
+  SCENES = buildScenes(Object.fromEntries(mk.markers.map((m) => [m.name, (m.t - t0) / F])));
+  await document.fonts.load("italic 500 60px Newsreader"); await document.fonts.load("700 25px DM Sans");
+  out.length = 0; buildTimeline();
+  const chunks = []; let description = null, err = null;
+  const enc = new VideoEncoder({
+    output: (chunk, meta) => { if (meta?.decoderConfig?.description && !description) description = new Uint8Array(meta.decoderConfig.description); const d = new Uint8Array(chunk.byteLength); chunk.copyTo(d); chunks.push({ key: chunk.type === "key", ts: chunk.timestamp, data: d }); },
+    error: (e) => (err = e.message),
+  });
+  enc.configure({ codec: "avc1.640028", width: W, height: H, bitrate: 11000000, bitrateMode: "variable", framerate: FPS, latencyMode: "quality", avc: { format: "avc" } });
+  for (let k = 0; k < out.length; k++) {
+    prefetch(k + 1); await drawFrame(k); evict(k);
+    const vf = new VideoFrame(C, { timestamp: Math.round((k * 1e6) / FPS), duration: Math.round(1e6 / FPS) });
+    enc.encode(vf, { keyFrame: k % 60 === 0 }); vf.close();
+    while (enc.encodeQueueSize > 8) await new Promise((r) => setTimeout(r, 5));
+  }
+  await enc.flush(); enc.close();
+  chunks.sort((a, b) => a.ts - b.ts);
+  const total = chunks.reduce((a, c) => a + c.data.length, 0), bin = new Uint8Array(total); let o = 0;
+  for (const c of chunks) { bin.set(c.data, o); o += c.data.length; }
+  const meta = { fps: FPS, width: W, height: H, description: btoa(String.fromCharCode(...description)), samples: chunks.map((c) => ({ size: c.data.length, key: c.key, ts: c.ts })) };
+  for (const [name, data, type] of [["video-cfr.h264bin", bin, "application/octet-stream"], ["video-cfr.json", JSON.stringify(meta), "application/json"]]) {
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([data], { type })); a.download = name; document.body.appendChild(a); a.click();
+    await new Promise((r) => setTimeout(r, 400));
+  }
+  return { frames: out.length, chunks: chunks.length, keys: chunks.filter((c) => c.key).length, bytes: total, err };
+};
+
+// draw a single output frame (for checking stills)
+window.still = async function (sec) {
+  frames = frames || await (await fetch("frames.json")).json();
+  if (!out.length) { const mk = await (await fetch("markers.json")).json(); F = mk.F; t0 = frames[0].t; SCENES = buildScenes(Object.fromEntries(mk.markers.map((m) => [m.name, (m.t - t0) / F]))); await document.fonts.load("italic 500 60px Newsreader"); await document.fonts.load("700 25px DM Sans"); buildTimeline(); }
+  const k = Math.min(out.length - 1, Math.round(sec * FPS)); await drawFrame(k); return out.length / FPS;
+};
+</script></body></html>

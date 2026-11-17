@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Passage Walk – App Store screenshots</title>
+<!-- Source for the App Store screenshots. Open with ?slide=1…8 (one 1320 × 2868 screenshot) or ?collage.
+     Rendered to PNG by headless Chrome; screens/ = real app captures (3x). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-1: #4f7029; --green-2: #34501e; --green-3: #24361a; --green-4: #18240f;
+    --gold: #f3c96f; --gold-soft: #fde9c0; --cream: #fbf8ef; --leaf: #9ac268;
+    --W: 1320px; --H: 2868px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #111; }
+  body { font-family: "DM Sans", sans-serif; -webkit-font-smoothing: antialiased; }
+
+  /* ---------- one screenshot ---------- */
+  .slide {
+    position: relative; width: var(--W); height: var(--H); overflow: hidden; color: var(--cream);
+    background:
+      radial-gradient(1100px 900px at 50% 18%, rgba(154,194,104,.28), transparent 70%),
+      radial-gradient(900px 700px at 50% 100%, rgba(10,16,6,.55), transparent 70%),
+      linear-gradient(170deg, #45682a 0%, #34501e 38%, #263c17 70%, #1b2a10 100%);
+  }
+  .slide.warm {
+    background:
+      radial-gradient(1000px 900px at 50% 40%, rgba(243,201,111,.30), transparent 70%),
+      radial-gradient(900px 700px at 50% 100%, rgba(10,16,6,.55), transparent 70%),
+      linear-gradient(170deg, #4a6b2b 0%, #34501e 40%, #263c17 72%, #1b2a10 100%);
+  }
+  /* continuous walking path: one long SVG, each slide shows its own 1320px window of it */
+  .path { position: absolute; top: 0; height: var(--H); width: calc(var(--W) * 8); pointer-events: none; }
+  .grain { position: absolute; inset: 0; opacity: .5; mix-blend-mode: soft-light;
+    background-image: radial-gradient(rgba(255,255,255,.18) 1px, transparent 1.4px); background-size: 9px 9px; }
+
+  .caption { position: absolute; left: 0; right: 0; top: 190px; text-align: center; padding: 0 90px; z-index: 3; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 22px; font-weight: 700; font-size: 38px; letter-spacing: .2em; color: var(--gold); }
+  .eyebrow:before, .eyebrow:after { content: ""; width: 64px; height: 3px; border-radius: 3px; background: currentColor; opacity: .55; }
+  .title {
+    margin-top: 36px; font-family: "Newsreader", serif; font-style: italic; font-weight: 500;
+    font-size: 124px; line-height: 1.04; letter-spacing: -.015em; color: var(--cream);
+  }
+  .title em { color: var(--gold); font-style: italic; }
+
+  .brand { display: flex; align-items: center; justify-content: center; gap: 30px; margin-bottom: 64px; }
+  .brand img { width: 150px; height: 150px; border-radius: 36px; box-shadow: 0 0 0 3px rgba(253,233,192,.35); }
+  .brand span { font-family: "Newsreader", serif; font-style: italic; font-weight: 500; font-size: 92px; color: var(--cream); }
+
+  /* ---------- iPhone ---------- */
+  .phone {
+    position: absolute; left: 180px; top: 650px; width: 960px; height: 1961px; z-index: 2;
+    padding: 26px; border-radius: 156px;
+    background: linear-gradient(140deg, #5b6b4b 0%, #1d2615 9%, #0d1209 50%, #1d2615 91%, #56664a 100%);
+    box-shadow:
+      inset 0 0 0 4px #2e3b22, inset 0 0 0 9px #0a0e07;
+  }
+  .phone:before { /* thin bright rim */
+    content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.22);
+  }
+  .phone i { position: absolute; width: 10px; border-radius: 6px; background: linear-gradient(90deg, #3a4730, #11170c); }
+  .phone .b1 { left: -9px; top: 330px; height: 88px; }
+  .phone .b2 { left: -9px; top: 470px; height: 160px; }
+  .phone .b3 { left: -9px; top: 660px; height: 160px; }
+  .phone .b4 { right: -9px; top: 520px; height: 250px; background: linear-gradient(270deg, #3a4730, #11170c); }
+  .screen { position: relative; width: 100%; height: 100%; border-radius: 132px; overflow: hidden; background: #f4f1e8; }
+  .screen img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  /* lifted card: a piece of the real screen, pulled out of the phone */
+  .pop {
+    position: absolute; z-index: 4; background-repeat: no-repeat; border-radius: 34px;
+    box-shadow: 0 0 0 2px rgba(255,255,255,.55);
+  }
+  .pop.round { border-radius: 50%; }
+
+  /* ---------- collage ---------- */
+  .collage { width: 3000px; padding: 64px; background:
+      radial-gradient(1400px 900px at 50% 0%, rgba(154,194,104,.25), transparent 70%),
+      linear-gradient(170deg, #3f5f25, #1d2c12); }
+  .card { background: var(--cream); border-radius: 72px; padding: 110px 110px 120px; }
+  .card-head { display: flex; align-items: center; gap: 40px; margin-bottom: 90px; color: #1c2619; }
+  .card-head img { width: 150px; height: 150px; border-radius: 36px; }
+  .card-head h1 { font-family: "Newsreader", serif; font-style: italic; font-weight: 500; font-size: 104px; line-height: 1; }
+  .card-head p { margin-top: 18px; font-size: 38px; color: #636562; }
+  .card-head .tag { margin-left: auto; padding: 22px 40px; border-radius: 999px; background: #eff5e8; color: #4f7029; font-weight: 700; font-size: 32px; letter-spacing: .12em; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 56px 48px; }
+  .grid figure { text-align: center; }
+  .grid img { width: 100%; display: block; border-radius: 40px; box-shadow: 0 0 0 1px rgba(28,38,25,.08); }
+  .grid figcaption { margin-top: 26px; font-size: 30px; font-weight: 600; color: #4f7029; letter-spacing: .02em; }
+  .grid figcaption b { color: #b07d1c; margin-right: 12px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+  // Screen captures: 372 × 782 CSS px at 3x. Phone screen on canvas: 908 × 1909 px at (206, 676).
+  const SCREEN = { w: 372, h: 782 }, SX = 206, SY = 676, K = 908 / 372;
+
+  const slides = [
+    { img: "home", eyebrow: "STEPS · SCRIPTURE · REFLECTION", title: "Walk with God,<br>one <em>step</em> at a time", hero: true,
+      pop: { x: 20, y: 122, w: 332, h: 84, scale: 1.2, dx: 0, dy: 70, r: 22 } },
+    { img: "steps", eyebrow: "YOUR DAILY STEPS", title: "Your <em>steps</em> choose<br>today’s scripture",
+      pop: { x: 104, y: 225, w: 164, h: 164, scale: 1.22, dx: 0, dy: 20, round: true } },
+    { img: "passage-ready", eyebrow: "TODAY’S SCRIPTURE", title: "A passage made<br>for <em>your walk</em>",
+      pop: { x: 46, y: 320, w: 280, h: 114, scale: 1.22, dx: -50, dy: 0, r: 14 } },
+    { img: "reading-2", eyebrow: "KING JAMES VERSION", title: "Highlight what<br><em>speaks</em> to you",
+      pop: { x: 25, y: 373, w: 322, h: 139, scale: 1.2, dx: 70, dy: 0, r: 10 } },
+    { img: "reflection", eyebrow: "PRIVATE JOURNAL", title: "Pause, <em>reflect</em>,<br>and write it down" },
+    { img: "celebration", eyebrow: "MILESTONES & BADGES", title: "Celebrate every<br><em>milestone</em>", warm: true,
+      pop: { src: "badge-scroll", x: 20, y: 385, w: 332, h: 292, scale: 0.9, at: { x: 850, y: 2330 }, r: 10, rotate: -5 } },
+    { img: "journey", eyebrow: "MY JOURNEY", title: "See your walk,<br><em>day by day</em>",
+      pop: { x: 22, y: 462, w: 328, h: 106, scale: 1.25, dx: -120, dy: 0, r: 16 } },
+    { img: "choose-journey", eyebrow: "THREE WAYS TO WALK", title: "Choose the walk<br>that <em>fits you</em>" },
+  ];
+
+  // One long winding path behind all 8 slides (8 × 1320 px), so the set reads as one walk when swiped.
+  function pathSvg() {
+    const W = 1320 * 8, pts = [];
+    for (let x = -60; x <= W + 60; x += 24) {
+      const y = 1700 + 980 * Math.sin((2 * Math.PI * x) / 2640 + 0.9) + 170 * Math.sin((2 * Math.PI * x) / 910);
+      pts.push(`${x.toFixed(0)},${y.toFixed(0)}`);
+    }
+    const d = "M" + pts.join(" L");
+    return `<svg class="path" viewBox="0 0 ${W} 2868" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="${d}" fill="none" stroke="rgba(154,194,104,.16)" stroke-width="90" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="${d}" fill="none" stroke="rgba(243,201,111,.55)" stroke-width="12" stroke-dasharray="1 40" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`;
+  }
+
+  function popHtml(s) {
+    const p = s.pop; if (!p) return "";
+    const src = p.src || s.img, k = K * p.scale;
+    const w = p.w * k, h = p.h * k;
+    let left, top;
+    if (p.at) { left = p.at.x - w / 2; top = p.at.y - h / 2; }
+    else {
+      const cx = SX + (p.x + p.w / 2) * K + (p.dx || 0), cy = SY + (p.y + p.h / 2) * K + (p.dy || 0);
+      left = cx - w / 2; top = cy - h / 2;
+    }
+    left = Math.max(48, Math.min(1320 - 48 - w, left));
+    const style = `left:${left}px;top:${top}px;width:${w}px;height:${h}px;` +
+      `background-image:url(screens/${src}.png);background-size:${SCREEN.w * k}px ${SCREEN.h * k}px;` +
+      `background-position:${-p.x * k}px ${-p.y * k}px;` + (p.r ? `border-radius:${p.r * k}px;` : "") +
+      (p.rotate ? `transform:rotate(${p.rotate}deg);` : "");
+    return `<div class="pop${p.round ? " round" : ""}" style="${style}"></div>`;
+  }
+
+  function slideHtml(i) {
+    const s = slides[i];
+    const phoneTop = s.hero ? 760 : 650;
+    const shift = phoneTop - 650;
+    const hero = s.hero ? `<div class="brand"><img src="passagewalk-app-icon-rounded.svg" alt=""><span>Passage Walk</span></div>` : "";
+    let pop = popHtml(s);
+    if (shift) pop = pop.replace(/top:([\d.]+)px/, (_, t) => `top:${+t + shift}px`);
+    return `<section class="slide${s.warm ? " warm" : ""}">
+      <div style="position:absolute;inset:0;transform:translateX(${-i * 1320}px)">${pathSvg()}</div>
+      <div class="grain"></div>
+      <div class="caption" style="top:${s.hero ? 150 : 190}px">${hero}<div class="eyebrow">${s.eyebrow}</div><h1 class="title">${s.title}</h1></div>
+      <div class="phone" style="top:${phoneTop}px"><i class="b1"></i><i class="b2"></i><i class="b3"></i><i class="b4"></i>
+        <div class="screen"><img src="screens/${s.img}.png" alt=""></div></div>
+      ${pop}
+    </section>`;
+  }
+
+  function collageHtml() {
+    const names = ["Walk with God", "Your steps choose", "Today’s passage", "Highlight verses", "Reflect", "Celebrate milestones", "Your journey", "Three ways to walk"];
+    const figs = names.map((n, i) => `<figure><img src="../ios/6.9-inch/0${i + 1}.png" alt=""><figcaption><b>0${i + 1}</b>${n}</figcaption></figure>`).join("");
+    return `<div class="collage"><div class="card">
+      <div class="card-head"><img src="passagewalk-app-icon-rounded.svg" alt=""><div><h1>Passage Walk</h1><p>App Store screenshots · iPhone · 1320 × 2868</p></div><span class="tag">iOS · 8 SCREENS</span></div>
+      <div class="grid">${figs}</div></div></div>`;
+  }
+
+  const q = new URLSearchParams(location.search);
+  const root = document.getElementById("root");
+  if (q.has("collage")) root.innerHTML = collageHtml();
+  else root.innerHTML = slideHtml(Math.max(0, Math.min(7, (+q.get("slide") || 1) - 1)));
+</script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Passage Walk – Google Play images</title>
+<!-- Source for the Google Play images. ?slide=1…8 (1440 × 2560 phone screenshot), ?feature (1024 × 500 feature graphic), ?collage.
+     screens-android/ = real app captures (3x) with an Android status bar. Flat: no shadows. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
+<style>
+  :root { --gold: #f3c96f; --cream: #fbf8ef; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #111; overflow: hidden; }
+  body { font-family: "DM Sans", sans-serif; -webkit-font-smoothing: antialiased; }
+
+  .bg {
+    background:
+      radial-gradient(1100px 900px at 50% 18%, rgba(154,194,104,.28), transparent 70%),
+      radial-gradient(900px 700px at 50% 100%, rgba(10,16,6,.55), transparent 70%),
+      linear-gradient(170deg, #45682a 0%, #34501e 38%, #263c17 70%, #1b2a10 100%);
+  }
+  .bg.warm {
+    background:
+      radial-gradient(1000px 900px at 50% 40%, rgba(243,201,111,.30), transparent 70%),
+      radial-gradient(900px 700px at 50% 100%, rgba(10,16,6,.55), transparent 70%),
+      linear-gradient(170deg, #4a6b2b 0%, #34501e 40%, #263c17 72%, #1b2a10 100%);
+  }
+  .slide { position: relative; width: 1440px; height: 2560px; overflow: hidden; color: var(--cream); }
+  .path { position: absolute; top: 0; pointer-events: none; }
+  .grain { position: absolute; inset: 0; opacity: .5; mix-blend-mode: soft-light;
+    background-image: radial-gradient(rgba(255,255,255,.18) 1px, transparent 1.4px); background-size: 9px 9px; }
+
+  .caption { position: absolute; left: 0; right: 0; text-align: center; padding: 0 90px; z-index: 3; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 22px; font-weight: 700; font-size: 38px; letter-spacing: .2em; color: var(--gold); }
+  .eyebrow:before, .eyebrow:after { content: ""; width: 64px; height: 3px; border-radius: 3px; background: currentColor; opacity: .55; }
+  .title { margin-top: 34px; font-family: "Newsreader", serif; font-style: italic; font-weight: 500; font-size: 124px; line-height: 1.04; letter-spacing: -.015em; color: var(--cream); }
+  .title em { color: var(--gold); font-style: italic; }
+  .brand { display: flex; align-items: center; justify-content: center; gap: 30px; margin-bottom: 56px; }
+  .brand img { width: 140px; height: 140px; border-radius: 34px; box-shadow: 0 0 0 3px rgba(253,233,192,.35); }
+  .brand span { font-family: "Newsreader", serif; font-style: italic; font-weight: 500; font-size: 88px; color: var(--cream); }
+
+  /* ---------- generic Android phone (no brand) ---------- */
+  .phone { position: absolute; z-index: 2; border-radius: 128px; padding: 20px;
+    background: #0e130b; box-shadow: inset 0 0 0 4px #2f3c25, inset 0 0 0 1.5px rgba(255,255,255,.25); }
+  .phone i { position: absolute; right: -8px; width: 9px; border-radius: 5px; background: #26311c; }
+  .phone .p1 { top: 380px; height: 150px; }
+  .phone .p2 { top: 600px; height: 240px; }
+  .screen { position: relative; width: 100%; height: 100%; border-radius: 110px; overflow: hidden; background: #f4f6f3; }
+  .screen img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .screen .cam { position: absolute; left: 50%; top: 30px; width: 36px; height: 36px; margin-left: -18px; border-radius: 50%;
+    background: radial-gradient(circle at 40% 38%, #2a3424 0 18%, #050704 32%); z-index: 2; }
+
+  .pop { position: absolute; z-index: 4; background-repeat: no-repeat; border-radius: 34px; box-shadow: 0 0 0 2px rgba(255,255,255,.55); }
+  .pop.round { border-radius: 50%; }
+
+  /* ---------- feature graphic ---------- */
+  .feature { position: relative; width: 1024px; height: 500px; overflow: hidden; color: var(--cream); }
+  .feature .text { position: absolute; left: 72px; top: 0; bottom: 0; width: 520px; display: flex; flex-direction: column; justify-content: center; z-index: 3; }
+  .feature .logo { display: flex; align-items: center; gap: 18px; }
+  .feature .logo img { width: 84px; height: 84px; border-radius: 20px; box-shadow: 0 0 0 2px rgba(253,233,192,.35); }
+  .feature .logo span { font-family: "Newsreader", serif; font-style: italic; font-weight: 500; font-size: 62px; line-height: 1; }
+  .feature .eb { margin-top: 30px; font-weight: 700; font-size: 15px; letter-spacing: .22em; color: var(--gold); }
+  .feature .tag { margin-top: 12px; font-family: "Newsreader", serif; font-style: italic; font-weight: 500; font-size: 40px; line-height: 1.1; }
+  .feature .tag em { color: var(--gold); }
+  .feature .phone { border-radius: 46px; padding: 8px; box-shadow: inset 0 0 0 2px #2f3c25, inset 0 0 0 1px rgba(255,255,255,.25); }
+  .feature .phone i { right: -4px; width: 4px; }
+  .feature .phone .p1 { top: 110px; height: 40px; }
+  .feature .phone .p2 { top: 170px; height: 64px; }
+  .feature .screen { border-radius: 39px; }
+  .feature .screen .cam { top: 11px; width: 13px; height: 13px; margin-left: -6.5px; }
+
+  /* ---------- collage ---------- */
+  .collage { width: 3000px; padding: 64px; background:
+      radial-gradient(1400px 900px at 50% 0%, rgba(154,194,104,.25), transparent 70%), linear-gradient(170deg, #3f5f25, #1d2c12); }
+  .card { background: var(--cream); border-radius: 72px; padding: 110px 110px 120px; }
+  .card-head { display: flex; align-items: center; gap: 40px; margin-bottom: 80px; color: #1c2619; }
+  .card-head img { width: 150px; height: 150px; border-radius: 36px; }
+  .card-head h1 { font-family: "Newsreader", serif; font-style: italic; font-weight: 500; font-size: 104px; line-height: 1; }
+  .card-head p { margin-top: 18px; font-size: 38px; color: #636562; }
+  .card-head .tag { margin-left: auto; padding: 22px 40px; border-radius: 999px; background: #eff5e8; color: #4f7029; font-weight: 700; font-size: 32px; letter-spacing: .12em; }
+  .feature-row { margin-bottom: 70px; }
+  .feature-row img { width: 100%; display: block; border-radius: 36px; box-shadow: 0 0 0 1px rgba(28,38,25,.08); }
+  .label { margin: 0 0 26px; font-size: 30px; font-weight: 700; letter-spacing: .14em; color: #b07d1c; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 56px 48px; }
+  .grid figure { text-align: center; }
+  .grid img { width: 100%; display: block; border-radius: 40px; box-shadow: 0 0 0 1px rgba(28,38,25,.08); }
+  .grid figcaption { margin-top: 26px; font-size: 30px; font-weight: 600; color: #4f7029; }
+  .grid figcaption b { color: #b07d1c; margin-right: 12px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+  const CW = 1440, CH = 2560;
+  const SCREEN = { w: 372, h: 782 };
+  // phone geometry on the 1440 × 2560 canvas
+  const BEZEL = 20, SW = 852, SH = Math.round(SW * SCREEN.h / SCREEN.w), PW = SW + BEZEL * 2, PH = SH + BEZEL * 2;
+  const PX = (CW - PW) / 2, K = SW / SCREEN.w;
+
+  const slides = [
+    { img: "home", eyebrow: "STEPS · SCRIPTURE · REFLECTION", title: "Walk with God,<br>one <em>step</em> at a time", hero: true,
+      pop: { x: 20, y: 122, w: 332, h: 84, scale: 1.2, dx: 0, dy: 60, r: 22 } },
+    { img: "steps", eyebrow: "YOUR DAILY STEPS", title: "Your <em>steps</em> choose<br>today’s scripture",
+      pop: { x: 104, y: 225, w: 164, h: 164, scale: 1.22, dx: 0, dy: 20, round: true } },
+    { img: "passage-ready", eyebrow: "TODAY’S SCRIPTURE", title: "A passage made<br>for <em>your walk</em>",
+      pop: { x: 46, y: 320, w: 280, h: 114, scale: 1.24, dx: -60, dy: 0, r: 14 } },
+    { img: "reading-2", eyebrow: "KING JAMES VERSION", title: "Highlight what<br><em>speaks</em> to you",
+      pop: { x: 25, y: 373, w: 322, h: 139, scale: 1.22, dx: 80, dy: 0, r: 10 } },
+    { img: "reflection", eyebrow: "PRIVATE JOURNAL", title: "Pause, <em>reflect</em>,<br>and write it down" },
+    { img: "celebration", eyebrow: "MILESTONES & BADGES", title: "Celebrate every<br><em>milestone</em>", warm: true,
+      pop: { src: "badge-scroll", x: 20, y: 385, w: 332, h: 292, scale: 0.92, at: { x: 930, y: 2080 }, r: 10, rotate: -5 } },
+    { img: "journey", eyebrow: "MY JOURNEY", title: "See your walk,<br><em>day by day</em>",
+      pop: { x: 22, y: 462, w: 328, h: 106, scale: 1.27, dx: -130, dy: 0, r: 16 } },
+    { img: "choose-journey", eyebrow: "THREE WAYS TO WALK", title: "Choose the walk<br>that <em>fits you</em>" },
+  ];
+
+  // One long winding path behind all 8 slides, so the set reads as one walk when swiped.
+  function pathSvg(width, height, cy, amp, period, wide, dot, gap) {
+    const pts = [];
+    for (let x = -60; x <= width + 60; x += 20) {
+      const y = cy + amp * Math.sin((2 * Math.PI * x) / period + 0.9) + amp * 0.17 * Math.sin((2 * Math.PI * x) / (period * 0.345));
+      pts.push(`${x.toFixed(0)},${y.toFixed(0)}`);
+    }
+    const d = "M" + pts.join(" L");
+    return `<svg class="path" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+      <path d="${d}" fill="none" stroke="rgba(154,194,104,.16)" stroke-width="${wide}" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="${d}" fill="none" stroke="rgba(243,201,111,.55)" stroke-width="${dot}" stroke-dasharray="1 ${gap}" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`;
+  }
+
+  function phoneHtml(img, x, y, sw, folder, cls = "") {
+    const sh = Math.round(sw * SCREEN.h / SCREEN.w);
+    return `<div class="phone ${cls}" style="left:${x}px;top:${y}px;width:${sw + 2 * (cls ? 8 : BEZEL)}px;height:${sh + 2 * (cls ? 8 : BEZEL)}px"><i class="p1"></i><i class="p2"></i>
+      <div class="screen"><span class="cam"></span><img src="${folder}/${img}.png" alt=""></div></div>`;
+  }
+
+  function popHtml(s, SX, SY) {
+    const p = s.pop; if (!p) return "";
+    const src = p.src || s.img, k = K * p.scale, w = p.w * k, h = p.h * k;
+    let left, top;
+    if (p.at) { left = p.at.x - w / 2; top = p.at.y - h / 2; }
+    else { left = SX + (p.x + p.w / 2) * K + (p.dx || 0) - w / 2; top = SY + (p.y + p.h / 2) * K + (p.dy || 0) - h / 2; }
+    left = Math.max(48, Math.min(CW - 48 - w, left));
+    return `<div class="pop${p.round ? " round" : ""}" style="left:${left}px;top:${top}px;width:${w}px;height:${h}px;` +
+      `background-image:url(screens-android/${src}.png);background-size:${SCREEN.w * k}px ${SCREEN.h * k}px;` +
+      `background-position:${-p.x * k}px ${-p.y * k}px;` + (p.r ? `border-radius:${p.r * k}px;` : "") + (p.rotate ? `transform:rotate(${p.rotate}deg);` : "") + `"></div>`;
+  }
+
+  function slideHtml(i) {
+    const s = slides[i];
+    const phoneTop = s.hero ? 690 : 600;
+    const SX = PX + BEZEL, SY = phoneTop + BEZEL;
+    const hero = s.hero ? `<div class="brand"><img src="passagewalk-app-icon-rounded.svg" alt=""><span>Passage Walk</span></div>` : "";
+    return `<section class="slide bg${s.warm ? " warm" : ""}">
+      <div style="position:absolute;inset:0;transform:translateX(${-i * CW}px)">${pathSvg(CW * 8, CH, 1520, 860, 2880, 90, 12, 40)}</div>
+      <div class="grain"></div>
+      <div class="caption" style="top:${s.hero ? 130 : 175}px">${hero}<div class="eyebrow">${s.eyebrow}</div><h1 class="title">${s.title}</h1></div>
+      ${phoneHtml(s.img, PX, phoneTop, SW, "screens-android")}
+      ${popHtml(s, SX, SY)}
+    </section>`;
+  }
+
+  function featureHtml() {
+    return `<section class="feature bg">
+      <div style="position:absolute;inset:0">${pathSvg(1024, 500, 330, 150, 1400, 36, 5, 16)}</div>
+      <div class="grain"></div>
+      <div class="text">
+        <div class="logo"><img src="passagewalk-app-icon-rounded.svg" alt=""><span>Passage Walk</span></div>
+        <div class="eb">STEPS · SCRIPTURE · REFLECTION</div>
+        <div class="tag">Walk with God,<br>one <em>step</em> at a time</div>
+      </div>
+      ${phoneHtml("passage-ready", 812, 92, 196, "screens-android", "small")}
+      ${phoneHtml("home", 610, 44, 214, "screens-android", "small")}
+    </section>`;
+  }
+
+  function collageHtml() {
+    const names = ["Walk with God", "Your steps choose", "Today’s passage", "Highlight verses", "Reflect", "Celebrate milestones", "Your journey", "Three ways to walk"];
+    const figs = names.map((n, i) => `<figure><img src="../android/phone/0${i + 1}.png" alt=""><figcaption><b>0${i + 1}</b>${n}</figcaption></figure>`).join("");
+    return `<div class="collage"><div class="card">
+      <div class="card-head"><img src="passagewalk-app-icon-rounded.svg" alt=""><div><h1>Passage Walk</h1><p>Google Play images · phone 1440 × 2560 · feature graphic 1024 × 500</p></div><span class="tag">ANDROID · 8 SCREENS</span></div>
+      <p class="label">FEATURE GRAPHIC</p>
+      <div class="feature-row"><img src="../android/feature-graphic-1024x500.png" alt=""></div>
+      <p class="label">PHONE SCREENSHOTS</p>
+      <div class="grid">${figs}</div></div></div>`;
+  }
+
+  const q = new URLSearchParams(location.search), root = document.getElementById("root");
+  if (q.has("collage")) root.innerHTML = collageHtml();
+  else if (q.has("feature")) root.innerHTML = featureHtml();
+  else root.innerHTML = slideHtml(Math.max(0, Math.min(7, (+q.get("slide") || 1) - 1)));
+</script>
+</body>
+</html>
