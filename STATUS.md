@@ -1,10 +1,40 @@
 # Passage Walk — Status
 
-**Last updated:** 2026-11-13
+**Last updated:** 2026-11-17
 
-## ▶️ NAALAIKU (Mon 2026-11-16) — first idha padi
+## ▶️ 2026-11-17 — Onboarding client images (pudhu work 1) ✅ (uncommitted)
 
-**Day close 2026-11-13 (Fri):** user leave. Journey tab change **commit `faed05e`** aagiduchu. Indha day-close STATUS.md update mattum uncommitted (commit pannalaam). Typecheck + build pass ✅, regression 362/362 ✅.
+- Client 8 pudhu images (1A · 2A–2D · 3A–3C) add. Online (Unsplash) placeholder 6 images **UI + code + files remove**.
+- Folder: ella onboarding photos um `src/assets/onboarding/` (`onboarding-1.jpg` … `onboarding-3c.jpg`, pazhaya 3 client photos um inga move). Web size ku resize (max 1200px, q82: 60MB → ~2.5MB); 1A la irundha ~5px white frame crop. Raw originals `Client-call/Onboarding-images/` (gitignored).
+- Carousel: Page 1 = 3 images (1 + 1A + 2B), Page 2 = 4 (2 + 2A + 2C + 2D), Page 3 = 4 (3 + 3A–3C). First = pazhaya client photo, apram random fade. User: page 1 la 2 images mattum repeat aagudhu → page 2 la irundha 2B (bridge + stream) page 1 ku move. 3B `15% center` (hikers theriyum). Alt text ellam pudhusu.
+- Check: typecheck + build ✅, headless 3 pages × 11 images load ✅, crops screenshot la paathaachu, 0 console errors.
+
+## ▶️ NAALAIKU (Tue 2026-11-17) — first idha padi
+
+**Day close 2026-11-16 (Mon):** user leave. Inniku UI work ellam **commit aagiduchu** (`fcb4985`, `e8178c3`, `dbb0253`). Indha day-close STATUS.md update mattum uncommitted (commit pannalaam). Typecheck + build pass ✅, **full regression 413/413** ✅, 0 console errors. Project last week = testing time — **pudhu work edukka venaam, issues vandhaa mattum fix** (user decision).
+
+**Inniku mudinjadhu:**
+1. **PW-32 (Step Entry ring) — answer ready:** ring digit count padi fill aagum: 1 / 2 / 3 / 4+ digits = 25 / 50 / 75 / 100%. UI mattum dhaan, step goal illa, flow ah block pannaadhu. Ticket reply text user ku kuduthaachu.
+2. **Settings → Completed Journeys (dev team ask) ✅** (`SettingsPage.tsx`):
+   - Settings overview la **prototype tabs** (dashed gold box "PROTOTYPE · SETTINGS STATE"): **Journey in progress** (Current Journey card + details + Change Journey + READING Bible version + YOUR JOURNEYS 0 + PROTOTYPE DEMO) / **Journey completed** (LAST JOURNEY card, COMPLETED badge same colour, same details rows, "Choose Your Next Journey" button; Bible version + Prototype demo hide).
+   - **YOUR JOURNEYS → Completed Journeys page:** empty state ("No completed journeys yet") / card list (badge, dates short format, "33 of 33 days") → tap = Your 33-Day Story; card keela "or" line + white pill "Where to Next?" (no shadow) → Your Next Walk. Back = Completed Journeys page.
+   - `JourneyCompleteFlow` ku `startAt` prop ("story" / "next") add — back button direct ah Settings ku varum.
+3. **PW-281 (Change Journey day / steps) ✅:** Rule: new journey **today Day 1** (backdate illa), old journey la completed days real date oda irukkum, not-completed days incomplete ah irukkum, step carry-over illa, badges / Passage Walk days / Bible progress cumulative, Journal dates maaraadhu. Popup text bigger + clear: "Your X ends at Day N of M. Days not completed will **stay incomplete**. Your new journey starts **today as Day 1**." + green box "Completed days and badges stay with you." Ticket reply text kuduthaachu.
+4. **PW-287 (Next Walk after Journey Complete) ✅:** 66-Day recommendation ellarukum fixed (Kathy decision). Recommended card copy: "Ready for a longer walk? Try Isaiah — the only book of the Bible with 66 chapters, one for each day." Reply text kuduthaachu.
+5. **Ticket screenshots** → `Client-call/Jira-tickets/PW-287/` (2 PNG) + `PW-281/` (popup PNG). Gitignored. Jira comment innum post pannala (user post pannuvaaru / sonnaa MCP la post pannalaam; images manual ah attach).
+6. **Full regression 413/413:** 9 journey suites 362/362 + app-wide 13/13 (old `app.json` labels fix: "Back to Welcome", "See what happens when a user finishes") + pudhu Settings / tabs / Log out-in checks 38/38. Suites: `1d8756f9…/scratchpad/qa/journeys-v3.json`, `app.json`.
+
+**Known (user decision: venaam, leave as is):** Change Journey ku appram Home la "Day 05 · 5 of 7 days" varum (mock rule Day 5 today ella type kum) — popup "today as Day 1" oda mismatch. Dev team kettaa reply: "This is prototype mock data. Every journey type shows the same sample progress (Day 5 today). In the real app, the new journey starts today as Day 1, as the Change Journey popup says."
+
+**Naalaiku work:**
+1. Testing time issues / dev tickets vandhaa fix (fix → build → regression → commit).
+2. Point 1 PM answer innum pending: Passage Ready "Book 5 of 66" subtext → Option B vandhaa `describeBookPosition` (`data/stepsRule.ts`) maathanum.
+3. Wait (ippo venaam): client carousel images · Kathy Day 40 … 365 names · Wearable flow plan.
+4. Atlassian MCP deprecated V1 endpoint — user ku already sonnaachu (v2 ku reconnect pannanum).
+
+## ✅ 2026-11-13 — Journey tab 66 books hide (committed)
+
+**Day close 2026-11-13 (Fri):** user leave. Journey tab change **commit `faed05e`** aagiduchu. Typecheck + build pass ✅, regression 362/362 ✅.
 
 **Inniku mudinjadhu:**
 1. **Journey tab "THE 66 BOOKS" hide (PM correction) ✅ commit `faed05e`:** Passage Ready trail hide panna adhe reason (user next passage guess panna koodaadhu). Journey tab-la **"THE 66 BOOKS · Where your steps have led"** card hide. Idhu 33-Day Walk-la mattum dhaan vandhuchu (Designed Experiences ellam max 7 books, adhanaala avanga per-book list kaattuvaanga). `JourneyScreen.tsx` `SHOW_STEPS_BOOK_MAP = false` (true = thirumba varum), code delete pannala.

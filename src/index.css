@@ -129,7 +129,7 @@ html:has(.design-pages-canvas)::-webkit-scrollbar, body:has(.design-pages-canvas
   width: 100%; height: 100%; display: block; object-fit: cover; object-position: center 54%;
   animation: onboarding-image-in .85s cubic-bezier(.22,1,.36,1) both;
 }
-/* Top banner carousel (3 images per page): stacked, slow cross-fade, gentle zoom on the showing image.
+/* Top banner carousel (2–5 client images per page): stacked, slow cross-fade, gentle zoom on the showing image.
    Per-image object-position comes from OnboardingFlow. */
 .onboarding-carousel { position: absolute; inset: 0; animation: onboarding-image-in .85s cubic-bezier(.22,1,.36,1) both; }
 .onboarding-carousel img { position: absolute; inset: 0; opacity: 0; transition: opacity 1.1s ease-in-out; animation: none; }

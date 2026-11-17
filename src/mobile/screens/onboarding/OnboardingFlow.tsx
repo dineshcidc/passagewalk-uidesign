@@ -1,14 +1,16 @@
 import { useState } from "react";
-import onboardingImage1 from "../../../assets/Onboarding1.jpg";
-import onboardingImage2 from "../../../assets/Onboarding2.jpg";
-import onboardingImage3 from "../../../assets/Onboarding3.jpg";
-// Placeholder carousel photos (Unsplash) until the client shares their images.
-import onboardingForestPath from "../../../assets/Onboarding1-forest-path.jpg";
-import onboardingSunlitValley from "../../../assets/Onboarding1-sunlit-valley.jpg";
-import onboardingBible from "../../../assets/Onboarding2-bible.jpg";
-import onboardingSteps from "../../../assets/Onboarding2-steps.jpg";
-import onboardingHikers from "../../../assets/Onboarding3-hikers.jpg";
-import onboardingSunrise from "../../../assets/Onboarding3-sunrise.jpg";
+// Onboarding top banner photos — all client images (src/assets/onboarding/). Originals: Client-call/Onboarding-images/.
+import onboarding1 from "../../../assets/onboarding/onboarding-1.jpg";
+import onboarding1a from "../../../assets/onboarding/onboarding-1a.jpg";
+import onboarding2 from "../../../assets/onboarding/onboarding-2.jpg";
+import onboarding2a from "../../../assets/onboarding/onboarding-2a.jpg";
+import onboarding2b from "../../../assets/onboarding/onboarding-2b.jpg";
+import onboarding2c from "../../../assets/onboarding/onboarding-2c.jpg";
+import onboarding2d from "../../../assets/onboarding/onboarding-2d.jpg";
+import onboarding3 from "../../../assets/onboarding/onboarding-3.jpg";
+import onboarding3a from "../../../assets/onboarding/onboarding-3a.jpg";
+import onboarding3b from "../../../assets/onboarding/onboarding-3b.jpg";
+import onboarding3c from "../../../assets/onboarding/onboarding-3c.jpg";
 import AppIcon from "../../components/AppIcon";
 import IOSDeviceFrame from "../../components/IOSDeviceFrame";
 import { defaultJourneyPlan } from "../../data/journeyPlans";
@@ -29,11 +31,12 @@ const onboardingContent = [
     eyebrow: "A DAILY DEVOTIONAL RHYTHM",
     title: "Walk With Purpose",
     body: "Passage Walk connects the steps you take with scripture—creating a rhythm of movement, reflection, and faith that brings you closer to God each day.",
-    // Top banner carousel: first = original client photo, then 2 more (random order, slow fade).
+    // Top banner carousel: first = the page's original client photo, then the rest (random order, slow fade). 3 / 4 / 4 images.
     images: [
-      { src: onboardingImage1, alt: "A stone path leading down a hillside toward a sunlit valley", position: "60% center" },
-      { src: onboardingForestPath, alt: "Morning light falling on a path through a tall forest" },
-      { src: onboardingSunlitValley, alt: "A person standing on a rock above a sunlit mountain valley", position: "center 60%" },
+      { src: onboarding1, alt: "A stone path leading down a hillside toward a sunlit valley", position: "60% center" },
+      { src: onboarding1a, alt: "A wooden boardwalk winding through tall grass toward morning light", position: "55% center" },
+      // Client 2B: moved from page 2 so page 1 also rotates 3 images.
+      { src: onboarding2b, alt: "A stream rushing under a small bridge through a mossy forest" },
     ],
   },
   {
@@ -41,9 +44,10 @@ const onboardingContent = [
     title: "Your Steps, Your Scripture",
     body: "Enter your daily steps and receive a meaningful passage selected for your journey. Read at your own pace, then pause for a quiet moment of reflection.",
     images: [
-      { src: onboardingImage2, alt: "A hiker walking along a peaceful forest trail", position: "center 53%" },
-      { src: onboardingSteps, alt: "Walking shoes stepping up stone stairs" },
-      { src: onboardingBible, alt: "Hands holding an open Bible" },
+      { src: onboarding2, alt: "A hiker walking along a peaceful forest trail", position: "center 53%" },
+      { src: onboarding2a, alt: "A quiet pond below green hills and an oak tree under a blue sky", position: "60% center" },
+      { src: onboarding2c, alt: "Pine trees and mountain peaks reflected in a still pond" },
+      { src: onboarding2d, alt: "Sunlight on a green meadow and pond beneath a rocky mountainside", position: "60% center" },
     ],
   },
   {
@@ -51,9 +55,10 @@ const onboardingContent = [
     title: "A 33-Day Walk",
     body: "Build a lasting devotional habit through daily reading and personal reflection. Your steps uniquely determine your Bible reading. Follow your progress and celebrate meaningful milestones along the way.",
     images: [
-      { src: onboardingImage3, alt: "A hiker walking along a mountain trail toward a distant peak", position: "center 62%" },
-      { src: onboardingHikers, alt: "Two hikers on a trail below snowy mountains" },
-      { src: onboardingSunrise, alt: "The sun rising over layered mountain ridges" },
+      { src: onboarding3, alt: "A hiker walking along a mountain trail toward a distant peak", position: "center 62%" },
+      { src: onboarding3a, alt: "A forested mountain valley with a small pond below the trail" },
+      { src: onboarding3b, alt: "Three hikers walking a hillside trail above a wide green valley", position: "15% center" },
+      { src: onboarding3c, alt: "A green meadow and rocky path below a tall mountain peak" },
     ],
   },
 ];

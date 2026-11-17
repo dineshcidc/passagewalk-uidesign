@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 export type CarouselImage = { src: string; alt: string; position?: string };
 
 // Client ask (2026-11-12): while the user stays on an onboarding page, its top banner keeps changing between
-// 3 images — slow cross-fade + gentle zoom, next image picked at random (never the same one twice in a row).
-// The first image is always the page's original (client) photo. Placeholder photos until the client's set arrives.
+// that page's images — slow cross-fade + gentle zoom, next image picked at random (never the same one twice in a row).
+// The first image is always the page's original photo. All images are the client's (2026-11-17 set, src/assets/onboarding/).
 const HOLD_MS = 3500;
 
 export default function OnboardingCarousel({ images }: { images: CarouselImage[] }) {
