@@ -1,15 +1,64 @@
 # Passage Walk — Status
 
-**Last updated:** 2026-11-17
+**Last updated:** 2026-11-18 (day close)
 
-## ▶️ 2026-11-17 — Onboarding client images (pudhu work 1) ✅ (uncommitted)
+## ▶️ NAALAIKU (Thu 2026-11-19) — first idha padi
 
-- Client 8 pudhu images (1A · 2A–2D · 3A–3C) add. Online (Unsplash) placeholder 6 images **UI + code + files remove**.
-- Folder: ella onboarding photos um `src/assets/onboarding/` (`onboarding-1.jpg` … `onboarding-3c.jpg`, pazhaya 3 client photos um inga move). Web size ku resize (max 1200px, q82: 60MB → ~2.5MB); 1A la irundha ~5px white frame crop. Raw originals `Client-call/Onboarding-images/` (gitignored).
-- Carousel: Page 1 = 3 images (1 + 1A + 2B), Page 2 = 4 (2 + 2A + 2C + 2D), Page 3 = 4 (3 + 3A–3C). First = pazhaya client photo, apram random fade. User: page 1 la 2 images mattum repeat aagudhu → page 2 la irundha 2B (bridge + stream) page 1 ku move. 3B `15% center` (hikers theriyum). Alt text ellam pudhusu.
-- Check: typecheck + build ✅, headless 3 pages × 11 images load ✅, crops screenshot la paathaachu, 0 console errors.
+**Day close 2026-11-18 (Wed):** user leave. Code change edhuvum illa — STATUS.md mattum update (nethu + inniku update rendum uncommitted, commit pannalaam).
 
-## ▶️ NAALAIKU (Tue 2026-11-17) — first idha padi
+**Inniku mudinjadhu:**
+1. **PW-287 (Next Walk) — Yougan question ku reply ready:**
+   - Point 1 (finished journey data) ✅ Yougan API la confirm: new walk today Day 1 (Isaiah 1), pazhaya days real dates oda, today's steps carry over illa, badges / Bible progress cumulative. Test `bb5663f` (backend). Namba reply venaam.
+   - Point 2 (Recommended card) ✅ Kishore app fix `99de386` — 66-Day details (03/06) selected ah open aagum.
+   - Point 3 (recommendation rule) — Yougan ketta question: always 66-Day vs twice-length rule. **Namba answer = Option 1:** always 66-Day Isaiah (client decision); 66-Day already complete aanaa → twice-length rule fallback (completed walks skip); walk edhuvum illana `recommended` illa → app "Recommended for you" card hide, "Choose your own journey" button appdiye. Card text prototype padi: "Ready for a longer walk? Try Isaiah — the only book of the Bible with 66 chapters, one for each day." Server change mattum.
+   - Reply text user ku kuduthaachu — **user Jira la post pannuvaaru** (mentions Jira la select panni). Nov 16 comment la typos irundhuchu ("Readyh", "66chapters", "66-D") — indha reply la correct text irukku.
+
+**Naalaiku work:**
+1. PW-287: reply post aachaa nu check; Yougan / Kishore / Karthi response vandhaa answer (esp. "card hide" case app la handle aagudhaa — Kishore).
+2. Store images / video feedback vandhaa fix (source HTML → re-render → 24-bit export).
+3. Testing time issues / dev tickets vandhaa fix (fix → build → regression → commit).
+4. PM Point 1 pending: Passage Ready "Book 5 of 66" subtext → Option B vandhaa `describeBookPosition` (`data/stepsRule.ts`) + store screenshots slide 3 re-capture.
+5. Wait (ippo venaam): Kathy Day 40 … 365 names · Wearable flow plan.
+6. Atlassian MCP v1 deprecated → v2 reconnect (user, innum pending).
+
+## ✅ 2026-11-17 — Onboarding client images + store images + iOS video (committed)
+
+**Day close 2026-11-17 (Tue):** user leave. Inniku work ellam **commit aagiduchu**: `3dc3102` (onboarding client images), `a0d4c3f` (App Store + Google Play images, iOS preview video). Indha STATUS.md update mattum uncommitted. Onboarding change ku typecheck + build pass ✅, 0 console errors.
+
+**Inniku mudinjadhu:**
+1. **Onboarding client images ✅ `3dc3102`**
+   - Client 8 pudhu images (1A · 2A–2D · 3A–3C) add pannom. Online (Unsplash) placeholder 6 images UI + code + files la irundhu remove.
+   - Folder `src/assets/onboarding/` (`onboarding-1.jpg` … `onboarding-3c.jpg`); pazhaya 3 client photos um inga move. Web ku resize (max 1200px, q82: 60MB → ~2.5MB). 1A la irundha ~5px white frame crop. Raw originals `Client-call/Onboarding-images/` la (gitignored).
+   - Carousel: Page 1 = 3 (1 + 1A + 2B), Page 2 = 4 (2 + 2A + 2C + 2D), Page 3 = 4 (3 + 3A–3C). First = pazhaya client photo, apram random fade. 2B page 2 la irundhu page 1 ku move (user: page 1 la 2 images mattum repeat aachu). 3B `15% center` (hikers theriyum).
+   - Dev team ku ticket la `src/assets/onboarding/` zip + page-wise image order text kuduthaachu.
+2. **Store submission research ✅:** Apple + Google official specs (sizes, PNG/JPG, alpha illa, count, text rules, iPhone frame Play la poda koodaadhu, Apple 2.3.3 / 2.3.4 / 2.3.10). iPad venaam (user).
+3. **iOS App Store screenshots ✅ `a0d4c3f`** → `design-assets/app-store/ios/`
+   - 8 screens: Home → Steps → Passage Ready → Reading + highlight → Reflection → Day 3 badge + certificate → Journey calendar → Choose your journey. Captions (eyebrow + serif italic, gold accent word), client green bg, gold dotted "walking path" 8 images um connect aagum, key card pop-out.
+   - `6.9-inch/` 1320 × 2868 + `6.3-inch/` 1206 × 2622, 24-bit PNG (alpha illa), 1–2 MB each. Collage card `passagewalk-ios-screenshots-collage.png/.jpg`.
+   - **User correction: shadow venaam** → phone / card / text shadow + app UI shadows ellam remove (memory la save: no-shadows). Sample name "Sarah".
+4. **iOS App Preview video ✅ `a0d4c3f`** → `ios/app-preview/passagewalk-app-preview.mp4`
+   - 29.37s, 886 × 1920, H.264 High Level 4.0, exact 30 fps CFR (881 frames), stereo AAC 48 kHz, progressive MP4, 18 MB. Real app screen recording + tap ripple + caption pills + naama compose panna music (piano + pad, badge la bell shimmer, licence free) + "Passage Walk" end title.
+   - ffmpeg install permission deny aachu → Chrome WebCodecs (video) + MediaRecorder (audio) + own muxer (`source/video/mux.mjs`). Encoder header "Level 5.0" nu pottuchu → stream 4.0 limits ku ulla irukkaradhaala SPS / avcC level 4.0 ku patch. Avg 4.8 Mbps (Apple "10–12 Mbps target" = recommendation).
+   - ⚠️ App Store Connect la upload panra varaikum 100% confirm illa. Reject aanaa error message vechu fix pannanum.
+5. **Google Play images ✅ `a0d4c3f`** → `design-assets/app-store/android/` (video venaam, user)
+   - `phone/01–08.png` 1440 × 2560 (9:16), same 8 screens + captions. Brand illaadha Android phone (punch-hole, right buttons), Android status bar, Dynamic Island illa. 24-bit PNG.
+   - `feature-graphic-1024x500.png` (icon + name + tagline + 2 phones). App icon 512 already `design-assets/app-icon/android/play-store-512.png`.
+   - Collage `passagewalk-android-images-collage.png/.jpg` (feature graphic + 8 screens).
+   - Ellam `design-assets/app-store/README.md` la (specs, captions, upload order).
+   - Source: `source/screenshots.html` (iOS), `source/android.html` (Android + feature), `source/screens*/` (3x captures), `source/video/`.
+
+**Known / small:**
+- Screenshots la Home "GOOD AFTERNOON, Sarah" (capture time padi); video la "Good Morning". Same venum na sonnaa re-capture.
+- Slide 3 (Passage Ready) green card la "Book 5 of 66 · 5th book of the Old Testament" theriyudhu = PM Point 1 pending. PM hide sonnaa app fix → screenshots re-capture (iOS + Android).
+
+**Naalaiku work:**
+1. User / client store images + video feedback vandhaa fix (source HTML la edit → re-render → 24-bit export).
+2. Testing time issues / dev tickets vandhaa fix (fix → build → regression → commit).
+3. PM Point 1 pending: Passage Ready "Book 5 of 66" subtext → Option B vandhaa `describeBookPosition` (`data/stepsRule.ts`) + store screenshots slide 3 update.
+4. Wait (ippo venaam): Kathy Day 40 … 365 names · Wearable flow plan.
+5. Atlassian MCP deprecated V1 endpoint → v2 ku reconnect (user).
+
+## ✅ 2026-11-16 — Settings Completed Journeys + PW-281 / PW-287 (committed)
 
 **Day close 2026-11-16 (Mon):** user leave. Inniku UI work ellam **commit aagiduchu** (`fcb4985`, `e8178c3`, `dbb0253`). Indha day-close STATUS.md update mattum uncommitted (commit pannalaam). Typecheck + build pass ✅, **full regression 413/413** ✅, 0 console errors. Project last week = testing time — **pudhu work edukka venaam, issues vandhaa mattum fix** (user decision).
 

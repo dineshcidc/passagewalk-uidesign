@@ -16,6 +16,11 @@ import ProfileSubpageHeader from "./ProfileSubpageHeader";
 const shortDate = (date: string, withYear = false) =>
   new Date(date).toLocaleDateString("en-US", { month: "short", day: "numeric", ...(withYear ? { year: "numeric" } : {}) });
 
+// PM (2026-11-19): the "Journey in progress / Journey completed" prototype tabs were for the dev team only and
+// would confuse the client — the completed state is shared with dev as screenshots. Hidden, so Settings always
+// shows the running journey and YOUR JOURNEYS = 0 (empty state). Set true to bring the tabs back.
+const SHOW_SETTINGS_STATE_TABS = false;
+
 // Settings → Change Journey reuses the first-time setup (3 journey types → books → order → journey ready),
 // so the team sees one flow. Starting the new journey switches the whole app to it.
 export default function SettingsPage({
@@ -156,13 +161,15 @@ export default function SettingsPage({
       <ProfileSubpageHeader title="Settings" onBack={onBack} />
       <div className="settings-content">
         {/* Prototype only: switch between the two Settings states (not part of the real app). */}
-        <div className="settings-state-demo">
-          <span>PROTOTYPE · SETTINGS STATE</span>
-          <div className="notifications-tabs" role="tablist" aria-label="Settings state">
-            <button role="tab" aria-selected={demoState === "active"} className={demoState === "active" ? "active" : ""} onClick={() => setDemoState("active")}>Journey in progress</button>
-            <button role="tab" aria-selected={demoState === "completed"} className={demoState === "completed" ? "active" : ""} onClick={() => setDemoState("completed")}>Journey completed</button>
+        {SHOW_SETTINGS_STATE_TABS && (
+          <div className="settings-state-demo">
+            <span>PROTOTYPE · SETTINGS STATE</span>
+            <div className="notifications-tabs" role="tablist" aria-label="Settings state">
+              <button role="tab" aria-selected={demoState === "active"} className={demoState === "active" ? "active" : ""} onClick={() => setDemoState("active")}>Journey in progress</button>
+              <button role="tab" aria-selected={demoState === "completed"} className={demoState === "completed" ? "active" : ""} onClick={() => setDemoState("completed")}>Journey completed</button>
+            </div>
           </div>
-        </div>
+        )}
 
         {demoState === "active" ? (
           <>
