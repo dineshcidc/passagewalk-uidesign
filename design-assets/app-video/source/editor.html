@@ -1,0 +1,413 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Passage Walk app walkthrough editor</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;700&family=Newsreader:ital,opsz,wght@1,6..72,500&display=swap" rel="stylesheet">
+<style>html,body{margin:0;background:#111}canvas{display:block}</style></head>
+<body><canvas id="c" width="1080" height="1920"></canvas>
+<script>
+// Full app walkthrough video (portrait 1080 × 1920, 30 fps).
+// Layers: animated background (client green, light blobs, rays, two footprint trails walking up, light motes)
+// → caption card above the phone → flat phone frame (no shadows) with the real app recording inside.
+// Video: WebCodecs H.264 at an exact 30 fps. Audio: music composed here (OfflineAudioContext), recorded to AAC.
+const W = 1080, H = 1920, FPS = 30;
+const C = document.getElementById("c"), X = C.getContext("2d");
+
+// ---------- layout ----------
+const SCR = { w: 714, h: 1500 }; const BEZ = 15;
+const PH = { w: SCR.w + BEZ * 2, h: SCR.h + BEZ * 2 }; PH.x = (W - PH.w) / 2; PH.y = 360;
+SCR.x = PH.x + BEZ; SCR.y = PH.y + BEZ;
+const CARD = { x: 80, y: 76, w: 920, h: 244, r: 46 };
+const INTRO = 2.9, OUTRO = 4.8;
+
+// ---------- story: captions per scene (scenes start at capture markers) ----------
+const CAPTIONS = {
+  splash:        ["PASSAGE WALK", "Every step leads to scripture"],
+  onboarding:    ["GETTING STARTED", "Steps, scripture, reflection"],
+  welcome:       ["CREATE ACCOUNT", "Sign up in under a minute"],
+  ready:         ["WELCOME", "Your private space is ready"],
+  choose:        ["CHOOSE YOUR JOURNEY", "33 days, a designed walk, or your own"],
+  version:       ["YOUR BIBLE", "Read in the version you love"],
+  set:           ["READY TO WALK", "Your journey is set"],
+  home:          ["HOME", "Your day at a glance"],
+  notifications: ["NOTIFICATIONS", "Gentle reminders, right on time"],
+  steps:         ["DAILY STEPS", "Your steps choose today’s scripture"],
+  passage:       ["TODAY’S SCRIPTURE", "A passage made for your walk"],
+  reading:       ["READ & HIGHLIGHT", "Mark the verses that speak to you"],
+  reflection:    ["REFLECT", "Pause, reflect, write it down"],
+  celebration:   ["MILESTONES", "Celebrate every step forward"],
+  journey:       ["MY JOURNEY", "See your walk, day by day"],
+  journal:       ["MY JOURNAL", "A quiet place for your thoughts"],
+  highlights:    ["HIGHLIGHTS", "Every verse you saved"],
+  milestones:    ["BADGES & CERTIFICATES", "Earned as you walk"],
+  you:           ["YOU & SETTINGS", "Change your journey anytime"],
+  complete:      ["JOURNEY COMPLETE", "Your story, start to finish"],
+};
+const SPEED = { generating: 3.2, designed: 1.1, signup: 1.15, home: 1.1, story: 1.1 };
+const TARGET = 2 * 60 - INTRO - OUTRO; // whole video ≤ 2:00
+
+let frames, mk, F, tStart, SCENES = [], TAPS = [], CONTENT = 0, TOTAL = 0;
+const srcOf = (i) => (frames[i].t - tStart) / F;
+async function load() {
+  if (frames) return;
+  frames = await (await fetch("frames.json")).json();
+  mk = await (await fetch("markers.json")).json(); F = mk.F;
+  tStart = mk.markers.find((m) => m.name === "start").t;
+  const named = mk.markers.filter((m) => m.name !== "tap" && m.name !== "start");
+  const sec = (m) => (m.t - tStart) / F;
+  SCENES = [];
+  const SKIP = { splash: 1.3 }; // the splash paints after a short blank: start on the drawn logo
+  for (let i = 0; i < named.length - 1; i++) SCENES.push({ name: named[i].name, from: sec(named[i]) + (SKIP[named[i].name] || 0), to: sec(named[i + 1]), speed: SPEED[named[i].name] || 1 });
+  // fit: gentle uniform speed-up if needed
+  const raw = SCENES.reduce((a, s) => a + (s.to - s.from) / s.speed, 0);
+  const g = Math.max(1, raw / TARGET);
+  let T = INTRO;
+  for (const s of SCENES) { s.speed *= g; s.start = T; s.dur = (s.to - s.from) / s.speed; T += s.dur; }
+  CONTENT = T - INTRO; TOTAL = T + OUTRO;
+  TAPS = mk.markers.filter((m) => m.name === "tap").map((m) => outOf(sec(m))).filter((t) => t != null);
+  // caption timeline
+  let cur = null; CAPS.length = 0;
+  for (const s of SCENES) if (CAPTIONS[s.name]) { cur = { t: s.start, eyebrow: CAPTIONS[s.name][0], text: CAPTIONS[s.name][1] }; CAPS.push(cur); }
+  console.log("raw", raw.toFixed(1), "g", g.toFixed(3), "total", TOTAL.toFixed(1));
+  await document.fonts.load("italic 500 60px Newsreader"); await document.fonts.load("700 24px DM Sans"); await document.fonts.load("500 24px DM Sans");
+  ICON = await createImageBitmap(await (await fetch("icon.png")).blob());
+}
+const CAPS = []; let ICON;
+const outOf = (src) => { for (const s of SCENES) if (src >= s.from && src < s.to) return s.start + (src - s.from) / s.speed; return null; };
+const sceneAt = (name) => SCENES.find((s) => s.name === name);
+function frameAt(src) { let lo = 0, hi = frames.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (srcOf(m) <= src) lo = m; else hi = m - 1; } return lo; }
+function srcAt(t) {
+  if (t < INTRO) return SCENES[0].from;
+  for (const s of SCENES) if (t < s.start + s.dur) return s.from + (t - s.start) * s.speed;
+  return SCENES.at(-1).to - 0.01;
+}
+
+// ---------- helpers ----------
+const clamp = (x) => (x < 0 ? 0 : x > 1 ? 1 : x);
+const easeOut = (x) => 1 - Math.pow(1 - clamp(x), 3);
+const easeInOut = (x) => { x = clamp(x); return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+function rr(x, y, w, h, r) { X.beginPath(); X.moveTo(x + r, y); X.arcTo(x + w, y, x + w, y + h, r); X.arcTo(x + w, y + h, x, y + h, r); X.arcTo(x, y + h, x, y, r); X.arcTo(x, y, x + w, y, r); X.closePath(); }
+let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+
+// ---------- background ----------
+const BASE = document.createElement("canvas"); BASE.width = W; BASE.height = H;
+{ const b = BASE.getContext("2d"); const g = b.createLinearGradient(0, 0, W * 0.35, H); g.addColorStop(0, "#3d5a22"); g.addColorStop(0.45, "#2a3f1b"); g.addColorStop(1, "#16210e"); b.fillStyle = g; b.fillRect(0, 0, W, H); }
+const MOTES = Array.from({ length: 70 }, () => ({ x: rnd() * W, y: rnd() * H, r: 1.2 + rnd() * 3, v: 14 + rnd() * 30, ph: rnd() * 6.28, gold: rnd() < 0.55, drift: rnd() * 6.28 }));
+function blob(x, y, r, col) { const g = X.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, col); g.addColorStop(1, "rgba(0,0,0,0)"); X.fillStyle = g; X.fillRect(x - r, y - r, r * 2, r * 2); }
+// a footprint trail walking up one side of the screen
+function trail(t, cx, phase, flip) {
+  const STEP = 58, SPEED = 1.7; // px between steps, steps per second
+  const head = t * SPEED + phase;
+  const yOf = (i) => H + 60 - (i * STEP) % (H + 260);
+  for (let i = Math.floor(head) - 22; i <= Math.floor(head); i++) {
+    if (i < 0) continue;
+    const age = head - i; const a = clamp(age / 0.25) * clamp(1 - (age - 9) / 13) * 0.55;
+    if (a <= 0) continue;
+    const y = yOf(i); const wave = Math.sin(y / 260 + phase) * 34;
+    const side = i % 2 ? 1 : -1; const x = cx + wave + side * 15 * flip;
+    const ang = Math.cos(y / 260 + phase) * 0.13 * -1 + side * 0.08;
+    X.save(); X.translate(x, y); X.rotate(ang); X.globalAlpha = a;
+    X.fillStyle = side > 0 ? "#e8a83a" : "#9cc76a";
+    X.beginPath(); X.ellipse(0, 0, 10, 17, 0, 0, Math.PI * 2); X.fill();
+    X.restore();
+  }
+}
+function background(t) {
+  X.drawImage(BASE, 0, 0);
+  X.save(); X.globalCompositeOperation = "lighter";
+  blob(540 + 320 * Math.sin(t * 0.13), 520 + 220 * Math.cos(t * 0.11), 760, "rgba(108,143,62,0.34)");
+  blob(170 + 160 * Math.cos(t * 0.09), 1480 + 240 * Math.sin(t * 0.12), 660, "rgba(243,201,111,0.13)");
+  blob(930 + 120 * Math.sin(t * 0.07 + 1), 1150 + 280 * Math.cos(t * 0.08), 620, "rgba(170,200,120,0.15)");
+  blob(120 + 80 * Math.sin(t * 0.1 + 2), 260 + 90 * Math.cos(t * 0.1), 420, "rgba(126,0,252,0.06)");
+  // soft light rays from above
+  X.translate(W / 2, -260); X.rotate(Math.sin(t * 0.05) * 0.12);
+  for (let k = -3; k <= 3; k++) {
+    X.save(); X.rotate(k * 0.2); const g = X.createLinearGradient(0, 0, 0, H * 1.1);
+    g.addColorStop(0, "rgba(253,233,192,0.055)"); g.addColorStop(1, "rgba(253,233,192,0)");
+    X.fillStyle = g; X.beginPath(); X.moveTo(-18, 0); X.lineTo(18, 0); X.lineTo(150, H * 1.1); X.lineTo(-150, H * 1.1); X.fill(); X.restore();
+  }
+  X.restore();
+  trail(t, 84, 0, 1); trail(t, W - 84, 4.5, -1);
+  for (const m of MOTES) {
+    const y = ((m.y - t * m.v) % (H + 40) + H + 40) % (H + 40) - 20;
+    const x = m.x + Math.sin(t * 0.4 + m.drift) * 14;
+    const a = 0.25 + 0.35 * (0.5 + 0.5 * Math.sin(t * 1.3 + m.ph));
+    X.fillStyle = m.gold ? `rgba(253,233,192,${a})` : `rgba(214,236,190,${a * 0.8})`;
+    X.beginPath(); X.arc(x, y, m.r, 0, Math.PI * 2); X.fill();
+  }
+}
+
+// ---------- phone ----------
+function phone(bmp, dy, alpha) {
+  if (alpha <= 0) return;
+  X.save(); X.globalAlpha = alpha; X.translate(0, dy);
+  // side buttons
+  X.fillStyle = "#2b3b1c";
+  for (const [y, h] of [[230, 58], [330, 104], [455, 104]]) { rr(PH.x - 6, PH.y + y, 9, h, 3); X.fill(); }
+  rr(PH.x + PH.w - 3, PH.y + 350, 9, 160, 3); X.fill();
+  // body + outline (flat, no shadow)
+  rr(PH.x, PH.y, PH.w, PH.h, 112); X.fillStyle = "#10170a"; X.fill();
+  X.lineWidth = 3; X.strokeStyle = "rgba(214,232,190,0.38)"; X.stroke();
+  rr(PH.x + 6, PH.y + 6, PH.w - 12, PH.h - 12, 106); X.lineWidth = 1.5; X.strokeStyle = "rgba(255,255,255,0.07)"; X.stroke();
+  // screen
+  X.save(); rr(SCR.x, SCR.y, SCR.w, SCR.h, 98); X.clip();
+  if (bmp) X.drawImage(bmp, SCR.x, SCR.y, SCR.w, SCR.h); else { X.fillStyle = "#f6f3ea"; X.fillRect(SCR.x, SCR.y, SCR.w, SCR.h); }
+  X.restore();
+  // dynamic island
+  rr(W / 2 - 108, SCR.y + 22, 216, 62, 31); X.fillStyle = "#050704"; X.fill();
+  X.restore();
+}
+
+// ---------- caption card ----------
+function capText(c, a, dy) {
+  if (!c || a <= 0) return;
+  X.save(); X.globalAlpha *= a; X.textAlign = "center";
+  X.font = "700 23px DM Sans"; X.letterSpacing = "6px"; X.fillStyle = "#8a6416";
+  const ew = X.measureText(c.eyebrow).width;
+  X.fillText(c.eyebrow, W / 2 + 3 + 14, CARD.y + 86 + dy);
+  X.fillStyle = "#d9a441"; X.beginPath(); X.arc(W / 2 - ew / 2 - 6, CARD.y + 78 + dy, 6, 0, Math.PI * 2); X.fill();
+  X.letterSpacing = "0px"; X.fillStyle = "#1c2619"; X.font = "italic 500 62px Newsreader";
+  let size = 62; while (X.measureText(c.text).width > CARD.w - 90 && size > 44) { size -= 2; X.font = `italic 500 ${size}px Newsreader`; }
+  X.fillText(c.text, W / 2, CARD.y + 168 + dy);
+  X.restore();
+}
+function card(t, alpha) {
+  if (alpha <= 0 || !CAPS.length) return;
+  X.save(); X.globalAlpha = alpha;
+  rr(CARD.x, CARD.y, CARD.w, CARD.h, CARD.r); X.fillStyle = "#f8f4e8"; X.fill();
+  X.lineWidth = 2; X.strokeStyle = "rgba(243,201,111,0.75)"; X.stroke();
+  // progress line
+  const p = clamp((t - INTRO) / CONTENT);
+  rr(CARD.x + 60, CARD.y + CARD.h - 34, CARD.w - 120, 6, 3); X.fillStyle = "rgba(108,143,62,0.18)"; X.fill();
+  if (p > 0) { rr(CARD.x + 60, CARD.y + CARD.h - 34, Math.max(6, (CARD.w - 120) * p), 6, 3); X.fillStyle = "#6c8f3e"; X.fill(); }
+  // text: current caption, with a short slide between captions
+  X.save(); rr(CARD.x, CARD.y, CARD.w, CARD.h - 40, CARD.r); X.clip();
+  let i = CAPS.length - 1; while (i > 0 && CAPS[i].t > t) i--;
+  const c = CAPS[i], prev = CAPS[i - 1];
+  const k = (t - c.t) / 0.55;
+  if (prev && k < 1) {
+    capText(prev, 1 - easeOut(k * 1.6), -40 * easeOut(k * 1.6));
+    capText(c, easeOut((k - 0.25) / 0.75), 46 * (1 - easeOut((k - 0.25) / 0.75)));
+  } else capText(c, 1, 0);
+  X.restore(); X.restore();
+}
+
+// ---------- titles ----------
+function title(a, y0, eyebrow, line, tag) {
+  if (a <= 0) return;
+  X.save(); X.globalAlpha = a; X.textAlign = "center";
+  const s = 230; X.save(); rr(W / 2 - s / 2, y0, s, s, 52); X.clip(); X.drawImage(ICON, W / 2 - s / 2, y0, s, s); X.restore();
+  rr(W / 2 - s / 2, y0, s, s, 52); X.lineWidth = 3; X.strokeStyle = "rgba(243,201,111,0.6)"; X.stroke();
+  X.fillStyle = "#fbf8ef"; X.font = "italic 500 128px Newsreader"; X.fillText("Passage Walk", W / 2, y0 + s + 170);
+  X.fillStyle = "#f3c96f"; X.font = "700 26px DM Sans"; X.letterSpacing = "8px"; X.fillText(eyebrow, W / 2 + 4, y0 + s + 250);
+  X.letterSpacing = "0px";
+  if (line) { X.fillStyle = "rgba(251,248,239,0.86)"; X.font = "italic 500 52px Newsreader"; X.fillText(line, W / 2, y0 + s + 350); }
+  if (tag) { X.fillStyle = "rgba(226,239,208,0.7)"; X.font = "500 26px DM Sans"; X.fillText(tag, W / 2, y0 + s + 430); }
+  X.restore();
+}
+
+// ---------- one output frame ----------
+const cache = new Map();
+const bitmap = (i) => { if (!cache.has(i)) cache.set(i, fetch("frames/" + frames[i].f).then((r) => r.blob()).then(createImageBitmap)); return cache.get(i); };
+function evict(minIdx) { for (const [i, p] of cache) if (i < minIdx) { p.then((b) => b.close()); cache.delete(i); } }
+async function drawAt(t) {
+  const fi = frameAt(srcAt(t)); const bmp = await bitmap(fi);
+  background(t);
+  const end = TOTAL - OUTRO;
+  // intro title
+  if (t < INTRO + 0.2) { const a = easeOut((t - 0.15) / 0.7) * (1 - easeInOut((t - 1.75) / 0.55)); title(a, 560 - 60 * easeInOut((t - 1.75) / 0.55), "A WALK THROUGH THE APP"); }
+  // phone: rises in, sinks out
+  let dy = 0, pa = 1;
+  if (t < INTRO) { const k = easeOut((t - 1.85) / 1.05); dy = (1 - k) * 1700; pa = clamp((t - 1.85) / 0.3); }
+  if (t > end) { const k = easeInOut((t - end) / 0.9); dy = k * 1700; pa = 1 - clamp((t - end - 0.5) / 0.4); }
+  phone(bmp, dy, pa);
+  // caption card
+  let ca = t < INTRO ? easeOut((t - 2.35) / 0.55) : t > end ? 1 - easeOut((t - end) / 0.45) : 1;
+  X.save(); X.translate(0, t < INTRO ? (1 - ca) * -30 : 0); card(Math.min(t, end), ca); X.restore();
+  // end card
+  if (t > end) { const a = easeOut((t - end - 0.6) / 0.8); title(a, 470, "STEPS · SCRIPTURE · REFLECTION", "Walk with God, one step at a time"); }
+  // fade to dark at the very end
+  if (t > TOTAL - 0.6) { X.fillStyle = `rgba(10,14,6,${easeInOut((t - (TOTAL - 0.6)) / 0.6)})`; X.fillRect(0, 0, W, H); }
+  return fi;
+}
+
+window.still = async (t) => { await load(); await drawAt(t); return { total: +TOTAL.toFixed(2), scenes: SCENES.map((s) => [s.name, +s.start.toFixed(1), +s.dur.toFixed(1)]) }; };
+
+// ---------- video: exact 30 fps H.264 via WebCodecs ----------
+window.encodeCFR = async function (bitrate = 6500000) {
+  await load();
+  const n = Math.round(TOTAL * FPS);
+  const chunks = []; let description = null, err = null;
+  const enc = new VideoEncoder({
+    output: (chunk, meta) => { if (meta?.decoderConfig?.description && !description) description = new Uint8Array(meta.decoderConfig.description); const d = new Uint8Array(chunk.byteLength); chunk.copyTo(d); chunks.push({ key: chunk.type === "key", ts: chunk.timestamp, data: d }); },
+    error: (e) => (err = e.message),
+  });
+  enc.configure({ codec: "avc1.640028", width: W, height: H, bitrate, bitrateMode: "variable", framerate: FPS, latencyMode: "quality", avc: { format: "avc" } });
+  for (let k = 0; k < n; k++) {
+    const t = k / FPS;
+    for (let j = 1; j <= 30; j++) bitmap(frameAt(srcAt(t + j / FPS)));
+    const fi = await drawAt(t); evict(fi - 2);
+    const vf = new VideoFrame(C, { timestamp: Math.round((k * 1e6) / FPS), duration: Math.round(1e6 / FPS) });
+    enc.encode(vf, { keyFrame: k % 60 === 0 }); vf.close();
+    while (enc.encodeQueueSize > 8) await new Promise((r) => setTimeout(r, 5));
+  }
+  await enc.flush(); enc.close();
+  chunks.sort((a, b) => a.ts - b.ts);
+  const total = chunks.reduce((a, c) => a + c.data.length, 0), bin = new Uint8Array(total); let o = 0;
+  for (const c of chunks) { bin.set(c.data, o); o += c.data.length; }
+  let desc = ""; for (const x of description) desc += String.fromCharCode(x);
+  const meta = { fps: FPS, width: W, height: H, description: btoa(desc), samples: chunks.map((c) => ({ size: c.data.length, key: c.key, ts: c.ts })) };
+  for (const [name, data, type] of [["video-cfr.h264bin", bin, "application/octet-stream"], ["video-cfr.json", JSON.stringify(meta), "application/json"]]) {
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([data], { type })); a.download = name; document.body.appendChild(a); a.click();
+    await new Promise((r) => setTimeout(r, 500));
+  }
+  return { frames: n, seconds: +TOTAL.toFixed(2), chunks: chunks.length, bytes: total, err };
+};
+
+// ---------- music (composed here) ----------
+async function renderMusic() {
+  const seconds = TOTAL, sr = 48000;
+  const ctx = new OfflineAudioContext(2, Math.ceil(seconds * sr), sr);
+  const master = ctx.createGain();
+  master.gain.setValueAtTime(0, 0); master.gain.linearRampToValueAtTime(0.95, 1.2);
+  master.gain.setValueAtTime(0.95, seconds - 3.2); master.gain.linearRampToValueAtTime(0, seconds - 0.05);
+  const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -18; comp.ratio.value = 3; comp.attack.value = 0.01; comp.release.value = 0.3;
+  master.connect(comp).connect(ctx.destination);
+  const ir = ctx.createBuffer(2, sr * 3.5, sr);
+  let s2 = 11; const r2 = () => ((s2 = (s2 * 16807) % 2147483647) / 2147483647);
+  for (let ch = 0; ch < 2; ch++) { const d = ir.getChannelData(ch); for (let i = 0; i < d.length; i++) d[i] = (r2() * 2 - 1) * Math.pow(1 - i / d.length, 3); }
+  const verb = ctx.createConvolver(); verb.buffer = ir; const wet = ctx.createGain(); wet.gain.value = 0.36; verb.connect(wet).connect(master);
+  const dry = ctx.createGain(); dry.gain.value = 0.8; dry.connect(master);
+  const bus = (node) => { node.connect(dry); node.connect(verb); };
+  const hz = (m) => 440 * Math.pow(2, (m - 69) / 12);
+  const pan = (p) => { const n = ctx.createStereoPanner(); n.pan.value = p; return n; };
+  const beat = 60 / 70, bar = beat * 4;
+  // F major: F – Dm – B♭ – C(sus), then a lifted B♭ – C – Am – Dm, home on F.
+  const CH = {
+    F:  { bass: 41, pad: [57, 60, 64, 67], tones: [65, 69, 72, 76, 79] },
+    Dm: { bass: 38, pad: [53, 57, 60, 64], tones: [62, 65, 69, 72, 74] },
+    Bb: { bass: 46, pad: [50, 53, 57, 60], tones: [62, 65, 70, 72, 74] },
+    C:  { bass: 36, pad: [53, 55, 60, 64], tones: [64, 67, 72, 74, 76] },
+    Am: { bass: 45, pad: [52, 55, 60, 64], tones: [64, 69, 72, 76, 81] },
+  };
+  const A = ["F", "Dm", "Bb", "C"], B = ["Bb", "C", "Am", "Dm", "Bb", "C", "F", "F"];
+  const tHome = sceneAt("home").start, tJourney = sceneAt("journey").start, tComplete = sceneAt("complete").start;
+  // bars: intro + A until home, then B / A alternating, final cadence near the end
+  const bars = [];
+  for (let t = 0, i = 0; t < seconds; t += bar, i++) {
+    const sec = t < tHome - 0.5 ? "A" : t < tJourney - 0.5 ? "B" : t < tComplete - 0.5 ? "C" : "D";
+    bars.push({ t, sec });
+  }
+  let ai = 0, bi = 0;
+  for (const b of bars) {
+    if (b.sec === "A" || b.sec === "C") b.ch = A[ai++ % 4]; else b.ch = B[bi++ % 8];
+  }
+  bars.at(-1).ch = "F"; if (bars.length > 2) bars.at(-2).ch = "C";
+
+  const piano = (m, t, vel, len = 1.8, p = 0) => {
+    const g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vel, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0006, t + len);
+    const pn = pan(p); g.connect(pn); bus(pn);
+    for (const [mult, amp] of [[1, 1], [2, 0.36], [3, 0.12], [4, 0.05]]) {
+      const o = ctx.createOscillator(); o.type = "sine"; o.frequency.value = hz(m) * mult; o.detune.value = (mult - 1) * 2;
+      const ga = ctx.createGain(); ga.gain.value = amp; o.connect(ga).connect(g); o.start(t); o.stop(t + len + 0.05);
+    }
+  };
+  const bell = (t0, notes, vel = 0.05) => notes.forEach((m, k) => {
+    const t = t0 + k * 0.085; const g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vel, t + 0.008); g.gain.exponentialRampToValueAtTime(0.0005, t + 2.8);
+    const pn = pan((k - notes.length / 2) * 0.2); g.connect(pn); bus(pn);
+    for (const [mult, amp] of [[1, 1], [2.76, 0.38], [5.4, 0.14]]) { const o = ctx.createOscillator(); o.frequency.value = hz(m) * mult; const ga = ctx.createGain(); ga.gain.value = amp; o.connect(ga).connect(g); o.start(t); o.stop(t + 2.9); }
+  });
+
+  // melody: deterministic walk over chord tones / F major scale
+  const SCALE = [60, 62, 64, 65, 67, 69, 70, 72, 74, 76, 77, 79, 81];
+  const RHY = [[1, 1, 2], [1.5, 0.5, 2], [2, 1, 1], [1, 0.5, 0.5, 2], [3, 1]];
+  let s3 = 5; const r3 = () => ((s3 = (s3 * 48271) % 2147483647) / 2147483647);
+  let mel = 72;
+
+  bars.forEach((b, bi) => {
+    const c = CH[b.ch], t = b.t, last = bi === bars.length - 1;
+    const len = last ? seconds - t : bar;
+    // pad (detuned triangles, low-passed)
+    for (const m of c.pad) for (const det of [-7, 7]) {
+      const o = ctx.createOscillator(); o.type = "triangle"; o.frequency.value = hz(m); o.detune.value = det;
+      const f = ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = b.sec === "A" ? 1100 : 1600;
+      const g = ctx.createGain(); const lv = b.sec === "D" ? 0.024 : 0.019;
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(lv, t + 1.0); g.gain.setValueAtTime(lv, t + len - 0.2); g.gain.linearRampToValueAtTime(0, t + len + 1.4);
+      const p = pan(det < 0 ? -0.4 : 0.4); o.connect(f).connect(g).connect(p); bus(p); o.start(t); o.stop(t + len + 1.5);
+    }
+    // bass
+    { const o = ctx.createOscillator(); o.type = "sine"; o.frequency.value = hz(c.bass + 12);
+      const g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.13, t + 0.06); g.gain.exponentialRampToValueAtTime(0.025, t + len);
+      o.connect(g); g.connect(dry); o.start(t); o.stop(t + len + 0.1); }
+    if (last) { piano(c.tones[0], t, 0.07, 5); piano(c.tones[2], t + 0.12, 0.06, 5); piano(c.tones[4], t + 0.24, 0.05, 5); return; }
+    // arpeggio (8ths), lighter in the intro bar
+    const arp = [0, 2, 1, 3, 2, 4, 3, 2];
+    for (let k = 0; k < 8; k++) {
+      const nt = t + (k * beat) / 2; if (nt > seconds - 3) break;
+      if (bi === 0 && k % 2) continue;
+      piano(c.tones[arp[k]] + (b.sec === "A" ? 0 : 0), nt, k % 2 ? 0.032 : 0.046, 1.5, ((k % 4) - 1.5) * 0.2);
+    }
+    // "footsteps": soft low pulse on beats 1 and 3 (daily walk + progress sections)
+    if (b.sec === "B" || b.sec === "C" || b.sec === "D") for (const k of [0, 2]) {
+      const nt = t + k * beat; const o = ctx.createOscillator(); o.type = "sine";
+      o.frequency.setValueAtTime(95, nt); o.frequency.exponentialRampToValueAtTime(48, nt + 0.18);
+      const g = ctx.createGain(); g.gain.setValueAtTime(0, nt); g.gain.linearRampToValueAtTime(0.16, nt + 0.008); g.gain.exponentialRampToValueAtTime(0.0008, nt + 0.32);
+      o.connect(g); g.connect(dry); o.start(nt); o.stop(nt + 0.35);
+    }
+    // shaker on off-beats (B / D)
+    if (b.sec === "B" || b.sec === "D") for (let k = 0; k < 8; k++) {
+      const nt = t + (k * beat) / 2 + beat / 4; const src = ctx.createBufferSource();
+      const nb = ctx.createBuffer(1, sr * 0.08, sr); const d = nb.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = (r2() * 2 - 1) * Math.pow(1 - i / d.length, 4);
+      src.buffer = nb; const f = ctx.createBiquadFilter(); f.type = "highpass"; f.frequency.value = 7000;
+      const g = ctx.createGain(); g.gain.value = k % 2 ? 0.05 : 0.03; const p = pan(0.3);
+      src.connect(f).connect(g).connect(p); p.connect(dry); src.start(nt);
+    }
+    // melody (from the second section on)
+    if (b.sec !== "A") {
+      const rh = RHY[Math.floor(r3() * RHY.length)]; let bt = 0;
+      rh.forEach((d, j) => {
+        const nt = t + bt * beat; bt += d;
+        if (j === 0) { // downbeat: nearest chord tone
+          let best = c.tones[0] + 12; for (const ct of c.tones) for (const o of [0, 12]) if (Math.abs(ct + o - mel) < Math.abs(best - mel)) best = ct + o; mel = best;
+        } else { let idx = SCALE.indexOf(mel); if (idx < 0) idx = SCALE.findIndex((s) => s > mel); idx = Math.max(1, Math.min(SCALE.length - 2, idx + (r3() < 0.5 ? -1 : 1) * (r3() < 0.7 ? 1 : 2))); mel = SCALE[Math.max(0, Math.min(SCALE.length - 1, idx))]; }
+        if (mel < 67) mel += 12; if (mel > 84) mel -= 12;
+        piano(mel, nt, 0.075, Math.max(1.2, d * beat * 1.6), 0.05);
+      });
+    }
+  });
+  // moments
+  bell(0.35, [77, 81, 84, 89], 0.04);                                   // intro logo
+  bell(sceneAt("celebration").start + 0.35, [86, 89, 93, 98, 101], 0.055); // Day 3 badge
+  bell(sceneAt("badge").start + 0.2, [84, 88, 91], 0.035);
+  bell(tComplete + 0.4, [77, 81, 84, 89, 93, 96, 101], 0.06);            // journey complete
+  bell(TOTAL - OUTRO + 0.7, [77, 84, 89], 0.04);                        // end title
+  // soft taps
+  for (const t of TAPS) {
+    const o = ctx.createOscillator(); o.type = "sine"; o.frequency.setValueAtTime(1650, t); o.frequency.exponentialRampToValueAtTime(900, t + 0.05);
+    const g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.045, t + 0.003); g.gain.exponentialRampToValueAtTime(0.0005, t + 0.07);
+    o.connect(g); g.connect(dry); o.start(t); o.stop(t + 0.08);
+  }
+  return ctx.startRendering();
+}
+
+// ---------- audio: render, then record to AAC (MP4) in real time ----------
+window.recordAudio = async function () {
+  await load();
+  const music = await renderMusic();
+  const ac = new AudioContext({ sampleRate: 48000 });
+  const dest = ac.createMediaStreamDestination(); dest.channelCount = 2;
+  const src = ac.createBufferSource(); src.buffer = music; src.connect(dest);
+  const tiny = document.createElement("canvas"); tiny.width = 16; tiny.height = 16; tiny.getContext("2d").fillRect(0, 0, 16, 16);
+  const vt = tiny.captureStream(5).getVideoTracks()[0];
+  const stream = new MediaStream([vt, ...dest.stream.getAudioTracks()]);
+  const rec = new MediaRecorder(stream, { mimeType: "video/mp4;codecs=avc1.42E01E,mp4a.40.2", audioBitsPerSecond: 192000, videoBitsPerSecond: 50000 });
+  const chunks = []; rec.ondataavailable = (e) => e.data.size && chunks.push(e.data);
+  const done = new Promise((r) => (rec.onstop = r));
+  rec.start(1000); await ac.resume(); src.start();
+  await new Promise((r) => setTimeout(r, music.duration * 1000 + 600));
+  rec.stop(); await done;
+  const blob = new Blob(chunks, { type: "video/mp4" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "audio-src.mp4"; document.body.appendChild(a); a.click();
+  // peak / rms check
+  let peak = 0, sum = 0; const d = music.getChannelData(0); for (let i = 0; i < d.length; i++) { const v = Math.abs(d[i]); if (v > peak) peak = v; sum += v * v; }
+  return { seconds: +music.duration.toFixed(2), peak: +peak.toFixed(3), rms: +Math.sqrt(sum / d.length).toFixed(4), bytes: blob.size };
+};
+</script></body></html>
