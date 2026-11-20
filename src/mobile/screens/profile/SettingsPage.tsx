@@ -117,8 +117,10 @@ export default function SettingsPage({
         <div className="settings-content">
           <div className="profile-subpage-intro">
             <span>READING SETTINGS</span>
-            <h1>Bible Version</h1>
-            <p>Choose the version for your daily readings and highlights.</p>
+            {/* Same copy as the journey setup Bible version step (client feedback 2026-11-19, row 14). */}
+            <h1>Select your Bible version</h1>
+            <p>God's message remains the same. The wording may differ. Choose the translation that helps you read, reflect, and engage.</p>
+            <p>You can change it at any time.</p>
           </div>
           <BibleVersionList />
         </div>
@@ -152,7 +154,7 @@ export default function SettingsPage({
     journey.type === "custom" || journey.type === "designed"
       ? { label: "Books", value: journey.books.length === 66 ? "All 66 books" : formatBookList(journey.books) }
       : { label: "Books", value: journey.type === "bible" ? "All 66 books" : "Old & New Testaments, alternating" },
-    { label: "Reading order", value: readingOrderLabel(journey) },
+    { label: "Reading experience", value: readingOrderLabel(journey) },
   ];
   const details = journeyDetails(plan);
 
@@ -176,7 +178,7 @@ export default function SettingsPage({
             <div className="profile-subpage-intro">
               <span>JOURNEY SETTINGS</span>
               <h1>Current Journey</h1>
-              <p>Review the journey type guiding your daily scripture assignments.</p>
+              <p>Review the journey type guiding your daily Scripture assignments.</p>
             </div>
 
             <section className="current-journey-card">

@@ -16,7 +16,7 @@ export const journeyTypeLabels: Record<JourneyType, string> = {
 };
 
 export const journeyTypeIcons: Record<JourneyType, AppIconName> = {
-  automatic: "spark",
+  automatic: "butterfly",
   designed: "compass",
   custom: "book",
   bible: "library",
@@ -96,10 +96,10 @@ export function createJourneyPlan(type: Exclude<JourneyType, "designed">, books:
 
 export const defaultJourneyPlan = createJourneyPlan("automatic");
 
-// Reading order wording (client slides 12 / 15 / 16). The 33-Day Journey is always guided by the steps.
-export const readingOrderLabel = (plan: JourneyPlan) =>
-  plan.order === "in-order" ? (plan.type === "bible" ? "In chapter order" : "In order") : "Randomly, by your steps";
-export const readingStyle = (plan: JourneyPlan) => (plan.type === "automatic" ? "" : plan.order === "in-order" ? "sequential" : "random");
+// Reading experience wording (client feedback 2026-11-19): "Sequential" / "Step Guided" for every journey type
+// (was "In order" / "In chapter order" / "Randomly, by your steps"). The 33-Day Journey is always guided by the steps.
+export const readingOrderLabel = (plan: JourneyPlan) => (plan.order === "in-order" ? "Sequential" : "Step Guided");
+export const readingStyle = (plan: JourneyPlan) => (plan.type === "automatic" ? "" : plan.order === "in-order" ? "sequential" : "step guided");
 
 export const formatCount = (value: number) => value.toLocaleString("en-US");
 

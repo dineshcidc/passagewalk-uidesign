@@ -1,8 +1,49 @@
 # Passage Walk — Status
 
-**Last updated:** 2026-11-19 (day close)
+**Last updated:** 2026-11-20 (day close)
 
-## ▶️ NAALAIKU (Fri 2026-11-20) — first idha padi
+## ▶️ NAALAIKU (Mon 2026-11-23) — first idha padi
+
+**Day close 2026-11-20 (Fri):** Client Excel feedback (copy + creative) work **text / image / UI items ellam mudinjadhu**. ⭐ **Branch = `uat/design_changes`** — indha work `main` la commit / merge panna koodaadhu, CPM approve pannina appram dhaan (memory: uat-design-changes-branch). STATUS.md update ku munnadi system restart aachu — indha section restart ku appram ezhudhunadhu.
+- Committed: `42c13e0` (PassageWalk one word, 73 places / 26 files = C60).
+- **Uncommitted (27 files)** = matha ella Excel changes. Typecheck + build pass ✅ (2026-11-20 restart ku appram run pannom). Full regression innum pannala.
+
+**Source:**
+- Client Excel: `Client-call/Client-Excel Feedbacks/PW Screenshots Tracker- Feedback- 11192026 .xlsx` (Robin, Nov 19, tab "APP Screenshot Copy & Creative" + Abbreviations tab).
+- Namba tracking sheet: `Client-call/Client-Excel Feedbacks/PW-Change-List-2026-11-20.xlsx` — tabs: Change List (60) · Function work (2) · Questions (10, dev team) · Wait (13).
+
+**Inniku mudinjadhu (Change List 59 / 60 Done):**
+1. **Onboarding (C01–C08):** 3 pages body copy pudhusu (paragraphs `\n\n` la split), body 16px, "PassageWalk" word mattum bold. Photos: page 1 = 1A mattum (rotation illa), page 2 = 2A → 2D / 2B / 2C, page 3 = 3A + 3C (old photos + 3B remove). Photo + text ippo scroll aagum, Back mela fixed, button keela sticky (`.onboarding-scroll`). Fact: "approximately 33 years old at the time of His crucifixion".
+2. **Welcome (C09–C11):** 2 paragraph copy, link "Learn more about PassageWalk.", logo path + trail animation **purple** (#cfa8ff tint of #7E00FC).
+3. **Account ready (C12, C13):** subtitle 2 lines, step list "Account created." / "Choose your path" / "…each day's passage".
+4. **Choose your journey (C14–C16, C59):** 3 cards new body; Create a Journey tag "YOUR DAYS, YOUR CHOICE" (1 tag mattum — `meta` ippo 1 or 2 tags); 33-Day icon **butterfly** (pudhu `AppIcon` "butterfly").
+5. **Bible version (C17–C19):** Settings la "Select your Bible version" + new intro; 7 version descriptions short; footer 2 lines.
+6. **Journey ready (C20, C21, C30–C33):** 33-Day rows = Generated from · Bible version (King James) · Testaments · Daily reading cadence; Designed / Create = Books · Number of chapters · Reading experience · Bible version · Daily reading cadence; Whole Bible = Pace + Reading experience + Bible version. Footer "earn the 18-Day completion badge" / "Walk, read, reflect and earn milestones along the way." Fact line spark icon remove.
+7. **Designed Experience (C22, C23, C25, C26):** "Choose a Walk" + new intro; card line = pudhu `summary` ("5 books, 1 chapter each"); details description "…each have exactly 6 chapters. Read and discover something new."; "chapters each".
+8. **Reading order → "Sequential" / "Step Guided" app full ah (C27–C29):** setup options "Sequential Reading" / "Step Guided Reading", Journey ready, Settings "Reading experience" row (`readingOrderLabel` in `journeyPlans.ts`).
+9. **Create a Journey (C34–C37):** "What path would you like to take?", cards "Selected books" (tag ONE CHAPTER A DAY) / "Entire Bible" (tag 66 BOOKS).
+10. **Book tiles = standard abbreviations (C38):** `bookAbbreviations` + `bookAbbreviation()` in `data/bibleBooks.ts` (GEN, EXOD, 1 THESS …), tile 46 × 32 (Choose your books + Experience details).
+11. **Daily flow (C39–C41):** "How many steps did you take today?", loading "Your steps are creating your journey.", "Reflections Saved" + new lines.
+12. **My Journey (C42–C44):** "N days of journey completed"; green card smaller (`SHOW_SUMMARY_JOURNEY_TYPE = false`, Journey type row hide); legend + calendar colours one step darker.
+13. **Journey Complete (C47–C52):** new body ending; chart label "GROWING WITH EVERY STEP" (Home chart um same); "Books completed"; Best day bar + 100% books **purple**; Next Walk intro + Recommended "Ready for something different? Try Isaiah…" (⚠️ backend um idhe text anuppudhu, PW-287 — Yougan ku sollanum).
+14. **Help & Support (C53–C56):** header "Need assistance?", 7 short FAQs ("How are passages chosen?", pudhu "How do journeys work?"), Contact copy, Report "Something not working as expected?" + "Category (Optional)" + "Describe the issue".
+15. **Confetti (C58):** Account ready / Journey ready / Welcome back — 14 pieces, gold + purple + green + emerald, bigger.
+16. **"Scripture" capital S app full ah (C62)** + My Profile "experience" (C46). C61 Settings tabs = already hidden (`4b39acc`).
+
+**Pending:**
+- **C45 Journal title** ("My Highlights") = **Needs answer** — client confirm venum (app la already "Your Highlights" page + tab name Journal).
+- **Function work, In progress (code innum start pannala):** **C24** Choose a Walk sort — same days na "One of a Kind" walk first (25-Day: 2 Kings first, 42-Day: Job first; `data/experiences.ts`). **C57** "About the Photographer" — You menu la pudhu row → own page (About style), Darrell Rodriguez credit + bio (client Excel F91).
+- **Questions Q01–Q10** → dev team answer (Change List "Questions" tab).
+- **Wait W01–W13** → client / Kathy / PW team review (Learn more copy, Welcome back dashboard, badges + certificates redesign, milestone cadence, Onboarding 3 copy …).
+
+**Naalaiku work (order padi):**
+1. Branch check `uat/design_changes` → C24 sort + C57 Photographer page → typecheck + build.
+2. Full regression (9 journey suites + app-wide), esp. onboarding scroll on small phone (iPhone SE), Journey ready rows ella type, book tiles, My Journey card.
+3. Change List Excel la C24 / C57 status update, user review → commit **`uat/design_changes` la mattum** (main venaam).
+4. Yougan ku: Recommended card text change (C52) backend la um maathanum.
+5. C45 client answer, Questions dev answers, Wait items vandhaa → work.
+
+## ✅ 2026-11-19 — Settings tabs hide + video + documentation (committed)
 
 **Day close 2026-11-19 (Thu):** user leave. Inniku work ellam **commit aagiduchu**: `4b39acc` (Settings tabs hide), `a37f334` (app video + documentation). Indha STATUS.md update mattum uncommitted.
 

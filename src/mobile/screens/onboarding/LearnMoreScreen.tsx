@@ -26,7 +26,7 @@ export default function LearnMoreScreen({ onBack, onCreateAccount, onSignIn }: {
         <div className="learn-intro">
           <span>BODY · MIND · SPIRIT</span>
           <h1>Your steps, God&apos;s Word</h1>
-          <p>PassageWalk strengthens your body through the steps you take and your spirit through the passages of scripture they lead you to.</p>
+          <p>PassageWalk strengthens your body through the steps you take and your spirit through the passages of Scripture they lead you to.</p>
         </div>
 
         <ol className="learn-steps">

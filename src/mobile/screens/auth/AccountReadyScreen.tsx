@@ -3,9 +3,9 @@ import AppIcon from "../../components/AppIcon";
 import { playApplause } from "../../sound";
 
 const nextSteps = [
-  { title: "Account created", body: "Your private space is ready.", state: "done" },
-  { title: "Choose your journey", body: "The 33-Day Walk, a Designed Experience, or a journey you create.", state: "next" },
-  { title: "Walk, read, reflect", body: "Your steps will lead you to each day's chapter.", state: "later" },
+  { title: "Account created.", body: "Your private space is ready.", state: "done" },
+  { title: "Choose your path", body: "The 33-Day Walk, a Designed Experience, or Create your Journey", state: "next" },
+  { title: "Walk, read, reflect", body: "Your steps will lead you to each day's passage.", state: "later" },
 ];
 
 // Shown once, right after Create Account. The journey choice comes next.
@@ -21,7 +21,7 @@ export default function AccountReadyScreen({ name, onContinue }: { name: string;
   return (
     <div className="moment-screen moment-account-ready">
       <div className="moment-visual">
-        <div className="moment-sparkles" aria-hidden="true">{Array.from({ length: 8 }, (_, index) => <i key={index} />)}</div>
+        <div className="moment-sparkles" aria-hidden="true">{Array.from({ length: 14 }, (_, index) => <i key={index} />)}</div>
         <div className="moment-ring">
           <div className="moment-badge moment-badge-check"><AppIcon name="check" /></div>
         </div>
@@ -30,7 +30,7 @@ export default function AccountReadyScreen({ name, onContinue }: { name: string;
       <div className="moment-copy">
         <span>YOU'RE ALL SET</span>
         <h1>Welcome to PassageWalk, {firstName}!</h1>
-        <p>Your account is ready. Now let's choose how your steps will guide you through scripture.</p>
+        <p>Your account is ready.<br />Now let's choose how your steps will guide you through Scripture.</p>
       </div>
 
       <ol className="moment-steps">

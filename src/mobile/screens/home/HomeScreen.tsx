@@ -263,7 +263,7 @@ export default function HomeScreen({
           </div>
           <div className="home-progress-encouragement">
             <strong>Well done — keep it up!</strong>
-            <p>Your steps may vary. Your scripture never does.</p>
+            <p>Your steps may vary. Your Scripture never does.</p>
           </div>
         </section>
 

@@ -209,7 +209,7 @@ export default function JournalScreen({
       <div className="journal-scroll">
         <header className="journal-header">
           <div>
-            <span>PRIVATE &amp; PERSONAL</span><h1>My Journal</h1><p>A quiet place for what scripture is stirring in you.</p>
+            <span>PRIVATE &amp; PERSONAL</span><h1>My Journal</h1><p>A quiet place for what Scripture is stirring in you.</p>
           </div>
           <button className="journal-highlights-link" onClick={() => setShowHighlights(true)} aria-label={`View ${highlightCount} highlighted ${highlightCount === 1 ? "verse" : "verses"}`}>
             <AppIcon name="spark" />

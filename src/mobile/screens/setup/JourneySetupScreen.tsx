@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import AppIcon, { type AppIconName } from "../../components/AppIcon";
-import { bibleBooks, type Testament } from "../../data/bibleBooks";
+import { bibleBooks, bookAbbreviation, type Testament } from "../../data/bibleBooks";
 import BibleBooksGrid from "../../components/BibleBooksGrid";
 import BibleVersionList from "../../components/BibleVersionList";
 import { BIBLE_VERSION, getBookIndex, getBookName } from "../../data/bible";
@@ -49,48 +49,51 @@ function SetupHeader({ step, choice, journeyType, askVersion, onBack }: { step: 
   );
 }
 
-type ChoiceCard<T> = { value: T; icon: AppIconName; title: string; body: string; meta: [string, string]; tag?: string };
+type ChoiceCard<T> = { value: T; icon: AppIconName; title: string; body: string; meta: [string] | [string, string]; tag?: string };
 
 // Robin's naming (review call 3): three truly separate ways to walk.
 const walkOptions: ChoiceCard<WalkChoice>[] = [
   {
     value: "automatic",
-    icon: "spark",
+    icon: "butterfly",
     title: "33-Day Walk",
-    body: "Your daily steps uniquely guide each scripture assignment.",
+    body: "Your daily steps uniquely assign each Scripture reading.",
     meta: [`${THIRTY_THREE_DAY_LENGTH} DAYS`, "ONE FOR EACH YEAR OF CHRIST'S LIFE"],
   },
   {
     value: "designed",
     icon: "compass",
     title: "Choose a Designed Experience",
-    body: "Books with the same number of chapters, walked together. Pick a length and start walking.",
+    body: "Choose to experience Scripture reading in a different way. Select books with the same number of chapters.",
     meta: ["2 TO 150 DAYS", "PLANNED FOR YOU"],
   },
   {
     value: "create",
     icon: "edit",
     title: "Create a Journey",
-    body: "Build your own walk. Pick the books you want, or read the whole Bible.",
-    meta: ["YOUR BOOKS OR ALL 66", "ONE CHAPTER A DAY"],
+    body: "Select the books you want to explore, or journey through the entire Bible.",
+    meta: ["YOUR DAYS, YOUR CHOICE"],
   },
 ];
 
+// Client feedback 2026-11-19 (tracker row 34): "Selected books" / "Entire Bible". The short line under each title
+// ("One chapter a day" / "66 Books") sits in the small tag next to the title, where "ALL 66" was.
 const buildOptions: ChoiceCard<"custom" | "bible">[] = [
   {
     value: "custom",
     icon: "book",
-    title: "Pick your books",
-    body: "Choose one or more books, one chapter a day. Their chapters set the length of your walk.",
-    meta: ["YOUR BOOKS", "EXODUS + LEVITICUS = 67 DAYS"],
+    title: "Selected books",
+    body: "Select one or more books. The total number of chapters sets the length of your walk.",
+    meta: ["YOUR PATH", "EXODUS + LEVITICUS = 67 DAYS"],
+    tag: "ONE CHAPTER A DAY",
   },
   {
     value: "bible",
     icon: "library",
-    title: "Read the whole Bible",
-    body: "All 66 books at your own pace — finish in 1, 2 or about 3 years, in chapter order or as your steps choose.",
-    meta: ["66 BOOKS", "1 TO 3 YEARS · YOUR PACE"],
-    tag: "ALL 66",
+    title: "Entire Bible",
+    body: "The entire Bible at your own pace.",
+    meta: ["ALL BOOKS", "YOUR PATH, YOUR CHOICE"],
+    tag: "66 BOOKS",
   },
 ];
 
@@ -113,7 +116,8 @@ function ChoiceList<T extends string>({ options, selected, onSelect }: { options
             <span className="journey-radio"><i></i></span>
           </div>
           <p>{option.body}</p>
-          <div className="journey-choice-meta"><span>{option.meta[0]}</span><i></i><span>{option.meta[1]}</span></div>
+          {/* One tag, or two tags with a dot between. */}
+          <div className="journey-choice-meta"><span>{option.meta[0]}</span>{option.meta[1] && <><i></i><span>{option.meta[1]}</span></>}</div>
         </button>
       ))}
     </div>
@@ -132,7 +136,7 @@ function ExperienceList({ selectedId, onSelect }: { selectedId: string | null; o
   const shown = experiences.filter((experience) => range === null || (experience.days >= EXPERIENCE_RANGES[range].min && experience.days <= EXPERIENCE_RANGES[range].max));
   return (
     <div className="setup-content experience-list-content" key="experience">
-      <div className="setup-heading"><span>DESIGNED EXPERIENCE</span><h1>Choose a walk</h1><p>Books with the same number of chapters, walked together — including the ones you may never have opened.</p></div>
+      <div className="setup-heading"><span>DESIGNED EXPERIENCE</span><h1>Choose a Walk</h1><p>Travel through the Bible in a uniquely designed way, exploring books with similar chapter counts. Let curiosity guide your discoveries.</p></div>
       <div className="experience-length-filter" aria-label="Filter by length">
         <button className={range === null ? "active" : ""} onClick={() => setRange(null)} aria-pressed={range === null}>All · {experiences.length}</button>
         {EXPERIENCE_RANGES.map((option, index) => (
@@ -146,7 +150,7 @@ function ExperienceList({ selectedId, onSelect }: { selectedId: string | null; o
             <div className="experience-card-copy">
               <em>{experience.theme}</em>
               <strong>{experience.name}</strong>
-              <p>{experience.tagline}</p>
+              <p>{experience.summary}</p>
               <small><AppIcon name="book" />{experienceBooksLine(experience)}</small>
             </div>
             <span className="journey-radio"><i></i></span>
@@ -172,7 +176,7 @@ function ExperienceDetails({ experience, walked }: { experience: Experience; wal
         <div className="experience-hero-stats">
           <div><strong>{experience.days}</strong><span>days</span></div>
           <div><strong>{experience.books.length}</strong><span>{experience.books.length === 1 ? "book" : "books"}</span></div>
-          <div><strong>{experience.chaptersEach}</strong><span>{experience.books.length === 1 ? (experience.chaptersEach === 1 ? "chapter" : "chapters") : "ch. each"}</span></div>
+          <div><strong>{experience.chaptersEach}</strong><span>{`${experience.chaptersEach === 1 ? "chapter" : "chapters"}${experience.books.length === 1 ? "" : " each"}`}</span></div>
         </div>
       </section>
 
@@ -195,7 +199,7 @@ function ExperienceDetails({ experience, walked }: { experience: Experience; wal
             const bookIndex = getBookIndex(book.name);
             return (
               <div key={book.name}>
-                <span className={bookIndex < 39 ? "old" : "new"}>{(/^\d /.test(book.name) ? book.name[0] + book.name.slice(2, 4) : book.name.slice(0, 3)).toUpperCase()}</span>
+                <span className={bookIndex < 39 ? "old" : "new"}>{bookAbbreviation(book.name)}</span>
                 <div><strong>{formatBookChapters(book)}</strong><p>{bookIndex < 39 ? "Old" : "New"} Testament · {plural(book.chapters.length, "chapter")}</p></div>
                 <em>{startDay === endDay ? `Day ${startDay}` : `Days ${startDay}–${endDay}`}</em>
               </div>
@@ -315,20 +319,20 @@ export default function JourneySetupScreen({
   const isDesigned = choice === "designed" && experience !== null;
   const isBible = !isDesigned && journeyType === "bible";
   const sequence = experience ? getExperienceSequence(experience) : [];
-  // Client wording (slides 12 / 15): "Read in (chapter) order" / "Read randomly".
+  // Client feedback 2026-11-19 (tracker rows 31, 47): "Sequential Reading" / "Step Guided Reading" (was "Read in order" / "Read randomly").
   const orderOptions: { value: ReadingOrder; icon: "book" | "steps"; title: string; body: string; tag?: string; preview: string[] }[] = isDesigned
     ? [
-      { value: "in-order", icon: "book", title: "Read in order", body: "Follow the walk as it was designed, one chapter a day.", tag: "RECOMMENDED", preview: sequence.slice(0, 3).map(readingName) },
-      { value: "steps", icon: "steps", title: "Read randomly", body: "Your daily steps pick an unread chapter of this walk. Every chapter once, every day a surprise.", preview: [...new Set([0.62, 0.08, 0.85].map((ratio) => readingName(sequence[Math.floor(sequence.length * ratio)])))] },
+      { value: "in-order", icon: "book", title: "Sequential Reading", body: "Read through books in biblical order, 1 chapter a day.", tag: "RECOMMENDED", preview: sequence.slice(0, 3).map(readingName) },
+      { value: "steps", icon: "steps", title: "Step Guided Reading", body: "Let your daily steps guide the next chapter in your journey. Every chapter once.", preview: [...new Set([0.62, 0.08, 0.85].map((ratio) => readingName(sequence[Math.floor(sequence.length * ratio)])))] },
     ]
     : isBible
     ? [
-      { value: "in-order", icon: "book", title: "Read in chapter order", body: "Begin at Genesis 1 and walk book by book to Revelation.", preview: ["Genesis 1", "Genesis 2", "Genesis 3"] },
-      { value: "steps", icon: "steps", title: "Read randomly", body: "Your daily steps point you to a book, alternating Old and New Testament. Every day a surprise.", tag: "UNIQUE", preview: ["Ruth 1", "Galatians 5", "Proverbs 3"] },
+      { value: "in-order", icon: "book", title: "Sequential Reading", body: "Begin at Genesis 1 and walk book by book to Revelation.", preview: ["Genesis 1", "Genesis 2", "Genesis 3"] },
+      { value: "steps", icon: "steps", title: "Step Guided Reading", body: "Your daily steps point you to a book, alternating Old and New Testament. Every day a surprise.", tag: "UNIQUE", preview: ["Ruth 1", "Galatians 5", "Proverbs 3"] },
     ]
     : [
-      { value: "in-order", icon: "book", title: "Read in order", body: `Begin at ${sortedBooks[0]} 1 and walk chapter by chapter.`, tag: "RECOMMENDED", preview: getChapterPreview(sortedBooks, "in-order") },
-      { value: "steps", icon: "steps", title: "Read randomly", body: "Your daily steps pick an unread chapter. Every chapter once, every day a surprise.", preview: getChapterPreview(sortedBooks, "steps") },
+      { value: "in-order", icon: "book", title: "Sequential Reading", body: "Read through books in biblical order.", tag: "RECOMMENDED", preview: getChapterPreview(sortedBooks, "in-order") },
+      { value: "steps", icon: "steps", title: "Step Guided Reading", body: "Let your daily steps guide the next chapter in your journey. Every chapter once.", preview: getChapterPreview(sortedBooks, "steps") },
     ];
 
   const continueLabel = step === "books"
@@ -343,7 +347,7 @@ export default function JourneySetupScreen({
 
       {step === "choose" && (
         <div className="setup-content setup-choice-content journey-options-content" key="choose">
-          <div className="setup-heading"><span>YOUR WALK, YOUR WAY</span><h1>Choose your journey</h1><p>How would you like your steps to guide you through scripture?</p></div>
+          <div className="setup-heading"><span>YOUR WALK, YOUR WAY</span><h1>Choose your journey</h1><p>How would you like your steps to guide you through Scripture?</p></div>
           <ChoiceList options={walkOptions} selected={choice} onSelect={setChoice} />
         </div>
       )}
@@ -354,14 +358,14 @@ export default function JourneySetupScreen({
 
       {step === "build" && (
         <div className="setup-content journey-options-content" key="build">
-          <div className="setup-heading"><span>CREATE A JOURNEY</span><h1>What would you like to read?</h1><p>Your own books, or every book of the Bible. You can switch journeys later in Settings.</p></div>
+          <div className="setup-heading"><span>CREATE A JOURNEY</span><h1>What path would you like to take?</h1><p>Follow a path through selected books or journey through the entire Bible. You can change journeys anytime in Settings.</p></div>
           <ChoiceList options={buildOptions} selected={journeyType === "bible" ? "bible" : "custom"} onSelect={setJourneyType} />
         </div>
       )}
 
       {step === "books" && (
         <div className="setup-content setup-book-content initial-book-content multi-book-content" key="books">
-          <div className="setup-heading"><h1>Choose your books</h1><p>Pick one or more. Each chapter becomes one day of your walk.</p></div>
+          <div className="setup-heading"><h1>Choose your books</h1><p>Select one or more. Each chapter becomes one day of your journey.</p></div>
           <div className="book-search"><AppIcon name="search" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search 66 books" /></div>
           <div className="testament-filter">
             {(["All", "Old", "New"] as Testament[]).map((item) => <button className={testament === item ? "active" : ""} onClick={() => setTestament(item)} key={item}>{item === "All" ? "All Books" : `${item} Testament`}</button>)}
@@ -371,7 +375,7 @@ export default function JourneySetupScreen({
               const selected = selectedBooks.includes(book.name);
               return (
                 <button className={selected ? "selected" : ""} onClick={() => toggleBook(book.name)} key={book.name} aria-pressed={selected}>
-                  <span>{(/^\d /.test(book.name) ? book.name[0] + book.name[2] : book.name.slice(0, 2)).toUpperCase()}</span>
+                  <span>{bookAbbreviation(book.name)}</span>
                   <div><strong>{book.name}</strong><p>{book.testament} Testament · {book.chapters} {book.chapters === 1 ? "chapter" : "chapters"}</p></div>
                   <i><AppIcon name="check" /></i>
                 </button>
@@ -383,25 +387,26 @@ export default function JourneySetupScreen({
       )}
 
       {step === "order" && (
+        // Client feedback 2026-11-19 (tracker rows 31, 47): one title for every journey's reading order step.
         <div className="setup-content setup-order-content" key="order">
           <div className="setup-heading">
             {isDesigned ? (
               <>
                 <span>{experience.name.toUpperCase()} · {plural(experience.days, "DAY", "DAYS")}</span>
-                <h1>How should we walk through it?</h1>
-                <p>One chapter a day through {experienceThrough(experience)}. You can switch journeys later in Settings.</p>
+                <h1>Choose your reading experience.</h1>
+                <p>One chapter a day through {experienceThrough(experience)}. You can change journeys anytime in Settings.</p>
               </>
             ) : isBible ? (
               <>
                 <span>66 BOOKS · {formatCount(BIBLE_CHAPTER_COUNT)} CHAPTERS</span>
-                <h1>How should we walk through the Bible?</h1>
-                <p>Choose the order first — next, how fast you'd like to finish. You can switch journeys later in Settings.</p>
+                <h1>Choose your reading experience.</h1>
+                <p>Choose the order first — next, how fast you'd like to finish. You can change journeys anytime in Settings.</p>
               </>
             ) : (
               <>
                 <span>{sortedBooks.length} {sortedBooks.length === 1 ? "BOOK" : "BOOKS"} · {formatCount(chapterTotal)} {chapterTotal === 1 ? "CHAPTER" : "CHAPTERS"}</span>
-                <h1>How should we walk through them?</h1>
-                <p>One chapter a day through {formatBookList(sortedBooks)}. You can switch journeys later in Settings.</p>
+                <h1>Choose your reading experience.</h1>
+                <p>One chapter a day through {formatBookList(sortedBooks)}. You can change journeys anytime in Settings.</p>
               </>
             )}
           </div>
@@ -418,7 +423,6 @@ export default function JourneySetupScreen({
                   {option.preview.map((reading, index) => (
                     <span key={reading}>{index > 0 && <AppIcon name="chevron" />}<b>{reading}</b></span>
                   ))}
-                  {(isDesigned ? experience.days > 3 : isBible || chapterTotal > 3) && <span className="order-preview-more">…</span>}
                 </div>
               </button>
             ))}
@@ -460,7 +464,7 @@ export default function JourneySetupScreen({
 
       {step === "bible" && (
         <div className="setup-content bible-version-content" key="bible">
-          <div className="setup-heading"><span>YOUR BIBLE</span><h1>Choose your Bible version</h1><p>The same chapters, in the wording you prefer. You can change it later in Settings.</p></div>          <BibleVersionList />
+          <div className="setup-heading"><span>YOUR BIBLE</span><h1>Select your Bible version</h1><p>God's message remains the same. The wording may differ. Choose the translation that helps you read, reflect, and engage.</p><p>You can change it at any time.</p></div>          <BibleVersionList />
         </div>
       )}
 

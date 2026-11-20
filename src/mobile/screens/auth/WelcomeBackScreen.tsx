@@ -31,7 +31,7 @@ export default function WelcomeBackScreen({ onContinue, onStartWalk }: { onConti
   return (
     <div className="moment-screen moment-welcome-back">
       <div className="moment-visual">
-        <div className="moment-sparkles" aria-hidden="true">{Array.from({ length: 8 }, (_, index) => <i key={index} />)}</div>
+        <div className="moment-sparkles" aria-hidden="true">{Array.from({ length: 14 }, (_, index) => <i key={index} />)}</div>
         <div className="moment-ring moment-ring-gold">
           <div className="moment-badge moment-badge-clap" role="img" aria-label="Clapping hands">👏</div>
         </div>

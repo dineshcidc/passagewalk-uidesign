@@ -29,7 +29,8 @@ export default function WelcomeScreen({ onCreateAccount, onSignIn, onLearnMore, 
       <div className="welcome-copy">
         <span>YOUR STEPS, GOD'S WORD</span>
         <h1>Welcome</h1>
-        <p>Every step can lead you deeper into scripture. Create an account to begin your journey, or log in to continue your walk.</p>
+        <p>Explore Scripture, deepen your knowledge and strengthen your faith.</p>
+        <p>Create an account to begin your journey, or log in to continue your experience.</p>
       </div>
 
       <div className="welcome-actions">
@@ -38,7 +39,7 @@ export default function WelcomeScreen({ onCreateAccount, onSignIn, onLearnMore, 
           <AppIcon name="chevron" />
         </button>
         <button type="button" className="welcome-secondary" onClick={onSignIn}>Log In</button>
-        <button type="button" className="welcome-learn" onClick={onLearnMore}>New here? <strong>Learn how PassageWalk works</strong><AppIcon name="chevron" /></button>
+        <button type="button" className="welcome-learn" onClick={onLearnMore}>New here? <strong>Learn more about PassageWalk.</strong><AppIcon name="chevron" /></button>
       </div>
     </div>
   );

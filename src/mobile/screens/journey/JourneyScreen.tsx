@@ -179,6 +179,9 @@ const SINGLE_PAGE_DAYS = 35;
 // Passage Ready steps trail (StepsLedCard SHOW_STEPS_TRAIL). Whole Bible keeps its card (chapter progress).
 // Set to true to bring it back.
 const SHOW_STEPS_BOOK_MAP = false;
+// Client feedback 2026-11-19 (tracker row 63): smaller green summary card so the calendar gets more room —
+// the "Journey type" row and its detail line are hidden (true = show again).
+const SHOW_SUMMARY_JOURNEY_TYPE = false;
 
 type CalendarPage = { firstDay: number; lastDay: number; title: string | null };
 
@@ -279,21 +282,25 @@ export default function JourneyScreen({ onNavigate, plan }: { onNavigate: (tab: 
         <header className="journey-overview-header">
           <span>PASSAGEWALK</span>
           <h1>My Journey</h1>
-          <p>Your {formatCount(plan.days)}-day walk through scripture</p>
+          <p>Your {formatCount(plan.days)}-day walk through Scripture</p>
         </header>
 
         <section className="journey-summary-card">
           <div className="journey-summary-top">
-            <div><span>CURRENT POSITION</span><strong>Day {today} of {formatCount(plan.days)}</strong><p>{plural(progress.completedDays, "day")} completed</p></div>
+            <div><span>CURRENT POSITION</span><strong>Day {today} of {formatCount(plan.days)}</strong><p>{plural(progress.completedDays, "day")} of journey completed</p></div>
             <div className="journey-summary-percent"><strong>{progress.percent}%</strong><span>complete</span></div>
           </div>
           <div className="journey-summary-track"><span style={{ width: progress.barWidth }}></span></div>
-          <div className="journey-summary-type">
-            <div><AppIcon name={journeyTypeIcons[plan.type]} /></div>
-            <span>Journey type</span>
-            <strong>{journeyTypeLabels[plan.type]}</strong>
-          </div>
-          <p className="journey-summary-detail">{typeDetail}</p>
+          {SHOW_SUMMARY_JOURNEY_TYPE && (
+            <>
+              <div className="journey-summary-type">
+                <div><AppIcon name={journeyTypeIcons[plan.type]} /></div>
+                <span>Journey type</span>
+                <strong>{journeyTypeLabels[plan.type]}</strong>
+              </div>
+              <p className="journey-summary-detail">{typeDetail}</p>
+            </>
+          )}
         </section>
 
         {(perBook || plan.type === "bible" || SHOW_STEPS_BOOK_MAP) && <section className={`journey-books-card ${perBook ? `accordion ${booksOpen ? "open" : ""}` : ""}`}>

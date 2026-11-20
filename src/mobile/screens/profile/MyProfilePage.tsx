@@ -113,7 +113,7 @@ export default function MyProfilePage({
               </dl>
               <button onClick={() => { setDraft(user); setEditing(true); }}><AppIcon name="edit" />Edit Profile</button>
             </section>
-            <p className="my-profile-note">Your profile information is used to personalize your PassageWalk journey.</p>
+            <p className="my-profile-note">Your profile information is used to personalize your PassageWalk experience.</p>
           </>
         )}
       </div>

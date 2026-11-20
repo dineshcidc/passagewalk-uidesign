@@ -31,7 +31,7 @@ export default function BibleVersionList({ preview = true }: { preview?: boolean
           );
         })}
       </div>
-      <p className="bible-version-note">More versions are on the way. Your readings, highlights, and certificate verses use the version you choose.</p>
+      <p className="bible-version-note"><span>More versions are on the way.</span><span>Your chosen Bible version will be used throughout your readings and reflections.</span></p>
     </div>
   );
 }

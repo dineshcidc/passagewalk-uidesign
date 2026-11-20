@@ -201,7 +201,7 @@ export default function DailyFlowScreen({
           </div>
           <span>PASSAGEWALK</span>
           <h1>{isToday ? "Finding today's passage" : `Finding Day ${journeyDay}'s passage`}</h1>
-          <p>Bringing your steps and your scripture journey together.</p>
+          <p>Your steps are creating your journey.</p>
           <div className="generation-progress"><i></i></div>
         </div>
       </div>
@@ -394,9 +394,10 @@ export default function DailyFlowScreen({
             <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m17 33 10 10 21-23" /></svg>
           </div>
           <span>JOURNAL UPDATED</span>
-          <h1>Reflection Saved</h1>
-          <p className="reflection-proud">Day {journeyDay} is complete — you're growing stronger!</p>
-          <p>Your thoughts are safely stored as part of {isToday ? "today's" : `Day ${journeyDay}'s`} scripture journey.</p>
+          {/* Client feedback 2026-11-19 (tracker row 62). */}
+          <h1>Reflections Saved</h1>
+          <p className="reflection-proud">Day {journeyDay} is complete. You're growing stronger!</p>
+          <p>Your reflections have been included in {isToday ? "today's" : `Day ${journeyDay}'s`} Scripture journey.</p>
 
           <div className="reflection-success-summary">
             <div><span>Steps Entered</span><strong>{formattedSteps}</strong></div>
@@ -417,8 +418,8 @@ export default function DailyFlowScreen({
       <button className="step-entry-back" onClick={onBack} aria-label="Back"><AppIcon name="back" /></button>
 
       <div className="step-entry-heading">
-        <h1>{isToday ? "How many steps did you walk today?" : `How many steps did you walk on ${shortDate}?`}</h1>
-        <p>{isToday ? "Enter today's total to continue your scripture journey." : `Enter that day's total to catch up on Day ${journeyDay}.`}</p>
+        <h1>{isToday ? "How many steps did you take today?" : `How many steps did you take on ${shortDate}?`}</h1>
+        <p>{isToday ? "Enter today's total to continue your PassageWalk." : `Enter that day's total to catch up on Day ${journeyDay}.`}</p>
       </div>
 
       <div className={`step-entry-ring ${stepsEntered && Number(stepValue) > 0 ? "has-value" : "empty"}`}>

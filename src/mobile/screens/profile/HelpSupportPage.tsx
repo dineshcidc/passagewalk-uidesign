@@ -4,30 +4,35 @@ import ProfileSubpageHeader from "./ProfileSubpageHeader";
 
 function FrequentlyAskedQuestions({ onBack }: { onBack: () => void }) {
   const [openQuestion, setOpenQuestion] = useState<number | null>(0);
+  // Client feedback 2026-11-19 (tracker row 86): new short answers, "How are passages chosen?", new "How do journeys work?".
   const questions = [
     {
       question: "How does PassageWalk work?",
-      answer: "PassageWalk connects your daily movement with scripture and reflection. Each day, enter your steps, receive a passage, read it, and pause to record what stood out.",
+      answer: "PassageWalk combines movement, Scripture, and reflection into a daily journey. Enter your steps, receive a passage, and reflect on what stands out along the way.",
     },
     {
-      question: "How are daily scripture passages assigned?",
-      answer: "In the 33-Day Walk, your step count chooses each day's chapter, alternating Old and New Testament. A Designed Experience walks books that share the same number of chapters (like Obadiah, Philemon, 2 John, 3 John, and Jude, one chapter each), from 2 to 150 days. With Create a Journey you pick your own books or read the whole Bible — in order or randomly, as your steps choose. For the whole Bible you also pick a pace: finish in 1 year (3–4 chapters a day), 2 years (1–2 a day) or about 3 years (one a day).",
+      question: "How are passages chosen?",
+      answer: "Passages are selected based on the journey you've chosen. Each experience is designed to guide you through Scripture in a unique and meaningful way.",
     },
     {
       question: "How do I enter my steps?",
-      answer: "From the Home screen, tap Enter Steps in the Daily Movement section. Enter the number shown by your phone or fitness tracker, then generate your passage.",
+      answer: "From the Home screen, enter your daily step count to continue your journey and receive your next passage.",
     },
     {
       question: "How do I complete a journey day?",
-      answer: "A journey day is completed after you enter your steps, read the assigned scripture, and finish your reflection for that day.",
+      answer: "Complete your daily passage and reflection after entering your steps.",
     },
     {
       question: "How do I add a reflection?",
-      answer: "Tap Write Reflection after reading your passage. Answer the reflection prompts, then save your thoughts to your private journal.",
+      answer: "After reading your passage, capture the thoughts, insights, or questions that Scripture inspires.",
+    },
+    {
+      question: "How do journeys work?",
+      answer: "Choose from guided experiences, custom journeys, or a passage through the entire Bible. You can change journeys at any time.",
     },
     {
       question: "How do milestones and badges work?",
-      answer: "Milestones count every day you complete in PassageWalk, in any journey: Day 3 Resurrection Walk, Day 7 Creation Walk, Day 12 Apostle Walk, Day 21 Trinity Walk, Day 33 Power Walk, then Day 40, 66, 70, 120 and on to 365. If you change journeys, your days and badges carry on. Finishing a journey earns its own badge, and finishing a book earns a book badge. Each badge comes with a certificate.",
+      answer: "PassageWalk celebrates your progress through milestones, badges, certificates, and completed journeys.",
     },
   ];
 
@@ -68,7 +73,7 @@ function ContactSupportPage({ onBack }: { onBack: () => void }) {
           <div><AppIcon name="mail" /></div>
           <span>PASSAGEWALK SUPPORT</span>
           <h1>How can we help?</h1>
-          <p>If you have a question or need assistance, contact our support team. We&apos;ll be happy to help you continue your journey.</p>
+          <p>If you have a question or need assistance, our support team is here for you. We&apos;ll be happy to help you continue your journey.</p>
           <strong className="contact-support-email">support@passagewalk.com</strong>
           <button onClick={() => { window.location.href = "mailto:support@passagewalk.com"; }}>
             <AppIcon name="mail" />
@@ -108,11 +113,12 @@ function ReportProblemPage({ onBack }: { onBack: () => void }) {
           <form className="report-problem-form" onSubmit={submitReport}>
             <div className="profile-subpage-intro">
               <span>REPORT AN ISSUE</span>
-              <h1>What went wrong?</h1>
-              <p>Tell us what happened so our team can look into it.</p>
+              {/* Client feedback 2026-11-19 (tracker row 89). */}
+              <h1>Something not working as expected?</h1>
+              <p>Tell us what happened and we&apos;ll look into it.</p>
             </div>
             <label className="report-field">
-              <span>Category <small>Optional</small></span>
+              <span>Category <small>(Optional)</small></span>
               <select value={category} onChange={(event) => setCategory(event.target.value)}>
                 <option value="">Select a category</option>
                 <option>Journey or steps</option>
@@ -122,7 +128,7 @@ function ReportProblemPage({ onBack }: { onBack: () => void }) {
               </select>
             </label>
             <label className="report-field">
-              <span>Problem description</span>
+              <span>Describe the issue</span>
               <textarea
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
@@ -156,8 +162,8 @@ export default function HelpSupportPage({ onBack }: { onBack: () => void }) {
       <div className="help-support-content">
         <div className="profile-subpage-intro">
           <span>WE&apos;RE HERE TO HELP</span>
-          <h1>How can we support you?</h1>
-          <p>Choose an option below and we&apos;ll help you find the right answer.</p>
+          <h1>Need assistance?</h1>
+          <p>Choose a topic below for answers, guidance, and support.</p>
         </div>
         <section className="help-support-list">
           {helpItems.map((item) => (

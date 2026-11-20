@@ -29,7 +29,7 @@ export default function RemindersPage({ onBack }: { onBack: () => void }) {
 
         <section className="reminder-card">
           <div className="reminder-card-heading">
-            <div><strong>Daily Scripture Reminder</strong><p>Remind me to complete today&apos;s scripture</p></div>
+            <div><strong>Daily Scripture Reminder</strong><p>Remind me to complete today&apos;s Scripture</p></div>
             <button
               className={`reminder-switch ${scriptureReminder ? "on" : ""}`}
               onClick={() => {

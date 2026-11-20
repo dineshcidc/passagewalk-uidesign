@@ -34,8 +34,9 @@ export default function PassagesGrowthChart() {
         aria-label={`${open ? "Hide" : "Show"} how your verses grow: ${formatCount(total)} verses read`}
       >
         <div>
-          <span>VERSES READ · ALWAYS GOING UP</span>
-          <strong>Your scripture keeps growing</strong>
+          {/* Same label as Your 33-Day Story (client feedback 2026-11-19, row 81). */}
+          <span>VERSES READ · GROWING WITH EVERY STEP</span>
+          <strong>Your Scripture keeps growing</strong>
           <small>{formatCount(total)} verses{growth ? ` · ${growth}` : ""}</small>
         </div>
         <i><AppIcon name={open ? "eyeOff" : "eye"} /></i>

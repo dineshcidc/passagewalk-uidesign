@@ -1,15 +1,11 @@
 import { useState } from "react";
 // Onboarding top banner photos — all client images (src/assets/onboarding/). Originals: Client-call/Onboarding-images/.
-import onboarding1 from "../../../assets/onboarding/onboarding-1.jpg";
 import onboarding1a from "../../../assets/onboarding/onboarding-1a.jpg";
-import onboarding2 from "../../../assets/onboarding/onboarding-2.jpg";
 import onboarding2a from "../../../assets/onboarding/onboarding-2a.jpg";
 import onboarding2b from "../../../assets/onboarding/onboarding-2b.jpg";
 import onboarding2c from "../../../assets/onboarding/onboarding-2c.jpg";
 import onboarding2d from "../../../assets/onboarding/onboarding-2d.jpg";
-import onboarding3 from "../../../assets/onboarding/onboarding-3.jpg";
 import onboarding3a from "../../../assets/onboarding/onboarding-3a.jpg";
-import onboarding3b from "../../../assets/onboarding/onboarding-3b.jpg";
 import onboarding3c from "../../../assets/onboarding/onboarding-3c.jpg";
 import AppIcon from "../../components/AppIcon";
 import IOSDeviceFrame from "../../components/IOSDeviceFrame";
@@ -30,34 +26,33 @@ const onboardingContent = [
   {
     eyebrow: "A DAILY DEVOTIONAL RHYTHM",
     title: "Walk With Purpose",
-    body: "PassageWalk connects the steps you take with scripture—creating a rhythm of movement, reflection, and faith that brings you closer to God each day.",
-    // Top banner carousel: first = the page's original client photo, then the rest (random order, slow fade). 3 / 4 / 4 images.
+    body: "PassageWalk intentionally connects the steps you take with Scripture, creating a rhythm of movement, faith and reflection, bringing you closer to God each day.",
+    // Top banner carousel: first image shows first, the rest follow in random order (slow fade).
+    // Client feedback 2026-11-19 (tracker row 3): page 1 = option A only (1A boardwalk), old photo removed — one image, no rotation.
     images: [
-      { src: onboarding1, alt: "A stone path leading down a hillside toward a sunlit valley", position: "60% center" },
       { src: onboarding1a, alt: "A wooden boardwalk winding through tall grass toward morning light", position: "55% center" },
-      // Client 2B: moved from page 2 so page 1 also rotates 3 images.
-      { src: onboarding2b, alt: "A stream rushing under a small bridge through a mossy forest" },
     ],
   },
   {
     eyebrow: "HOW PASSAGEWALK WORKS",
     title: "Your Steps, Your Scripture",
-    body: "Enter your daily steps and receive a meaningful passage selected for your journey. Read at your own pace, then pause for a quiet moment of reflection.",
+    // Blank line ("\n\n") = new paragraph.
+    body: "Enter your daily steps to receive a meaningful passage.\n\nRead at your own pace, then pause for a quiet moment of reflection.",
+    // Client feedback 2026-11-19 (tracker row 4): old photo removed; options D, E, F, G = 2A, 2D, 2B, 2C (2A shows first).
     images: [
-      { src: onboarding2, alt: "A hiker walking along a peaceful forest trail", position: "center 53%" },
       { src: onboarding2a, alt: "A quiet pond below green hills and an oak tree under a blue sky", position: "60% center" },
-      { src: onboarding2c, alt: "Pine trees and mountain peaks reflected in a still pond" },
       { src: onboarding2d, alt: "Sunlight on a green meadow and pond beneath a rocky mountainside", position: "60% center" },
+      { src: onboarding2b, alt: "A stream rushing under a small bridge through a mossy forest" },
+      { src: onboarding2c, alt: "Pine trees and mountain peaks reflected in a still pond" },
     ],
   },
   {
     eyebrow: "ONE DAY AT A TIME",
     title: "A 33-Day Walk",
-    body: "Build a lasting devotional habit through daily reading and personal reflection. Your steps uniquely determine your Bible reading. Follow your progress and celebrate meaningful milestones along the way.",
+    body: "Your PassageWalk is designed to build a lasting devotional habit.\n\nEach day’s steps will uniquely guide your Bible reading.\n\nFollow your progress and celebrate meaningful milestones along the way.",
+    // Client feedback 2026-11-19 (tracker row 5): old photo and 3B (people hiking) removed; options = 3A, 3C (3A shows first).
     images: [
-      { src: onboarding3, alt: "A hiker walking along a mountain trail toward a distant peak", position: "center 62%" },
       { src: onboarding3a, alt: "A forested mountain valley with a small pond below the trail" },
-      { src: onboarding3b, alt: "Three hikers walking a hillside trail above a wide green valley", position: "15% center" },
       { src: onboarding3c, alt: "A green meadow and rocky path below a tall mountain peak" },
     ],
   },
@@ -157,11 +152,13 @@ export default function OnboardingFlow() {
   return (
     <IOSDeviceFrame statusBarStyle="light">
       <div className={`onboarding-screen onboarding-screen-${activeScreen + 1}`}>
+        {/* Back stays fixed at the top; photo + text scroll; the button stays at the bottom (sticky). */}
+        {activeScreen > 0 && (
+          <button className="onboarding-back" onClick={() => setActiveScreen((current) => current - 1)} aria-label="Previous screen"><AppIcon name="back" /></button>
+        )}
+        <div className="onboarding-scroll" key={activeScreen}>
         <div className="onboarding-visual">
-          {activeScreen > 0 && (
-            <button className="onboarding-back" onClick={() => setActiveScreen((current) => current - 1)} aria-label="Previous screen"><AppIcon name="back" /></button>
-          )}
-          <div className="onboarding-visual-stage" key={activeScreen}>
+          <div className="onboarding-visual-stage">
             <div className="onboarding-photo-wrap">
               <OnboardingCarousel images={content.images} />
               <div className={`onboarding-photo-badge onboarding-photo-badge-${activeScreen + 1}`}>
@@ -191,9 +188,12 @@ export default function OnboardingFlow() {
         <div className="onboarding-copy" key={content.title}>
           <span>{content.eyebrow}</span>
           <h1>{content.title}</h1>
-          <p>{content.body}</p>
+          {/* Client: "PassageWalk" is emphasized (bold) in the body text. */}
+          {content.body.split("\n\n").map((paragraph) => (
+            <p key={paragraph} className="onboarding-body">{paragraph.split(/(PassageWalk)/).map((part, index) => (part === "PassageWalk" ? <strong key={index}>{part}</strong> : part))}</p>
+          ))}
           {isLastSlide && (
-            <p className="onboarding-fact"><AppIcon name="spark" /><span><strong>Did you know?</strong> Christ was 33 years old when He died.</span></p>
+            <p className="onboarding-fact"><AppIcon name="spark" /><span><strong>Did you know?</strong> Christ was approximately 33 years old at the time of His crucifixion.</span></p>
           )}
           <div className="onboarding-progress" aria-label={`Onboarding step ${activeScreen + 1} of 3`}>
             {onboardingContent.map((item, index) => (
@@ -205,6 +205,7 @@ export default function OnboardingFlow() {
               />
             ))}
           </div>
+        </div>
         </div>
 
         <div className="onboarding-bottom">

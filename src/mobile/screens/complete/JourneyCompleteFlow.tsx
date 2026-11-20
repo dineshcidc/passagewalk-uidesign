@@ -87,7 +87,8 @@ function Celebrate({ demo, onNext, onExit }: { demo: ReturnType<typeof getJourne
       <div className="jc-copy">
         <span>JOURNEY COMPLETE · {demo.days} OF {demo.days} DAYS</span>
         <h1 id="jc-title">You did it, {firstName}!</h1>
-        <p>You walked all {demo.days} days of {demo.finalInfo.name.replace(/^The /, "the ")} — one for each year of Christ's life. <strong>We are so proud of you.</strong></p>
+        {/* Client feedback 2026-11-19 (tracker row 80). */}
+        <p>You walked all {demo.days} days of {demo.finalInfo.name.replace(/^The /, "the ")}, one for each year of Christ's life. Every step, Scripture, and reflection became part of your story.</p>
       </div>
 
       <div className="jc-counters">
@@ -155,7 +156,7 @@ function Story({ demo, onBack, onNext }: { demo: ReturnType<typeof getJourneyCom
 
         {/* Kathy: total passages "never goes down… the more we can show where it goes up is the key visual". */}
         <section className="jc-card">
-          <div className="jc-card-head"><div><span>VERSES READ · ALWAYS GOING UP</span><strong>Your scripture grew every day</strong></div><b>{formatCount(demo.totalVerses)}</b></div>
+          <div className="jc-card-head"><div><span>VERSES READ · GROWING WITH EVERY STEP</span><strong>Your Scripture grew every day</strong></div><b>{formatCount(demo.totalVerses)}</b></div>
           <div className="jc-growth" aria-label={`Verses read grew from ${demo.growth[0]} on Day 1 to ${formatCount(demo.totalVerses)} on Day ${demo.days}`}>
             {demo.growth.map((value, index) => (
               <i className={index === demo.growth.length - 1 ? "last" : ""} style={{ height: `${Math.max(4, (value / demo.totalVerses) * 100)}%`, animationDelay: `${index * 0.025}s` }} key={index} />
@@ -184,14 +185,15 @@ function Story({ demo, onBack, onNext }: { demo: ReturnType<typeof getJourneyCom
           <div className="jc-furthest">
             <span>BOOKS YOU WENT FURTHEST IN</span>
             {demo.furthest.map((book) => (
-              <div key={book.book}>
+              // Client feedback 2026-11-19 (row 81): a finished book (100%) shows in purple.
+              <div className={book.percent >= 100 ? "complete" : ""} key={book.book}>
                 <strong>{book.book}</strong>
                 <i><b style={{ width: `${book.percent}%` }} /></i>
                 <em>{book.percent}%</em>
               </div>
             ))}
           </div>
-          {demo.finished.length > 0 && <p className="jc-note gold"><AppIcon name="milestones" />Books finished: {demo.finished.join(" · ")}</p>}
+          {demo.finished.length > 0 && <p className="jc-note gold"><AppIcon name="milestones" />Books completed: {demo.finished.join(" · ")}</p>}
         </section>
 
         <section className="jc-card jc-verse-card">
@@ -251,7 +253,7 @@ function NextWalk({ demo, onBack, onChoose, onExit }: { demo: ReturnType<typeof 
         <div className="jc-next-intro">
           <span>KEEP WALKING</span>
           <h1>Where will your steps lead next?</h1>
-          <p>You built a beautiful rhythm — {demo.days} days of steps, scripture, and reflection. Choose your next walk.</p>
+          <p>You established a rhythm of steps, Scripture, and reflection over {demo.days} days. Choose your next walk.</p>
         </div>
 
         {/* Kathy (review call 4): after the 33 "they may decide… I really want to go to this 66 day experience and keep this going". */}
@@ -266,7 +268,8 @@ function NextWalk({ demo, onBack, onChoose, onExit }: { demo: ReturnType<typeof 
             <div>
               <strong>{recommended.name}</strong>
               {/* PW-287: same recommendation for everyone (Kathy: after the 33, the 66), so no "keep going" wording. */}
-              <p>Ready for a longer walk? Try Isaiah — the only book of the Bible with 66 chapters, one for each day.</p>
+              {/* Client feedback 2026-11-19 (row 85). The real app gets this text from the server too (PW-287) — dev updates it there. */}
+              <p>Ready for something different? Try Isaiah, the only book of the Bible with 66 chapters, one for each day.</p>
               <small>DESIGNED EXPERIENCE</small>
             </div>
           </div>

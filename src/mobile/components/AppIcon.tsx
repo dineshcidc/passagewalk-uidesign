@@ -1,4 +1,4 @@
-export type AppIconName = "spark" | "steps" | "book" | "search" | "back" | "chevron" | "home" | "journey" | "journal" | "milestones" | "profile" | "edit" | "share" | "delete" | "download" | "bell" | "settings" | "help" | "info" | "shield" | "logout" | "camera" | "mail" | "alert" | "eye" | "eyeOff" | "library" | "check" | "compass";
+export type AppIconName = "spark" | "steps" | "book" | "search" | "back" | "chevron" | "home" | "journey" | "journal" | "milestones" | "profile" | "edit" | "share" | "delete" | "download" | "bell" | "settings" | "help" | "info" | "shield" | "logout" | "camera" | "mail" | "alert" | "eye" | "eyeOff" | "library" | "check" | "compass" | "butterfly";
 
 export default function AppIcon({ name }: { name: AppIconName }) {
   const paths = {
@@ -30,6 +30,8 @@ export default function AppIcon({ name }: { name: AppIconName }) {
     library: <><rect x="3" y="4" width="4.5" height="16" rx="1" /><rect x="9.5" y="4" width="4.5" height="16" rx="1" /><path d="m15.8 5.6 3.6-1 3.3 14.6-3.6 1-3.3-14.6Z" /><path d="M3 8h4.5M9.5 16h4.5" /></>,
     check: <path d="m5 12.5 4.5 4.5L19 7.5" />,
     compass: <><circle cx="12" cy="12" r="9" /><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z" /></>,
+    // 33-Day Walk icon (client feedback 2026-11-19: "change stars to butterfly").
+    butterfly: <><path d="M12 8.6v10.6" /><path d="M12 8.6c-.6-1.7-1.6-3-2.9-3.7M12 8.6c.6-1.7 1.6-3 2.9-3.7" /><path d="M11.5 10.9C9.8 7.4 6.6 5.2 4.1 5.8 2.3 6.3 2.2 9 3.8 10.9c1.6 1.9 4.6 2.6 7.7 2.2" /><path d="M12.5 10.9c1.7-3.5 4.9-5.7 7.4-5.1 1.8.5 1.9 3.2.3 5.1-1.6 1.9-4.6 2.6-7.7 2.2" /><path d="M11.5 13.6c-2.7.3-5.2 1.6-5.8 3.8-.5 1.8.9 3.4 2.8 3.1 1.7-.3 2.8-1.9 3.1-3.8" /><path d="M12.5 13.6c2.7.3 5.2 1.6 5.8 3.8.5 1.8-.9 3.4-2.8 3.1-1.7-.3-2.8-1.9-3.1-3.8" /></>,
     eyeOff: <><path d="M3 3l18 18" /><path d="M10.6 6.2A10.7 10.7 0 0 1 12 6c6 0 9.5 6 9.5 6a15 15 0 0 1-2.1 2.8M6.2 6.2C3.8 7.8 2.5 12 2.5 12s3.5 6 9.5 6c1.5 0 2.8-.4 4-1" /><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" /></>,
   };
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>;

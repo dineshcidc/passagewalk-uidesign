@@ -166,7 +166,7 @@ export default function AuthFlow({
   };
 
   const heading = isLogin
-    ? { eyebrow: "CONTINUE YOUR JOURNEY", title: "Welcome back", body: "Log in to continue your daily walk with scripture." }
+    ? { eyebrow: "CONTINUE YOUR JOURNEY", title: "Welcome back", body: "Log in to continue your daily walk with Scripture." }
     : isSignup
       ? { eyebrow: "START YOUR JOURNEY", title: "Create your account", body: "Welcome to PassageWalk. Tell us a little about yourself to begin." }
       : isForgot

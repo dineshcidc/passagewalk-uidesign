@@ -34,7 +34,7 @@ const walks: Record<number, Walk> = {
   3: {
     name: "The Three-Day Resurrection Walk",
     shortName: "Resurrection Walk",
-    prompts: ["Take a moment to reflect on the past three days.", "Look over your notes and think about how your body feels.", "Read the scripture on your certificate.", "Sincerely congratulate yourself on your accomplishment."],
+    prompts: ["Take a moment to reflect on the past three days.", "Look over your notes and think about how your body feels.", "Read the Scripture on your certificate.", "Sincerely congratulate yourself on your accomplishment."],
     closing: "You have begun.",
     verse: {
       text: "For I delivered unto you first of all that which I also received, how that Christ died for our sins according to the scriptures; And that he was buried, and that he rose again the third day according to the scriptures: And that he was seen of Cephas, then of the twelve.",
@@ -44,7 +44,7 @@ const walks: Record<number, Walk> = {
   7: {
     name: "The Seven-Day Creation Walk",
     shortName: "Creation Walk",
-    prompts: ["Just as you did after your first three days, take a moment now to reflect on the past week.", "Look over your notes and think about how your body feels.", "Read the familiar scripture on your certificate.", "And again, congratulate yourself on your accomplishment."],
+    prompts: ["Just as you did after your first three days, take a moment now to reflect on the past week.", "Look over your notes and think about how your body feels.", "Read the familiar Scripture on your certificate.", "And again, congratulate yourself on your accomplishment."],
     closing: "You are creating new, positive habits.",
     verse: { text: "And on the seventh day God ended his work which he had made; and he rested on the seventh day from all his work which he had made.", reference: "Genesis 2:2" },
   },
@@ -91,7 +91,7 @@ export const MILESTONE_LADDER = [1, ...PHASE_DAYS, 40, 66, 70, 120, 150, 180, 21
 const numberedWalk = (day: number): Walk => ({
   name: `${formatCount(day)} Days of PassageWalk`,
   shortName: `${formatCount(day)}-Day Walk`,
-  prompts: [`Take a moment to reflect on your ${plural(day, "day")} of steps and scripture.`, "Look over your notes and think about how your body feels.", "Read the scripture on your certificate."],
+  prompts: [`Take a moment to reflect on your ${plural(day, "day")} of steps and Scripture.`, "Look over your notes and think about how your body feels.", "Read the Scripture on your certificate."],
   closing: "Keep moving. Keep growing.",
   verse: walks[1].verse,
 });
@@ -109,7 +109,7 @@ export function getMilestoneInfo(day: number, plan: JourneyPlan = getActivePlan(
       ? "You have taken the first step of your PassageWalk Journey."
       : walks[day]
         ? `You have now walked ${formatCount(day)} days of your PassageWalk Journey.`
-        : `You have now walked ${formatCount(day)} days through passages of scripture with PassageWalk.`;
+        : `You have now walked ${formatCount(day)} days through passages of Scripture with PassageWalk.`;
   const certificateLine = day === 1
     ? "has taken the First Step of the PassageWalk Journey."
     : isThirtyThree && day === 33 && length === 33
@@ -132,7 +132,7 @@ export function getJourneyCompleteInfo(plan: JourneyPlan = getActivePlan(), leng
     shortName: experience ? "Experience Complete" : "Journey Complete",
     phase: null,
     congrats: experience ? `You have completed all ${plural(length, "day")} of the ${experience.name}.` : `You have completed all ${plural(length, "day")} of your PassageWalk Journey.`,
-    prompts: [`Take a moment to reflect on your ${plural(length, "day")}${experience ? ` of the ${experience.name}` : ""}.`, "Look over your notes and think about how your body feels.", "Read the scripture on your certificate."],
+    prompts: [`Take a moment to reflect on your ${plural(length, "day")}${experience ? ` of the ${experience.name}` : ""}.`, "Look over your notes and think about how your body feels.", "Read the Scripture on your certificate."],
     closing: experience ? "Your experience is complete." : "Your journey is complete.",
     verse: experience?.verse ?? walks[1].verse,
     certificateLine: experience ? `has completed the ${experience.name} of the PassageWalk Journey.` : `has completed the entire ${formatCount(length)}-Day PassageWalk Journey.`,

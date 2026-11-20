@@ -16,6 +16,8 @@ export type Experience = {
   theme: string;
   chaptersEach: number;
   tagline: string;
+  // Card line on Choose a Walk (client 2026-11-19): numbers, no book name, no full stop — "1 book, 2 chapters" / "5 books, 1 chapter each".
+  summary: string;
   description: string;
   verse: { text: string; reference: string }; // KJV
   books: { name: string; chapters: number[] }[];
@@ -79,9 +81,11 @@ function createExperience(names: string[]): Experience {
     tagline: single
       ? `The whole book of ${names[0]}, ${days} ${chapterWord}.`
       : `${capitalize(inWords(names.length))} books, ${inWords(chaptersEach)} ${chapterWord} each.`,
+    summary: single ? `1 book, ${days} ${chapterWord}` : `${names.length} books, ${chaptersEach} ${chapterWord} each`,
+    // Experience details (client 2026-11-19, tracker row 29): numbers + "Read and discover something new."
     description: single
-      ? `${names[0]} is the only book of the Bible with ${inWords(chaptersEach)} ${chapterWord}. Walk it one chapter a day.`
-      : `${listBooks(names)} each have exactly ${inWords(chaptersEach)} ${chapterWord}. Walk them together — books you may never have opened, side by side.`,
+      ? `${names[0]} is the only book of the Bible with ${chaptersEach} ${chapterWord}. Read and discover something new.`
+      : `${listBooks(names)} each have exactly ${chaptersEach} ${chapterWord}. Read and discover something new.`,
     verse: SHARED_VERSE,
     books: names.map((name) => ({ name, chapters: Array.from({ length: chaptersEach }, (_, index) => index + 1) })),
   };
