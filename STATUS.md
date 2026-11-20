@@ -5,8 +5,7 @@
 ## ▶️ NAALAIKU (Mon 2026-11-23) — first idha padi
 
 **Day close 2026-11-20 (Fri):** Client Excel feedback (copy + creative) work **text / image / UI items ellam mudinjadhu**. ⭐ **Branch = `uat/design_changes`** — indha work `main` la commit / merge panna koodaadhu, CPM approve pannina appram dhaan (memory: uat-design-changes-branch). STATUS.md update ku munnadi system restart aachu — indha section restart ku appram ezhudhunadhu.
-- Committed: `42c13e0` (PassageWalk one word, 73 places / 26 files = C60).
-- **Uncommitted (27 files)** = matha ella Excel changes. Typecheck + build pass ✅ (2026-11-20 restart ku appram run pannom). Full regression innum pannala.
+- Committed (`uat/design_changes`): `42c13e0` (PassageWalk one word, 73 places / 26 files = C60) + **`6ad0651`** (matha ella Excel changes, 27 files + STATUS.md — user commit pannaaru). Working tree clean. Typecheck + build pass ✅. Full regression innum pannala.
 
 **Source:**
 - Client Excel: `Client-call/Client-Excel Feedbacks/PW Screenshots Tracker- Feedback- 11192026 .xlsx` (Robin, Nov 19, tab "APP Screenshot Copy & Creative" + Abbreviations tab).
@@ -33,13 +32,18 @@
 **Pending:**
 - **C45 Journal title** ("My Highlights") = **Needs answer** — client confirm venum (app la already "Your Highlights" page + tab name Journal).
 - **Function work, In progress (code innum start pannala):** **C24** Choose a Walk sort — same days na "One of a Kind" walk first (25-Day: 2 Kings first, 42-Day: Job first; `data/experiences.ts`). **C57** "About the Photographer" — You menu la pudhu row → own page (About style), Darrell Rodriguez credit + bio (client Excel F91).
+- **Dev team ketta explanation (Function work tab) — user ku explain pannaachu, user dev team ku solluvaaru:**
+  - **C24 = Choose a Walk card order mattum.** Background: Designed Experience = same chapter count books ore walk (Obadiah + Philemon + 2 John + 3 John + Jude = 1 chapter each → 5-Day). Oru book oda chapter count vera endha book kum illana adhu thaniya walk → card tag **"ONE OF A KIND"** (Haggai 2, 2 Kings 25, Job 42, Isaiah 66 …); group walk tag = "N CHAPTERS EACH". Same days ku rendu walk irukkura place: **25-Day** (Lamentations · 1 Thess · James · 1 Peter · 1 John vs **2 Kings**) + **42-Day** (Judges · John vs **Job**). Ippo group first, single second → client: **ONE OF A KIND first**. Sort rule = days → single-book walk first → current order. "All · 31" + filter chips same order. Text / design / flow maaraadhu, 2 jodi cards swap mattum. 24-Day / 72-Day la single-book walk illa → maaraadhu (client "One of a Kind = all books have one chapter" + 24 / 72 example wording doubt — dev kettaa client kitta confirm). Real app la list API la irundhu vandhaa sort backend la um.
+  - **C57 = pudhu static page.** You tab → pudhu row "About the Photographer" (About PassageWalk pakkathula) → About style page, client Excel F91 text (Darrell Rodriguez credit + bio, 4 paragraphs + closing) → Back = You. User input illa; text app la / CMS — dev decide. Darrell photo client anuppina appram.
 - **Questions Q01–Q10** → dev team answer (Change List "Questions" tab).
 - **Wait W01–W13** → client / Kathy / PW team review (Learn more copy, Welcome back dashboard, badges + certificates redesign, milestone cadence, Onboarding 3 copy …).
+- **Client Excel 🟨 yellow rows — confirm pannadhu (2026-11-20):** legend row 95 "Yellow = Needs Internal PW Team Group Review" (client mail: PW team in progress), row 96 "Blue = New Add Section". Yellow = rows 8, 11, 50, 56, 59, 60, 90, 93, 94 → ellam Wait W01–W08; andha rows oda review content namma touch pannala. Exception mattum: row 11 Welcome back confetti (C58 shared component, client adhe row la kettaanga; mini dashboard = W02 wait) + app-wide word rules (C60 PassageWalk, C62 Scripture) Learn more / Home / About la um apply. Wait tab = yellow 9 rows + yellow illaadha 5 (W09–W13).
+- **🔜 Next round (ippo illa — client side mudinja appram):** client yellow rows review mudichu Excel update pannuvaanga → user pudhu Excel copy tharuvaaru → pazhaya copy + namma change list oda compare panni, **already done ellam filter panni vittudu, pudhusa vandhadhu / maarinadhu mattum** (reviewed yellow rows, pudhu blue New Add) edukkanum → `PW-Change-List-2026-11-20.xlsx` same format la add (Change List / Function work / Questions / Wait, IDs C62 / Q10 / W13 ku appram). User pudhu Excel anuppura varaikum yellow rows work start panna venaam.
 
 **Naalaiku work (order padi):**
 1. Branch check `uat/design_changes` → C24 sort + C57 Photographer page → typecheck + build.
 2. Full regression (9 journey suites + app-wide), esp. onboarding scroll on small phone (iPhone SE), Journey ready rows ella type, book tiles, My Journey card.
-3. Change List Excel la C24 / C57 status update, user review → commit **`uat/design_changes` la mattum** (main venaam).
+3. Change List Excel la C24 / C57 status update, user review → commit **`uat/design_changes` la mattum** (main venaam). Venum na C24 before / after screenshot dev team ku.
 4. Yougan ku: Recommended card text change (C52) backend la um maathanum.
 5. C45 client answer, Questions dev answers, Wait items vandhaa → work.
 
