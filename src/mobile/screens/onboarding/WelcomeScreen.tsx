@@ -11,7 +11,7 @@ export default function WelcomeScreen({ onCreateAccount, onSignIn, onLearnMore, 
           <path d="M-20 300C70 262 96 214 160 196s128 8 168-38 42-104 92-132" />
         </svg>
         <div className="welcome-brand">
-          <svg className="welcome-mark" viewBox="0 0 144 144" fill="none" role="img" aria-label="Passage Walk">
+          <svg className="welcome-mark" viewBox="0 0 144 144" fill="none" role="img" aria-label="PassageWalk">
             <path className="welcome-mark-page" d="M20 82.5C35 77.2 51.4 78.6 68.5 91.6V119.2C51.1 107.8 34.8 105.7 20 110.8V82.5Z" />
             <path className="welcome-mark-page" d="M124 82.5C109 77.2 92.6 78.6 75.5 91.6V119.2C92.9 107.8 109.2 105.7 124 110.8V82.5Z" />
             <path className="welcome-mark-line" d="M72 93V119" />
@@ -21,7 +21,7 @@ export default function WelcomeScreen({ onCreateAccount, onSignIn, onLearnMore, 
               <path d="M80.9 55.3C77.6 54.1 76.1 50.1 77.6 46.1C78.9 42.7 81.7 40.8 84.2 41.8C86.9 42.9 87.8 46.4 86.3 50C85 53.5 82.7 56 80.9 55.3Z" />
             </g>
           </svg>
-          <strong>Passage Walk</strong>
+          <strong>PassageWalk</strong>
           <span>WALK · READ · REFLECT</span>
         </div>
       </div>
@@ -38,7 +38,7 @@ export default function WelcomeScreen({ onCreateAccount, onSignIn, onLearnMore, 
           <AppIcon name="chevron" />
         </button>
         <button type="button" className="welcome-secondary" onClick={onSignIn}>Log In</button>
-        <button type="button" className="welcome-learn" onClick={onLearnMore}>New here? <strong>Learn how Passage Walk works</strong><AppIcon name="chevron" /></button>
+        <button type="button" className="welcome-learn" onClick={onLearnMore}>New here? <strong>Learn how PassageWalk works</strong><AppIcon name="chevron" /></button>
       </div>
     </div>
   );

@@ -3,7 +3,7 @@ import IOSDeviceFrame from "../../components/IOSDeviceFrame";
 export default function SplashScreen() {
   return (
     <IOSDeviceFrame>
-        <div className="splash-screen" aria-label="Passage Walk">
+        <div className="splash-screen" aria-label="PassageWalk">
           <div className="splash-brand">
             <svg
               className="splash-mark"
@@ -34,7 +34,7 @@ export default function SplashScreen() {
               </g>
             </svg>
 
-            <div className="splash-wordmark">Passage Walk</div>
+            <div className="splash-wordmark">PassageWalk</div>
             <div className="splash-tagline">Walk. Read. Reflect.</div>
           </div>
         </div>

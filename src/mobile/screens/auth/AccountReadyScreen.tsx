@@ -29,7 +29,7 @@ export default function AccountReadyScreen({ name, onContinue }: { name: string;
 
       <div className="moment-copy">
         <span>YOU'RE ALL SET</span>
-        <h1>Welcome to Passage Walk, {firstName}!</h1>
+        <h1>Welcome to PassageWalk, {firstName}!</h1>
         <p>Your account is ready. Now let's choose how your steps will guide you through scripture.</p>
       </div>
 

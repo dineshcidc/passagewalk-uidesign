@@ -13,7 +13,7 @@ import { getDayReflection, reflectionQuestions, saveDayReflection, saveDaySteps,
 export type DailyFlowEntry = "entry" | "reading" | "reflection";
 type DailyFlowPhase = DailyFlowEntry | "generating" | "ready" | "celebration" | "reflectionSuccess";
 
-// What a save newly earned: finished books first, then Passage Walk milestones, then the journey itself.
+// What a save newly earned: finished books first, then PassageWalk milestones, then the journey itself.
 // Designed Experiences have no book badges (Milestones screen).
 function getEarned() {
   return {
@@ -72,7 +72,7 @@ export default function DailyFlowScreen({
     const after = getEarned();
     const milestoneDays = getMilestoneDays();
     const finishedNow = after.journey && !before.journey;
-    // A first 33-Day Walk reaches Passage Walk Day 33 on its last day: the journey celebration (Power Walk) covers both.
+    // A first 33-Day Walk reaches PassageWalk Day 33 on its last day: the journey celebration (Power Walk) covers both.
     const sameAsJourney = (day: number) => finishedNow && getActivePlan().type === "automatic" && day === 33;
     const earned: Celebration[] = [
       ...after.books.filter((book) => !before.books.includes(book)).map((bookIndex): Celebration => ({ kind: "book", bookIndex })),
@@ -199,7 +199,7 @@ export default function DailyFlowScreen({
             <i className="generation-dot generation-dot-three"></i>
             <div className="generation-book"><AppIcon name="book" /></div>
           </div>
-          <span>PASSAGE WALK</span>
+          <span>PASSAGEWALK</span>
           <h1>{isToday ? "Finding today's passage" : `Finding Day ${journeyDay}'s passage`}</h1>
           <p>Bringing your steps and your scripture journey together.</p>
           <div className="generation-progress"><i></i></div>
@@ -249,7 +249,7 @@ export default function DailyFlowScreen({
         </header>
 
         <main className="scripture-reading-content" ref={readingContent}>
-          <div className="scripture-reading-label"><span>PASSAGE WALK</span><i></i><span>{dayLabel}</span></div>
+          <div className="scripture-reading-label"><span>PASSAGEWALK</span><i></i><span>{dayLabel}</span></div>
           <h1>{several ? activePart.reference : reference}</h1>
           <button className="scripture-reading-version" onClick={() => setVersionSheet(true)} aria-label={`${BIBLE_VERSION.name}. Change Bible version`}>
             <AppIcon name="book" />{BIBLE_VERSION.name}<AppIcon name="chevron" />

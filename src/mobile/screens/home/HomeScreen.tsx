@@ -56,7 +56,7 @@ export default function HomeScreen({
   const today = getTodayDay();
   const length = getJourneyLength();
   const journeyLabel = plan.type === "designed" ? journeyName(plan).toUpperCase() : plan.type === "custom" ? formatBookList(plan.books).toUpperCase() : plan.type === "bible" ? `THE WHOLE BIBLE · ${getBiblePace(plan.pace).years.toUpperCase()}` : `YOUR ${length}-DAY WALK`;
-  // Milestone track in Passage Walk days (milestones count across journeys): up to Day 33 first, then up to the
+  // Milestone track in PassageWalk days (milestones count across journeys): up to Day 33 first, then up to the
   // next milestone, with the four milestones before its end as dots.
   const trackDays = progress.walkedDays < 33 ? 33 : progress.nextMilestone || 365;
   const trackMilestones = getMilestoneDays().filter((day) => day > 1 && day < trackDays).slice(-4);

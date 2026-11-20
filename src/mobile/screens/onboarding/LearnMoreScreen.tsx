@@ -19,14 +19,14 @@ export default function LearnMoreScreen({ onBack, onCreateAccount, onSignIn }: {
     <div className="learn-screen">
       <div className="auth-top learn-top">
         <button type="button" className="auth-back" onClick={onBack} aria-label="Back to Welcome"><AppIcon name="back" /></button>
-        <div className="learn-top-title"><span>LEARN MORE</span><strong>How Passage Walk works</strong></div>
+        <div className="learn-top-title"><span>LEARN MORE</span><strong>How PassageWalk works</strong></div>
       </div>
 
       <div className="learn-content">
         <div className="learn-intro">
           <span>BODY · MIND · SPIRIT</span>
           <h1>Your steps, God&apos;s Word</h1>
-          <p>Passage Walk strengthens your body through the steps you take and your spirit through the passages of scripture they lead you to.</p>
+          <p>PassageWalk strengthens your body through the steps you take and your spirit through the passages of scripture they lead you to.</p>
         </div>
 
         <ol className="learn-steps">

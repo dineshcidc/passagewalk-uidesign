@@ -224,7 +224,7 @@ export default function SettingsPage({
               Choose Your Next Journey
               <AppIcon name="chevron" />
             </button>
-            <p className="change-journey-note">Your badges and Passage Walk days carry on into your next journey.</p>
+            <p className="change-journey-note">Your badges and PassageWalk days carry on into your next journey.</p>
           </>
         )}
 

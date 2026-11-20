@@ -14,7 +14,7 @@ import { getActivePlan } from "../../data/journeyStore";
 import { playChime } from "../../sound";
 import type { JourneyPlan, MainTab } from "../../types";
 
-// ladder = a Passage Walk milestone (counts days across journeys); journey = finishing this journey.
+// ladder = a PassageWalk milestone (counts days across journeys); journey = finishing this journey.
 type Milestone = {
   kind: "ladder" | "journey";
   day: number;
@@ -22,7 +22,7 @@ type Milestone = {
   unlockedOn?: string;
 };
 
-// Passage Walk milestones (progress.ts): one ladder for every journey, unlocked by Passage Walk days —
+// PassageWalk milestones (progress.ts): one ladder for every journey, unlocked by PassageWalk days —
 // saving one more reflection in the mock scenario earns Day 3 (with the celebration screen).
 // Only the badges this journey can reach are shown (PM: no "after this journey" line).
 function getMilestones(): Milestone[] {
@@ -32,7 +32,7 @@ function getMilestones(): Milestone[] {
 
 const getJourneyMilestone = (): Milestone => ({ kind: "journey", day: getJourneyLength(), unlocked: isJourneyComplete(), unlockedOn: getJourneyCompleteDate() ?? undefined });
 
-// Only a finished Designed Experience wears the client purple; every Passage Walk milestone is gold.
+// Only a finished Designed Experience wears the client purple; every PassageWalk milestone is gold.
 const isPurple = (milestone: Milestone) => milestone.kind === "journey" && milestone.unlocked && getActivePlan().type === "designed";
 
 function MilestoneAchievement({ milestone, onBack }: { milestone: Milestone; onBack: () => void }) {
@@ -62,7 +62,7 @@ function MilestoneAchievement({ milestone, onBack }: { milestone: Milestone; onB
           <div className="achievement-badge-glow">
             <MilestoneBadge milestone={milestone} large experience={isPurple(milestone)} />
           </div>
-          <span className="achievement-eyebrow">{milestone.kind === "journey" ? (getActivePlan().type === "designed" ? "EXPERIENCE COMPLETE" : "JOURNEY COMPLETE") : info.phase ? `PHASE ${info.phase.number} OF ${info.phase.total} · COMPLETE` : "PASSAGE WALK MILESTONE"}</span>
+          <span className="achievement-eyebrow">{milestone.kind === "journey" ? (getActivePlan().type === "designed" ? "EXPERIENCE COMPLETE" : "JOURNEY COMPLETE") : info.phase ? `PHASE ${info.phase.number} OF ${info.phase.total} · COMPLETE` : "PASSAGEWALK MILESTONE"}</span>
           <h1>{info.name}</h1>
           <p><strong>Congratulations!</strong> {info.congrats}</p>
           <div className="achievement-date">
@@ -147,10 +147,10 @@ export default function MilestonesScreen({ onNavigate, plan }: { onNavigate: (ta
 
         {/* Kathy: "cumulative based on bible reading days" — every completed day counts, in any journey. */}
         <div className="milestones-section-title">
-          <span>PASSAGE WALK MILESTONES</span>
+          <span>PASSAGEWALK MILESTONES</span>
           <p>{milestones.filter((milestone) => milestone.unlocked).length} of {milestones.length} unlocked</p>
         </div>
-        <p className="milestones-ladder-note"><AppIcon name="steps" /><span><strong>{plural(progress.walkedDays, "day")} walked</strong> in Passage Walk. Every day you complete counts, in any journey.</span></p>
+        <p className="milestones-ladder-note"><AppIcon name="steps" /><span><strong>{plural(progress.walkedDays, "day")} walked</strong> in PassageWalk. Every day you complete counts, in any journey.</span></p>
 
         <section className="milestones-grid">
           {milestones.map((milestone) => (

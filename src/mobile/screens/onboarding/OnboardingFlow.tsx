@@ -30,7 +30,7 @@ const onboardingContent = [
   {
     eyebrow: "A DAILY DEVOTIONAL RHYTHM",
     title: "Walk With Purpose",
-    body: "Passage Walk connects the steps you take with scripture—creating a rhythm of movement, reflection, and faith that brings you closer to God each day.",
+    body: "PassageWalk connects the steps you take with scripture—creating a rhythm of movement, reflection, and faith that brings you closer to God each day.",
     // Top banner carousel: first = the page's original client photo, then the rest (random order, slow fade). 3 / 4 / 4 images.
     images: [
       { src: onboarding1, alt: "A stone path leading down a hillside toward a sunlit valley", position: "60% center" },
@@ -40,7 +40,7 @@ const onboardingContent = [
     ],
   },
   {
-    eyebrow: "HOW PASSAGE WALK WORKS",
+    eyebrow: "HOW PASSAGEWALK WORKS",
     title: "Your Steps, Your Scripture",
     body: "Enter your daily steps and receive a meaningful passage selected for your journey. Read at your own pace, then pause for a quiet moment of reflection.",
     images: [
@@ -63,7 +63,7 @@ const onboardingContent = [
   },
 ];
 
-// Onboarding → Welcome (→ Learn more) → first-time user: Create Account → "Welcome to Passage Walk" → Choose Your Journey → Journey ready → Home
+// Onboarding → Welcome (→ Learn more) → first-time user: Create Account → "Welcome to PassageWalk" → Choose Your Journey → Journey ready → Home
 //                      → returning user:  Log In → "Welcome back 👏" → Home (journey setup is skipped)
 type Stage = "onboarding" | "welcome" | "learn-more" | "login" | "signup" | "account-ready" | "setup" | "welcome-back" | "app";
 
@@ -86,7 +86,7 @@ export default function OnboardingFlow() {
 
   // Starting a journey resets the prototype data to that journey's mock scenario; the key remounts every tab.
   // walk = Welcome back → Start Today's Walk; any other start (setup, Change Journey) opens Home.
-  // carryOver = Change Journey: Passage Walk days (and the badges they earned) continue into the new journey.
+  // carryOver = Change Journey: PassageWalk days (and the badges they earned) continue into the new journey.
   const startJourney = (plan: JourneyPlan, walk?: DailyFlowEntry, carryOver = false) => {
     activateJourney(plan, carryOver);
     setOpenWalk(walk);

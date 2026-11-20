@@ -70,12 +70,12 @@ function assign(journeyDay: number, steps: string) {
 
 const chaptersKey = (reading: ReadingAssignment) => reading.chapters.map((ref) => `${ref.bookIndex}:${ref.chapter}`).join(",");
 
-// Passage Walk days from earlier journeys (the date each was completed, in order). Milestones count them too
+// PassageWalk days from earlier journeys (the date each was completed, in order). Milestones count them too
 // (Kathy: "cumulative based on bible reading days"), so Change Journey keeps every badge already earned.
 const pastCompletedDates: string[] = [];
 
 // Starts a journey on the mock scenario above. Called when setup finishes, on Log In, and from Settings → Change Journey.
-// carryOver = Change Journey: the journey being left adds its completed days to the Passage Walk total;
+// carryOver = Change Journey: the journey being left adds its completed days to the PassageWalk total;
 // otherwise (first setup after Sign Up, a fresh Log In) the total starts again.
 export function activateJourney(nextPlan: JourneyPlan, carryOver = false) {
   if (carryOver) {

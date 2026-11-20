@@ -1,5 +1,5 @@
 // Short applause made with the Web Audio API (no audio file needed): many tiny filtered noise bursts,
-// denser at the start and fading out. Used for celebrations, Welcome to Passage Walk and Welcome back 👏 (Shikha's idea).
+// denser at the start and fading out. Used for celebrations, Welcome to PassageWalk and Welcome back 👏 (Shikha's idea).
 let context: AudioContext | null = null;
 
 function getAudio() {

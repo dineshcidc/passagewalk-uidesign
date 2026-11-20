@@ -168,7 +168,7 @@ export default function AuthFlow({
   const heading = isLogin
     ? { eyebrow: "CONTINUE YOUR JOURNEY", title: "Welcome back", body: "Log in to continue your daily walk with scripture." }
     : isSignup
-      ? { eyebrow: "START YOUR JOURNEY", title: "Create your account", body: "Welcome to Passage Walk. Tell us a little about yourself to begin." }
+      ? { eyebrow: "START YOUR JOURNEY", title: "Create your account", body: "Welcome to PassageWalk. Tell us a little about yourself to begin." }
       : isForgot
         ? { eyebrow: "ACCOUNT RECOVERY", title: "Forgot password?", body: "Enter the email connected to your account and we'll send you a secure reset link." }
         : { eyebrow: "SECURE YOUR ACCOUNT", title: "Reset password", body: "Choose a strong new password you haven't used for this account before." };
@@ -186,7 +186,7 @@ export default function AuthFlow({
       <div className={`auth-screen auth-screen-${view}`} key={view}>
         <div className="auth-top">
           <button type="button" className="auth-back" onClick={handleBack} aria-label="Go back"><BackIcon /></button>
-          <div className="auth-brand-name"><AuthBrandMark /><span>Passage Walk</span></div>
+          <div className="auth-brand-name"><AuthBrandMark /><span>PassageWalk</span></div>
         </div>
 
         <div className="auth-content">
@@ -256,7 +256,7 @@ export default function AuthFlow({
 
             {isLogin && (
               <button type="button" className="auth-switch" onClick={() => navigateTo("signup")}>
-                New to Passage Walk?<strong>Create an account</strong>
+                New to PassageWalk?<strong>Create an account</strong>
               </button>
             )}
             {isSignup && (

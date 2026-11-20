@@ -46,7 +46,7 @@ export default function CelebrationScreen({ celebration, onContinue }: { celebra
           eyebrow: plan.type === "automatic" ? "FINAL PHASE · JOURNEY COMPLETE" : plan.type === "designed" ? "EXPERIENCE COMPLETE" : "JOURNEY COMPLETE",
           title: plan.type === "custom" || plan.type === "bible" ? "You did it!" : info.name,
           body: celebration.day === 1
-            ? "I'm proud of you — you completed your Passage Walk."
+            ? "I'm proud of you — you completed your PassageWalk."
             : `Congratulations! ${info.congrats} I'm proud of you!`,
           chip: "CERTIFICATE OF COMPLETION EARNED",
         };
@@ -85,7 +85,7 @@ export default function CelebrationScreen({ celebration, onContinue }: { celebra
         {celebration.kind === "book" ? (
           <div className="celebration-book-medal"><AppIcon name="book" /></div>
         ) : (
-          // Passage Walk milestones are gold for every journey; only a finished Designed Experience is purple.
+          // PassageWalk milestones are gold for every journey; only a finished Designed Experience is purple.
           <div className="celebration-badge"><MilestoneBadge milestone={{ day: celebration.day, unlocked: true }} large experience={celebration.kind === "journey" && getActivePlan().type === "designed"} /></div>
         )}
       </div>

@@ -1,8 +1,45 @@
 # Passage Walk — Status
 
-**Last updated:** 2026-11-18 (day close)
+**Last updated:** 2026-11-19 (day close)
 
-## ▶️ NAALAIKU (Thu 2026-11-19) — first idha padi
+## ▶️ NAALAIKU (Fri 2026-11-20) — first idha padi
+
+**Day close 2026-11-19 (Thu):** user leave. Inniku work ellam **commit aagiduchu**: `4b39acc` (Settings tabs hide), `a37f334` (app video + documentation). Indha STATUS.md update mattum uncommitted.
+
+**Inniku mudinjadhu:**
+1. **Settings prototype tabs hide (PM) ✅ `4b39acc`:**
+   - "Journey in progress / Journey completed" tabs dev team ku mattum dhaan vechadhu. Client paatha confuse aaguvaanga, adhanaala hide pannom. Completed state dev ku screenshots ah share aachu.
+   - `SettingsPage.tsx` la `SHOW_SETTINGS_STATE_TABS = false` (true = thirumba varum). Settings la ippo running journey + YOUR JOURNEYS 0 ("No completed journeys yet") mattum. Build pass.
+2. **Client walkthrough video ✅ `a37f334`** → `design-assets/app-video/passagewalk-app-walkthrough.mp4`:
+   - Specs: 2:00 exact, 1080 × 1920 portrait, H.264 30 fps CFR, AAC, ~100 MB.
+   - Flow: Splash → onboarding → sign up → choose journey (Designed list → 33-Day) → version → Home → notifications → steps → passage → reading + highlights → reflection → Day 3 celebration → Journey → Journal → Highlights → Milestones → badge → You → Settings → Journey Complete + story.
+   - Design: caption card phone frame ku mela, animated green background (footprint trails, light rays), flat phone frame. Music original (soft piano + pad, bells, tap clicks), licence venaam. Poster JPG + README um irukku.
+   - Same folder la iOS preview copy `passagewalk-app-preview.mp4` irukku. Source + re-make steps `app-video/source/` + `README.md` la.
+   - ⚠️ Music konjam soft (RMS 0.05). PM / client sonnaa volume boost → re-render (~7 min). 100 MB, so link vazhiya share pannanum.
+3. **Client documentation (Word + PDF) ✅ `a37f334`** → `design-assets/documentaion/PassageWalk-Frontend-Documentation.docx` / `.pdf`:
+   - 22 pages. Reference format = Clienkt Health MOP doc (PM share pannadhu), aana namma own look.
+   - Cover: ConcertIDC logo + PW icon + 4 screens strip + meta table. Contents page. Header la ConcertIDC logo, footer "ConcertIDC | Confidential" + page no.
+   - Georgia italic headings + Calibri body, green / gold, flat. 31 real app screenshots (video frames la irundhu).
+   - 13 sections: Intro → Overview (tech, design system, navigation) → Onboarding → Choosing a Journey → Home → Daily Walk (steps rule table) → Journey & Journal → Milestones → Profile & Settings (Change Journey rules) → Journey Complete → User Journey Summary → Key Features → Conclusion.
+   - Re-make: `documentaion/source/` (`build.js` docx-js → `finalize.ps1` Word COM la TOC update + PDF export → `render.mjs` preview).
+   - Pending decide (user / PM): "Confidential" footer venumaa, client company name cover la venumaa.
+4. **Google Play listing text ✅ (chat la kuduthaachu, file save pannala):**
+   - App name: "Passage Walk" (alt "Passage Walk: Bible Steps").
+   - Short description, 78: "Walk, enter your steps, and receive today's Bible passage to read and reflect."
+   - Full description 1,873 chars + release notes 216 + category (Books & Reference).
+   - Data safety / content rating / target audience draft answers.
+   - Ippo app la illaadha features (other versions, watch sync) mention pannala.
+   - ❗ Client kitta irundhu venum: support email, website, **privacy policy URL** (required), Free / ads confirm, target age (13+ / 18+).
+
+**Naalaiku work:**
+1. PM / client feedback on video + documentation vandhaa fix (music volume, captions, doc wording).
+2. Play listing: client details (email, privacy URL) vandhaa fill. Venum na file ah save (`design-assets/app-store/`) + Apple App Store text (Subtitle 30, Promotional 170, Keywords 100).
+3. PW-287 reply post aachaa nu check, Yougan / Kishore / Karthi response vandhaa answer.
+4. Testing time issues / dev tickets vandhaa fix (fix → build → regression → commit).
+5. PM Point 1 pending: Passage Ready "Book 5 of 66" subtext → Option B vandhaa `describeBookPosition` + store screenshots slide 3 re-capture.
+6. Wait (ippo venaam): Kathy Day 40 … 365 names · Wearable flow plan · Atlassian MCP v2 reconnect (user).
+
+## ✅ 2026-11-18 — PW-287 reply ready (no code change)
 
 **Day close 2026-11-18 (Wed):** user leave. Code change edhuvum illa — STATUS.md mattum update (nethu + inniku update rendum uncommitted, commit pannalaam).
 

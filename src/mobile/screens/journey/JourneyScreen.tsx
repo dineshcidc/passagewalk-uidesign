@@ -277,7 +277,7 @@ export default function JourneyScreen({ onNavigate, plan }: { onNavigate: (tab: 
     <div className="journey-overview-screen">
       <div className="journey-overview-scroll">
         <header className="journey-overview-header">
-          <span>PASSAGE WALK</span>
+          <span>PASSAGEWALK</span>
           <h1>My Journey</h1>
           <p>Your {formatCount(plan.days)}-day walk through scripture</p>
         </header>

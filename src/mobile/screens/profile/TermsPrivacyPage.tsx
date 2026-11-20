@@ -11,24 +11,24 @@ function LegalDocumentPage({ type, onBack }: { type: "terms" | "privacy"; onBack
         <span>LAST UPDATED · OCTOBER 2026</span>
         <h1>{isTerms ? "Terms of Use" : "Privacy Policy"}</h1>
         <p>{isTerms
-          ? "These terms explain the simple guidelines for using Passage Walk and participating in your devotional journey."
-          : "This policy explains how Passage Walk handles the information you provide while using the app."}</p>
+          ? "These terms explain the simple guidelines for using PassageWalk and participating in your devotional journey."
+          : "This policy explains how PassageWalk handles the information you provide while using the app."}</p>
         <section>
-          <h2>{isTerms ? "Using Passage Walk" : "Information we collect"}</h2>
+          <h2>{isTerms ? "Using PassageWalk" : "Information we collect"}</h2>
           <p>{isTerms
-            ? "Passage Walk is intended for personal devotional use. Please use the app respectfully and provide accurate account information."
+            ? "PassageWalk is intended for personal devotional use. Please use the app respectfully and provide accurate account information."
             : "We use basic account details, journey progress, step entries, and reflections to provide and personalize your experience."}</p>
         </section>
         <section>
           <h2>{isTerms ? "Your journey content" : "How information is used"}</h2>
           <p>{isTerms
             ? "You remain responsible for the reflections and other personal content you add to your journey."
-            : "Your information supports app functionality, saves your progress, and helps us improve Passage Walk. We do not sell your personal information."}</p>
+            : "Your information supports app functionality, saves your progress, and helps us improve PassageWalk. We do not sell your personal information."}</p>
         </section>
         <section>
           <h2>{isTerms ? "Changes and availability" : "Your choices"}</h2>
           <p>{isTerms
-            ? "Features may evolve as Passage Walk improves. Continued use of the app means you accept the current terms."
+            ? "Features may evolve as PassageWalk improves. Continued use of the app means you accept the current terms."
             : "You may update your profile information and reminder preferences at any time from the You tab."}</p>
         </section>
       </article>
@@ -48,12 +48,12 @@ export default function TermsPrivacyPage({ onBack }: { onBack: () => void }) {
         <div className="profile-subpage-intro">
           <span>LEGAL INFORMATION</span>
           <h1>Clear and transparent</h1>
-          <p>Read how Passage Walk works and how your information is handled.</p>
+          <p>Read how PassageWalk works and how your information is handled.</p>
         </div>
         <section className="terms-privacy-list">
           <button onClick={() => setDocument("terms")}>
             <span><AppIcon name="info" /></span>
-            <div><strong>Terms of Use</strong><p>Guidelines for using Passage Walk</p></div>
+            <div><strong>Terms of Use</strong><p>Guidelines for using PassageWalk</p></div>
             <i><AppIcon name="chevron" /></i>
           </button>
           <button onClick={() => setDocument("privacy")}>

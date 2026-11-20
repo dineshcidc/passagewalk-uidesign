@@ -82,12 +82,12 @@ const PHASE_ORDINALS = ["first", "second", "third", "fourth", "fifth and final"]
 
 // One milestone ladder for every journey (review call 4 + Kathy's "PW Targeted Bible List" PDF): "Milestones will be
 // cumulative based on bible reading days" — 33-Day milestones 3, 7, 12, 21, 33, then the Designed Experience additional
-// milestones 40 … 365. Day 1 "First Step" is ours. They count Passage Walk days across journeys (progress.ts), so
+// milestones 40 … 365. Day 1 "First Step" is ours. They count PassageWalk days across journeys (progress.ts), so
 // changing journey keeps what was earned: "they've still walked the 21 days… and they still just keep adding".
 export const MILESTONE_LADDER = [1, ...PHASE_DAYS, 40, 66, 70, 120, 150, 180, 210, 240, 270, 300, 330, 365];
 
 // Kathy (review call 4): "having badges with numbers… a consistent congratulations… somewhere in the congratulations,
-// it just references passage walk" — e.g. "congratulations on 70 days of… walking through passages of scripture".
+// it just references passagewalk" — e.g. "congratulations on 70 days of… walking through passages of scripture".
 const numberedWalk = (day: number): Walk => ({
   name: `${formatCount(day)} Days of PassageWalk`,
   shortName: `${formatCount(day)}-Day Walk`,
@@ -96,7 +96,7 @@ const numberedWalk = (day: number): Walk => ({
   verse: walks[1].verse,
 });
 
-// A Passage Walk milestone (the ladder). plan defaults to the active journey: only the 33-Day Walk speaks of its
+// A PassageWalk milestone (the ladder). plan defaults to the active journey: only the 33-Day Walk speaks of its
 // five phases; the Journey Complete demo passes a finished 33-Day Walk.
 export function getMilestoneInfo(day: number, plan: JourneyPlan = getActivePlan(), length = getJourneyLength()): MilestoneInfo {
   const isThirtyThree = plan.type === "automatic";

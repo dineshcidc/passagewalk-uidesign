@@ -35,7 +35,7 @@ export default function ProfileScreen({
     { label: "Reminders", icon: "bell" as const, view: "reminders" as const },
     { label: "Settings", icon: "settings" as const, view: "settings" as const },
     { label: "Help & Support", icon: "help" as const, view: "help" as const },
-    { label: "About Passage Walk", icon: "info" as const, view: "about" as const },
+    { label: "About PassageWalk", icon: "info" as const, view: "about" as const },
     { label: "Terms and Privacy", icon: "shield" as const, view: "legal" as const },
   ];
 
@@ -82,7 +82,7 @@ export default function ProfileScreen({
           <section className="logout-dialog" role="dialog" aria-modal="true" aria-labelledby="logout-title" onClick={(event) => event.stopPropagation()}>
             <div className="logout-dialog-icon"><AppIcon name="logout" /></div>
             <h2 id="logout-title">Log out?</h2>
-            <p>Are you sure you want to log out of Passage Walk?</p>
+            <p>Are you sure you want to log out of PassageWalk?</p>
             <div>
               <button onClick={() => setShowLogout(false)} disabled={loggingOut}>Cancel</button>
               <button

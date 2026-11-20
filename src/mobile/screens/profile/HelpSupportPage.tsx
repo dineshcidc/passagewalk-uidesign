@@ -6,8 +6,8 @@ function FrequentlyAskedQuestions({ onBack }: { onBack: () => void }) {
   const [openQuestion, setOpenQuestion] = useState<number | null>(0);
   const questions = [
     {
-      question: "How does Passage Walk work?",
-      answer: "Passage Walk connects your daily movement with scripture and reflection. Each day, enter your steps, receive a passage, read it, and pause to record what stood out.",
+      question: "How does PassageWalk work?",
+      answer: "PassageWalk connects your daily movement with scripture and reflection. Each day, enter your steps, receive a passage, read it, and pause to record what stood out.",
     },
     {
       question: "How are daily scripture passages assigned?",
@@ -27,7 +27,7 @@ function FrequentlyAskedQuestions({ onBack }: { onBack: () => void }) {
     },
     {
       question: "How do milestones and badges work?",
-      answer: "Milestones count every day you complete in Passage Walk, in any journey: Day 3 Resurrection Walk, Day 7 Creation Walk, Day 12 Apostle Walk, Day 21 Trinity Walk, Day 33 Power Walk, then Day 40, 66, 70, 120 and on to 365. If you change journeys, your days and badges carry on. Finishing a journey earns its own badge, and finishing a book earns a book badge. Each badge comes with a certificate.",
+      answer: "Milestones count every day you complete in PassageWalk, in any journey: Day 3 Resurrection Walk, Day 7 Creation Walk, Day 12 Apostle Walk, Day 21 Trinity Walk, Day 33 Power Walk, then Day 40, 66, 70, 120 and on to 365. If you change journeys, your days and badges carry on. Finishing a journey earns its own badge, and finishing a book earns a book badge. Each badge comes with a certificate.",
     },
   ];
 
@@ -66,7 +66,7 @@ function ContactSupportPage({ onBack }: { onBack: () => void }) {
       <div className="contact-support-content">
         <section className="contact-support-card">
           <div><AppIcon name="mail" /></div>
-          <span>PASSAGE WALK SUPPORT</span>
+          <span>PASSAGEWALK SUPPORT</span>
           <h1>How can we help?</h1>
           <p>If you have a question or need assistance, contact our support team. We&apos;ll be happy to help you continue your journey.</p>
           <strong className="contact-support-email">support@passagewalk.com</strong>
@@ -101,7 +101,7 @@ function ReportProblemPage({ onBack }: { onBack: () => void }) {
             </div>
             <span>REPORT RECEIVED</span>
             <h1>Thanks! Your report has been submitted.</h1>
-            <p>Our support team will review the details and use them to improve Passage Walk.</p>
+            <p>Our support team will review the details and use them to improve PassageWalk.</p>
             <button onClick={onBack}>Back to Help &amp; Support</button>
           </section>
         ) : (
@@ -141,7 +141,7 @@ function ReportProblemPage({ onBack }: { onBack: () => void }) {
 export default function HelpSupportPage({ onBack }: { onBack: () => void }) {
   const [view, setView] = useState<"menu" | "faq" | "contact" | "report">("menu");
   const helpItems = [
-    { label: "Frequently Asked Questions", detail: "Find quick answers about Passage Walk.", icon: "help" as const, view: "faq" as const },
+    { label: "Frequently Asked Questions", detail: "Find quick answers about PassageWalk.", icon: "help" as const, view: "faq" as const },
     { label: "Contact Support", detail: "Send a message to our support team.", icon: "mail" as const, view: "contact" as const },
     { label: "Report a Problem", detail: "Tell us when something is not working.", icon: "alert" as const, view: "report" as const },
   ];

@@ -4,7 +4,7 @@ import { getExperience } from "../../data/experiences";
 import { BIBLE_CHAPTER_COUNT, chaptersPerDayLabel, experienceThrough, formatBookList, formatCount, getBiblePace, journeyTypeIcons, journeyTypeLabels, plural, readingOrderLabel, readingStyle, withArticle } from "../../data/journeyPlans";
 import type { JourneyPlan } from "../../types";
 
-// Journey confirmation after setup (client slide 16): "You're set for a 67-day sequential Passage Walk".
+// Journey confirmation after setup (client slide 16): "You're set for a 67-day sequential PassageWalk".
 export default function JourneyReadyScreen({ plan, onStart, onChange, startLabel = "Start My Journey" }: { plan: JourneyPlan; onStart: () => void; onChange: () => void; startLabel?: string }) {
   const days = formatCount(plan.days);
   const experience = getExperience(plan.experience);
@@ -68,7 +68,7 @@ export default function JourneyReadyScreen({ plan, onStart, onChange, startLabel
 
       <div className="moment-copy">
         <span>YOUR JOURNEY IS READY</span>
-        <h1>You're set for {withArticle(plan.days)}-day {readingStyle(plan) && `${readingStyle(plan)} `}Passage Walk</h1>
+        <h1>You're set for {withArticle(plan.days)}-day {readingStyle(plan) && `${readingStyle(plan)} `}PassageWalk</h1>
         <p>{experience ? `${experience.name}: one chapter a day through ${through}.` : `${perDay[0].toUpperCase()}${perDay.slice(1)} through ${through}.`} {stepsLine}</p>
       </div>
 

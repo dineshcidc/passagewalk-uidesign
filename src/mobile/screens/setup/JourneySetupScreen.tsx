@@ -158,7 +158,7 @@ function ExperienceList({ selectedId, onSelect }: { selectedId: string | null; o
 }
 
 // The chosen walk before it starts: what it is, the verse, the books day by day, and the badges on the way.
-// walked = Passage Walk days already done (Change Journey): milestones count on from there; first setup = 0.
+// walked = PassageWalk days already done (Change Journey): milestones count on from there; first setup = 0.
 function ExperienceDetails({ experience, walked }: { experience: Experience; walked: number }) {
   const everyBook = experience.books.length === bibleBooks.length;
   const milestoneDays = getMilestonePreview(walked, experience.days);
@@ -204,9 +204,9 @@ function ExperienceDetails({ experience, walked }: { experience: Experience; wal
         </div>
       )}
 
-      {/* Passage Walk milestones this walk can reach (one ladder for every journey) + its own finishing badge. */}
+      {/* PassageWalk milestones this walk can reach (one ladder for every journey) + its own finishing badge. */}
       <div className="experience-section-title"><span>BADGES ALONG THE WAY</span><small>{plural(milestoneDays.length + 1, "badge")}</small></div>
-      {walked > 0 && <p className="experience-milestones-note">Counting on from your {plural(walked, "Passage Walk day")} — every badge you've earned stays.</p>}
+      {walked > 0 && <p className="experience-milestones-note">Counting on from your {plural(walked, "PassageWalk day")} — every badge you've earned stays.</p>}
       <div className="experience-milestones">
         {milestoneDays.map((day) => (
           <div key={day}>
