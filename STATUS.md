@@ -5,7 +5,7 @@
 ## ▶️ NAALAIKU (Mon 2026-11-23) — first idha padi
 
 **Day close 2026-11-20 (Fri):** Client Excel feedback (copy + creative) work **text / image / UI items ellam mudinjadhu**. ⭐ **Branch = `uat/design_changes`** — indha work `main` la commit / merge panna koodaadhu, CPM approve pannina appram dhaan (memory: uat-design-changes-branch). STATUS.md update ku munnadi system restart aachu — indha section restart ku appram ezhudhunadhu.
-- Committed (`uat/design_changes`): `42c13e0` (PassageWalk one word, 73 places / 26 files = C60) + **`6ad0651`** (matha ella Excel changes, 27 files + STATUS.md — user commit pannaaru). Working tree clean. Typecheck + build pass ✅. Full regression innum pannala.
+- Committed (`uat/design_changes`): `42c13e0` (PassageWalk one word, 73 places / 26 files = C60) + **`6ad0651`** (matha ella Excel changes, 27 files + STATUS.md — user commit pannaaru). Typecheck + build pass ✅. Full regression innum pannala. Day close: user leave; `6ad0651` ku appram STATUS.md update mattum uncommitted (C24 / C57 explanation + yellow rows note) — commit pannalaam.
 
 **Source:**
 - Client Excel: `Client-call/Client-Excel Feedbacks/PW Screenshots Tracker- Feedback- 11192026 .xlsx` (Robin, Nov 19, tab "APP Screenshot Copy & Creative" + Abbreviations tab).
